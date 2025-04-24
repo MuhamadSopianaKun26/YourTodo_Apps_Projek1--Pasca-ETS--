@@ -139,7 +139,7 @@ class ToDoApp(QWidget):
         """Show login dialog and authenticate user. Returns True if successful."""
         login_dialog = LoginDialog()
         if login_dialog.exec_():
-            self.current_user = login_dialog.username.text()
+            self.current_user = login_dialog.username
             if hasattr(self, "header"):
                 self.header.updateUsername()
                 

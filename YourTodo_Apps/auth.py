@@ -10,10 +10,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont
-import hashlib
-import re
+import hashlib, re
 from path_utils import get_image_path, get_database_path
-import os
 
 
 class LoginDialog(QDialog):
@@ -24,6 +22,7 @@ class LoginDialog(QDialog):
 
     def __init__(self):
         super().__init__()
+        self.username = ""
         self.setWindowTitle("Login")
         self.setFixedSize(1100, 650)
         self._setup_styles()
@@ -95,8 +94,8 @@ class LoginDialog(QDialog):
         title.setFont(QFont("Arial", 48, QFont.Bold))
         title.setStyleSheet("color: #333; font-size: 48px;")
 
-        self.username = QLineEdit()
-        self.username.setPlaceholderText("Enter Your Username...")
+        self.email = QLineEdit()
+        self.email.setPlaceholderText("Enter Your Email...")
 
         self.password = QLineEdit()
         self.password.setPlaceholderText("Enter Your Password...")
@@ -109,8 +108,8 @@ class LoginDialog(QDialog):
 
         left_layout.addWidget(title)
         left_layout.addSpacing(20)
-        left_layout.addWidget(QLabel("Username"))
-        left_layout.addWidget(self.username)
+        left_layout.addWidget(QLabel("Email"))
+        left_layout.addWidget(self.email)
         left_layout.addWidget(QLabel("Password"))
         left_layout.addWidget(self.password)
         left_layout.addSpacing(10)
@@ -180,13 +179,13 @@ class LoginDialog(QDialog):
         users = {}
         try:
             users_file = get_database_path("users.txt")
-            with open(users_file, "r", encoding="utf-8") as file:
+            with open(users_file, "r") as file:
                 for line in file:
-                    if " | " in line:  # Ensure the line has the correct format
-                        username, password_hash = line.strip().split(" | ")
-                        users[username] = password_hash
+                    parts = line.strip().split(" | ")
+                    if len(parts) == 3:
+                        email, username, password_hash = parts
+                        users[email] =(username, password_hash)
         except FileNotFoundError:
-            # Create the file if it doesn't exist
             with open(users_file, "w", encoding="utf-8") as file:
                 file.write("")
         except Exception as e:
@@ -196,20 +195,24 @@ class LoginDialog(QDialog):
 
     def login(self):
         """Handle the login process and validation."""
-        username = self.username.text().strip()
+        email = self.email.text().strip()
         password = self.password.text()
 
-        if not username or not password:
+        if not email or not password:
             QMessageBox.warning(self, "Error", "Please fill in all fields")
             return
 
         users = self._load_users()
         password_hash = self._hash_password(password)
 
-        if username in users and users[username] == password_hash:
-            self.accept()
+        if email in users: 
+            stored_username, stored_hash = users[email]
+            if stored_hash == password_hash:
+                self.username = stored_username
+                self.accept()
+                return
         else:
-            QMessageBox.warning(self, "Error", "Invalid username or password")
+            QMessageBox.warning(self, "Error", "Invalid email or password")
 
     def register(self):
         """Open the registration dialog."""
@@ -296,6 +299,9 @@ class RegistrationDialog(QDialog):
         title.setFont(QFont("Arial", 48, QFont.Bold))
         title.setStyleSheet("color: #333; font-size: 48px;")
 
+        self.email = QLineEdit()
+        self.email.setPlaceholderText("Enter Your Email...")
+
         self.username = QLineEdit()
         self.username.setPlaceholderText("Enter Your Username...")
 
@@ -314,6 +320,8 @@ class RegistrationDialog(QDialog):
 
         left_layout.addWidget(title)
         left_layout.addSpacing(20)
+        left_layout.addWidget(QLabel("Email"))
+        left_layout.addWidget(self.email)
         left_layout.addWidget(QLabel("Username"))
         left_layout.addWidget(self.username)
         left_layout.addWidget(QLabel("Password"))
@@ -384,51 +392,64 @@ class RegistrationDialog(QDialog):
 
     def register(self):
         """Handle the registration process with validation."""
+        email = self.email.text().strip()
         username = self.username.text().strip()
         password = self.password.text()
         confirm_password = self.confirm_password.text()
 
-        if not username or not password or not confirm_password:
+        if not email or not username or not password or not confirm_password:
             QMessageBox.warning(self, "Error", "Please fill in all fields")
+            return
+        
+        if len(email) < 6 or len(email) > 30:
+            QMessageBox.warning(self, "Error", "Email must be between 6 and 30 character long")
+            return
+        
+        if not re.search(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
+            QMessageBox.warning(self, "Error", "Email Format not valid")
             return
 
         if password != confirm_password:
             QMessageBox.warning(self, "Error", "Passwords do not match")
             return
 
-        if len(password) < 6:
+        if len(password) < 8:
             QMessageBox.warning(
-                self, "Error", "Password must be at least 6 characters long"
+                self, "Error", "Password must be at least 8 characters long"
             )
             return
-
+        
         if not re.search(r'[A-Z]', password):
             QMessageBox.warning(
-                self, "Error", "Password must containt uppercase letter"
+                self, "Error", "Password must containt an uppercase letter"
             )
             return
 
         if not re.search(r'[a-z]', password):
             QMessageBox.warning(
-                self, "Error", "Password must containt lowercase letter"
+                self, "Error", "Password must containt a lowercase letter"
             )
             return
         
         if not re.search(r'[0-9]', password):
             QMessageBox.warning(
-                self, "Error", "Password must containt number"
+                self, "Error", "Password must containt a number"
             )
             return
 
-        # Get the correct file path
         users_file = get_database_path("users.txt")
 
         # Check for existing username
         try:
             with open(users_file, "r", encoding="utf-8") as file:
                 for line in file:
-                    if " | " in line:  # Ensure the line has the correct format
-                        existing_username = line.strip().split(" | ")[0]
+                    parts = line.strip().split(" | ")
+                    if len(parts) == 3:
+                        existing_email = line.strip().split(" | ")[0]
+                        if email == existing_email:
+                            QMessageBox.warning(self, "Error", "Email already exists")
+                            return
+                        existing_username = line.strip().split(" | ")[1]
                         if username == existing_username:
                             QMessageBox.warning(self, "Error", "Username already exists")
                             return
@@ -438,11 +459,11 @@ class RegistrationDialog(QDialog):
         # Create new user account
         password_hash = self._hash_password(password)
         try:
-            with open(users_file, "a", encoding="utf-8") as file:
-                file.write(f"{username} | {password_hash}\n")
+            with open(users_file, "a") as file:
+                file.write(f"{email} | {username} | {password_hash}\n")
             QMessageBox.information(
                 self, "Success", "Registration successful! You can now login."
             )
             self.accept()
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"Error registering user: {str(e)}")
+            QMessageBox.critical(self, "Error", f"Error registering user: {e}")
