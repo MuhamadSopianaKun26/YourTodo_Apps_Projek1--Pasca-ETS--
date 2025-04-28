@@ -249,7 +249,7 @@ class RegistrationDialog(QDialog):
                 font-size: 18px;
             }
             QLineEdit {
-                padding: 12px;
+                padding: 5px;
                 border: 1px solid #E0E0E0;
                 border-radius: 6px;
                 background: white;
