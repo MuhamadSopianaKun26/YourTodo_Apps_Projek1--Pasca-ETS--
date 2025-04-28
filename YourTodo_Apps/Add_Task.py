@@ -41,6 +41,7 @@ class DateTimeDialog(QDialog):
 
         # Time widget
         self.time_edit = QTimeEdit()
+        self.time_edit.setDisplayFormat("HH:mm")
         self.time_edit.setTime(QTime.currentTime())
         layout.addWidget(QLabel("Select Time:"))
         layout.addWidget(self.time_edit)

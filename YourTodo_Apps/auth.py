@@ -186,7 +186,7 @@ class LoginDialog(QDialog):
                     parts = line.strip().split(" | ")
                     if len(parts) == 3:
                         email, username, password_hash = parts
-                        users[email] =(username, password_hash)
+                        users[email] = (username, password_hash)
         except FileNotFoundError:
             with open(users_file, "w", encoding="utf-8") as file:
                 file.write("")
@@ -213,8 +213,10 @@ class LoginDialog(QDialog):
                 self.username = stored_username
                 self.accept()
                 return
+            elif stored_hash != password_hash :
+                QMessageBox.warning(self, "Error", "Password Invalid")
         else:
-            QMessageBox.warning(self, "Error", "Invalid email or password")
+            QMessageBox.warning(self, "Error", "Invalid Email or Email not found!")
 
     def register(self):
         """Open the registration dialog."""

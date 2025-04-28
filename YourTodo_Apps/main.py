@@ -14,7 +14,7 @@ from PyQt5.QtGui import QFont, QIcon
 import sys
 
 from create import TodoCreator
-from ui_components import (
+from main_components import (
     HeaderWidget, 
     SidebarWidget, 
     TaskItemWidget, 

@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer, QDateTime
 from PyQt5.QtGui import QFont, QIcon
 
-from ui_components import TaskItemWidget, LoadingWidget
+from main_components import TaskItemWidget, LoadingWidget
 from path_utils import get_image_path, get_database_path
 
 class TaskManager:
