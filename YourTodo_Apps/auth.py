@@ -7,9 +7,10 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QMessageBox,
     QWidget,
+    QAction
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QFont
+from PyQt5.QtGui import QPixmap, QFont, QIcon
 import hashlib, re
 from path_utils import get_image_path, get_database_path
 
@@ -100,6 +101,7 @@ class LoginDialog(QDialog):
         self.password = QLineEdit()
         self.password.setPlaceholderText("Enter Your Password...")
         self.password.setEchoMode(QLineEdit.Password)
+        self.add_toggle_action(self.password, self)
 
         login_btn = QPushButton("Login")
         login_btn.setObjectName("loginBtn")
@@ -218,6 +220,26 @@ class LoginDialog(QDialog):
         """Open the registration dialog."""
         dialog = RegistrationDialog(self)
         dialog.exec_()
+    
+    # update 22 April 2025 
+    # for toggling password visibility 
+    # using staticmethod to allow easy access from RegistrationDialog
+    @staticmethod
+    def add_toggle_action(line_edit, parent):
+        # Create toggle action for any QLineEdit
+        toggle_action = QAction(parent)
+        toggle_action.setIcon(QIcon(get_image_path("eye_closed.png")))
+        toggle_action.triggered.connect(lambda: LoginDialog.toggle_visibility(line_edit, toggle_action))
+        line_edit.addAction(toggle_action, QLineEdit.TrailingPosition)
+    @staticmethod
+    def toggle_visibility(line_edit, action):
+        # Generic method to toggle any QLineEdit's visibility
+        if line_edit.echoMode() == QLineEdit.Password:
+            line_edit.setEchoMode(QLineEdit.Normal)
+            action.setIcon(QIcon(get_image_path("eye_open.png")))
+        else:
+            line_edit.setEchoMode(QLineEdit.Password)
+            action.setIcon(QIcon(get_image_path("eye_closed.png")))
 
 
 class RegistrationDialog(QDialog):
@@ -308,10 +330,12 @@ class RegistrationDialog(QDialog):
         self.password = QLineEdit()
         self.password.setPlaceholderText("Enter Your Password...")
         self.password.setEchoMode(QLineEdit.Password)
+        LoginDialog.add_toggle_action(self.password, self)
 
         self.confirm_password = QLineEdit()
         self.confirm_password.setPlaceholderText("Confirm Your Password...")
         self.confirm_password.setEchoMode(QLineEdit.Password)
+        LoginDialog.add_toggle_action(self.confirm_password, self)
 
         register_btn = QPushButton("Register")
         register_btn.setObjectName("loginBtn")
