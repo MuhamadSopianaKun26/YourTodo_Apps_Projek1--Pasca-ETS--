@@ -7,12 +7,14 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QMessageBox,
     QStackedWidget,
+    QComboBox,
 )
-from PyQt5.QtCore import Qt, QTimer, QDateTime
-from PyQt5.QtGui import QFont, QIcon
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QIcon
 
 from ui_components import TaskItemWidget, LoadingWidget
-from path_utils import get_image_path, get_database_path
+from path_utils import get_image_path
+from filter import TaskFilter
 
 class TaskManager:
     def __init__(self, main_app):
@@ -21,6 +23,10 @@ class TaskManager:
         self.content_stack = None
         self.loading_widget = None
         self.task_count_label = None
+        self.filter_combo = None
+        self.task_filter = TaskFilter()
+        
+        # Button styles
         self.action_button_style = """
             QPushButton {
                 background-color: #00B4D8;
@@ -34,12 +40,24 @@ class TaskManager:
                 background-color: #0096B7;
             }
         """
+        self.filter_button_style = """
+            QPushButton {
+                background-color: #00B4D8;
+                border: none;
+                border-radius: 15px;
+                padding: 8px;
+            }
+            QPushButton:hover {
+                background-color: #0096B7;
+            }
+        """
 
     def setupTasksWidget(self):
         """Set up the Tasks section widget with task list and action buttons."""
         self.tasks_widget = QWidget()
         layout = QVBoxLayout(self.tasks_widget)
 
+        # Header with task count
         header_layout = QHBoxLayout()
         self.task_count_label = QLabel("Tasks: 0")
         self.task_count_label.setStyleSheet(
@@ -54,20 +72,57 @@ class TaskManager:
         header_layout.addWidget(self.task_count_label)
         header_layout.addStretch()
 
+        # Action buttons row (now only filter controls on the left)
+        action_btn_layout = QHBoxLayout()
+        
+        # Filter container (combo box + button)
+        filter_container = QWidget()
+        filter_layout = QHBoxLayout(filter_container)
+        filter_layout.setContentsMargins(0, 0, 0, 0)
+        filter_layout.setSpacing(5)
+        
+        # Filter combo box
+        self.filter_combo = QComboBox()
+        self.filter_combo.addItem("All Tasks")
+        self.filter_combo.addItem("High Priority")
+        self.filter_combo.addItem("Medium Priority")
+        self.filter_combo.addItem("Low Priority")
+        self.filter_combo.addItem("Completed")
+        self.filter_combo.addItem("Pending")
+        self.filter_combo.setStyleSheet(
+            """
+            QComboBox {
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 15px;
+                min-width: 150px;
+            }
+        """
+        )
+        self.filter_combo.currentIndexChanged.connect(self.applyFilters)
+        filter_layout.addWidget(self.filter_combo)
+        
+        # Filter button    
+        action_btn_layout.addWidget(filter_container)
+        action_btn_layout.addStretch()
+
+        # Add other action buttons
         add_btn = self._createActionButton("Add Task", get_image_path("add.png"))
         add_btn.clicked.connect(self.addTask)
-        header_layout.addWidget(add_btn)
+        action_btn_layout.addWidget(add_btn)
 
         clear_btn = self._createActionButton("Clear All", get_image_path("clear.png"))
         clear_btn.clicked.connect(self.clearAllTasks)
-        header_layout.addWidget(clear_btn)
+        action_btn_layout.addWidget(clear_btn)
 
         refresh_btn = self._createActionButton("Refresh", get_image_path("refresh.png"))
         refresh_btn.clicked.connect(self.refreshTasks)
-        header_layout.addWidget(refresh_btn)
+        action_btn_layout.addWidget(refresh_btn)
 
         layout.addLayout(header_layout)
+        layout.addLayout(action_btn_layout)
 
+        # Task list area
         self.content_stack = QStackedWidget()
         layout.addWidget(self.content_stack)
 
@@ -87,6 +142,11 @@ class TaskManager:
             btn.setIcon(QIcon(icon_path))
         btn.setStyleSheet(self.action_button_style)
         return btn
+
+    def applyFilters(self):
+        """Apply filters using the TaskFilter class"""
+        filter_text = self.filter_combo.currentText()
+        self.task_filter.filter_tasks(self.task_list_layout, filter_text)
 
     def clearAllTasks(self):
         """Clear all tasks after user confirmation."""
@@ -136,11 +196,10 @@ class TaskManager:
                 return
 
             tasks_data = []
-            task_file = get_database_path("tasks.txt")
-            schedule_file = get_database_path("scheduled_tasks.txt")
+            
             # Load tasks from tasks.txt
             try:
-                with open(task_file, "r", encoding="utf-8") as file:
+                with open("tasks.txt", "r", encoding="utf-8") as file:
                     for line in file:
                         data = line.strip().split(" | ")
                         if len(data) >= 9 and data[-1] == self.main_app.current_user:
@@ -157,11 +216,11 @@ class TaskManager:
                             }
                             tasks_data.append(task_dict)
             except FileNotFoundError:
-                open(task_file, "w", encoding="utf-8").close()
+                open("tasks.txt", "w", encoding="utf-8").close()
 
             # Load tasks from scheduled_tasks.txt
             try:
-                with open(schedule_file, "r", encoding="utf-8") as file:
+                with open("scheduled_tasks.txt", "r", encoding="utf-8") as file:
                     for line in file:
                         if line.startswith('#'):  # Skip comments
                             continue
@@ -203,8 +262,6 @@ class TaskManager:
 
     def saveNewTask(self, task_data):
         """Save new task and update UI."""
-
-        schedule_file = get_database_path("scheduled_tasks.txt")
         try:
             task_widget = TaskItemWidget(task_data, self.main_app)
             self.task_list_layout.addWidget(task_widget)
@@ -219,13 +276,13 @@ class TaskManager:
                     # Read existing scheduled tasks
                     scheduled_tasks = []
                     try:
-                        with open(schedule_file, "r", encoding="utf-8") as file:
+                        with open("scheduled_tasks.txt", "r", encoding="utf-8") as file:
                             for line in file:
                                 if not line.startswith('#'):  # Skip comments
                                     scheduled_tasks.append(line.strip())
                     except FileNotFoundError:
                         # Create file with headers if it doesn't exist
-                        with open(schedule_file, "w", encoding="utf-8") as file:
+                        with open("scheduled_tasks.txt", "w", encoding="utf-8") as file:
                             file.write("# File ini menyimpan task yang memiliki jadwal (daily, weekly, monthly)\n")
                             file.write("# Format: name | description | start_time | deadline | priority | reminder | status | schedule | username\n")
                     
@@ -236,7 +293,7 @@ class TaskManager:
                     scheduled_tasks.append(task_str)
                     
                     # Write back to file
-                    with open(schedule_file, "w", encoding="utf-8") as file:
+                    with open("scheduled_tasks.txt", "w", encoding="utf-8") as file:
                         file.write("# File ini menyimpan task yang memiliki jadwal (daily, weekly, monthly)\n")
                         file.write("# Format: name | description | start_time | deadline | priority | reminder | status | schedule | username\n\n")
                         for task in scheduled_tasks:
@@ -249,13 +306,9 @@ class TaskManager:
             self.updateTaskCount()
         except Exception as e:
             print(f"Error saving task: {e}")
-            # Don't show error message to prevent crashes
-            # QMessageBox.critical(self.main_app, "Error", f"Error saving task: {e}")
 
     def saveTasks(self):
         """Save all tasks to file, preserving tasks from other users."""
-        tasks_file = get_database_path("tasks.txt")
-
         try:
             if not self.main_app or not hasattr(self.main_app, 'current_user') or not self.main_app.current_user:
                 print("Cannot save tasks: No current user")
@@ -264,7 +317,7 @@ class TaskManager:
             # First, read all existing tasks
             all_tasks = []
             try:
-                with open(tasks_file, "r", encoding="utf-8") as file:
+                with open("tasks.txt", "r", encoding="utf-8") as file:
                     for line in file:
                         data = line.strip().split(" | ")
                         if len(data) >= 7 and data[-1] != self.main_app.current_user:
@@ -299,15 +352,13 @@ class TaskManager:
                         all_tasks.append(" | ".join(data))
 
             # Write all tasks back to file
-            with open(tasks_file, "w", encoding="utf-8") as file:
+            with open("tasks.txt", "w", encoding="utf-8") as file:
                 for task in all_tasks:
                     file.write(task+"\n")
 
             self.updateTaskCount()
         except Exception as e:
             print(f"Error saving tasks: {e}")
-            # Don't show error message to prevent crashes
-            # QMessageBox.critical(self.main_app, "Error", f"Error saving tasks: {e}")
 
     def updateTaskCount(self):
         """Update the task count display."""
@@ -321,8 +372,6 @@ class TaskManager:
 
     def _performRefresh(self):
         """Perform the actual refresh operation."""
-        # Load tasks first to ensure we have all tasks
         self.loadTasks()
-        # Then save to preserve any changes
         self.saveTasks()
-        self.content_stack.setCurrentWidget(self.content_stack.widget(0)) 
+        self.content_stack.setCurrentWidget(self.content_stack.widget(0))
