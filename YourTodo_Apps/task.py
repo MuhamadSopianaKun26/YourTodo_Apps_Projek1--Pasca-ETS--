@@ -7,12 +7,14 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QMessageBox,
     QStackedWidget,
+    QComboBox,
 )
 from PyQt5.QtCore import Qt, QTimer, QDateTime
 from PyQt5.QtGui import QFont, QIcon
 
 from main_components import TaskItemWidget, LoadingWidget
 from path_utils import get_image_path, get_database_path
+from filter import TaskFilter
 
 class TaskManager:
     def __init__(self, main_app):
@@ -21,6 +23,8 @@ class TaskManager:
         self.content_stack = None
         self.loading_widget = None
         self.task_count_label = None
+        self.filter_combo = None
+        self.task_filter = TaskFilter()
         self.action_button_style = """
             QPushButton {
                 background-color: #00B4D8;
@@ -29,6 +33,17 @@ class TaskManager:
                 border-radius: 15px;
                 padding: 8px 20px;
                 font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #0096B7;
+            }
+        """
+        self.filter_button_style = """
+            QPushButton {
+                background-color: #00B4D8;
+                border: none;
+                border-radius: 15px;
+                padding: 8px;
             }
             QPushButton:hover {
                 background-color: #0096B7;
@@ -52,6 +67,36 @@ class TaskManager:
         """
         )
         header_layout.addWidget(self.task_count_label)
+        header_layout.addStretch()
+
+        # Filter container (combo box)
+        filter_container = QWidget()
+        filter_layout = QHBoxLayout(filter_container)
+        filter_layout.setContentsMargins(0, 0, 0, 0)
+        filter_layout.setSpacing(5)
+        
+        # Filter combo box
+        self.filter_combo = QComboBox()
+        self.filter_combo.addItem("All Tasks")
+        self.filter_combo.addItem("High Priority")
+        self.filter_combo.addItem("Medium Priority")
+        self.filter_combo.addItem("Low Priority")
+        self.filter_combo.addItem("Completed")
+        self.filter_combo.addItem("Pending")
+        self.filter_combo.setStyleSheet(
+            """
+            QComboBox {
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 15px;
+                min-width: 150px;
+            }
+        """
+        )
+        self.filter_combo.currentIndexChanged.connect(self.applyFilters)
+        filter_layout.addWidget(self.filter_combo)
+        
+        header_layout.addWidget(filter_container)
         header_layout.addStretch()
 
         add_btn = self._createActionButton("Add Task", get_image_path("add.png"))
@@ -79,6 +124,11 @@ class TaskManager:
         self.content_stack.setCurrentWidget(scroll)
 
         return self.tasks_widget
+
+    def applyFilters(self):
+        """Apply filters using the TaskFilter class"""
+        filter_text = self.filter_combo.currentText()
+        self.task_filter.filter_tasks(self.task_list_layout, filter_text)
 
     def _createActionButton(self, text, icon_path=None):
         """Create a styled action button with optional icon."""
@@ -325,4 +375,4 @@ class TaskManager:
         self.loadTasks()
         # Then save to preserve any changes
         self.saveTasks()
-        self.content_stack.setCurrentWidget(self.content_stack.widget(0)) 
+        self.content_stack.setCurrentWidget(self.content_stack.widget(0))
