@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QComboBox, QHBoxLayout
+from PyQt5.QtCore import Qt
 
 class TaskFilter:
     def __init__(self):
@@ -10,6 +11,39 @@ class TaskFilter:
             "Completed": lambda task: "done" in task.get("status", "").lower(),
             "Pending": lambda task: task.get("status", "") == "due"
         }
+        self.filter_combo = None
+
+    def setup_filter_ui(self):
+        """Set up the filter UI components including combo box."""
+        filter_container = QWidget()
+        filter_layout = QHBoxLayout(filter_container)
+        filter_layout.setContentsMargins(0, 0, 0, 0)
+        filter_layout.setSpacing(5)
+        
+        # Create and configure filter combo box
+        self.filter_combo = QComboBox()
+        self.filter_combo.addItems(self.filter_options.keys())
+        self.filter_combo.setStyleSheet(
+            """
+            QComboBox {
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 15px;
+                min-width: 150px;
+            }
+            """
+        )
+        filter_layout.addWidget(self.filter_combo)
+        
+        return filter_container
+
+    def get_current_filter(self):
+        """Get the currently selected filter text.
+        
+        Returns:
+            str: The current filter text or "All Tasks" if no filter is selected
+        """
+        return self.filter_combo.currentText() if self.filter_combo else "All Tasks"
 
     def filter_tasks(self, task_list_layout, filter_text):
         """
