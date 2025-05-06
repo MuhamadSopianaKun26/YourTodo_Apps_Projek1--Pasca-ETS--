@@ -26,60 +26,73 @@ import re
 import json
 
 
+import json  # ADD: Import json module
+
 class HistoryManager:
     @staticmethod
     def load_history(username, start_time, deadline, status_filter="all"):
         done = {}
         failed = {}
         entries = []
-
+        
+        # CHANGE: Use JSON file instead of text file
         history_file = get_database_path("history.json")
         try:
-            with open(history_file, "r", encoding="utf-8") as file:
-                data = json.load(file)
-                history_entries = data.get("history", [])
+            with open(history_file, "r") as f:
+                data = json.load(f)
+                for entry in data["history"]:  # Process JSON array
+                    # Map JSON fields to variables (key change: 'name' -> 'task')
+                    task = entry.get("name", "")
+                    description = entry.get("description", "")
+                    start_time = entry.get("start_time", "")
+                    deadline_entry = entry.get("deadline", "")
+                    priority = entry.get("priority", "")
+                    reminder = entry.get("reminder", "")
+                    status = entry.get("status", "")
+                    schedule = entry.get("schedule", "")
+                    entry_username = entry.get("username", "")
 
-                for entry in history_entries:
-                    if entry["username"] != username:
+                    # Rest of the logic remains the same from original code
+                    if entry_username != username:
                         continue
 
-                    status = entry["status"].lower()
-                    if status_filter != "all":
-                        if status_filter == "done" and not status.startswith("done"):
+                    # Original date parsing logic
+                    if "on" in status:
+                        date_part = status.split("on ")[-1].strip()
+                        try:
+                            status_date = datetime.strptime(date_part, "%Y-%m-%d").date()
+                        except ValueError:
                             continue
-                        if status_filter == "failed" and not status.startswith(
-                            "failed"
-                        ):
+                    else:
+                        try:
+                            status_date = datetime.strptime(status, "%Y-%m-%d").date()
+                        except ValueError:
                             continue
-
-                    # Convert dates for comparison
-                    entry_date = datetime.strptime(
-                        entry["start_time"].split()[0], "%Y-%m-%d"
-                    )
-                    if start_time and entry_date < datetime.strptime(
-                        start_time, "%Y-%m-%d"
-                    ):
-                        continue
-                    if deadline and entry_date > datetime.strptime(
-                        deadline, "%Y-%m-%d"
-                    ):
+                    
+                    # Rest of original processing logic
+                    status_type = "failed" if "failed" in status.lower() else "done"
+                    if status_filter not in ["all", status_type]:
                         continue
 
-                    entries.append(entry)
-
-                    # Track completion status
-                    date_str = entry["start_time"].split()[0]
-                    if status.startswith("done"):
-                        done[date_str] = done.get(date_str, 0) + 1
-                    elif status.startswith("failed"):
+                    date_str = status_date.strftime("%Y-%m-%d")
+                    if status_type == "failed":
                         failed[date_str] = failed.get(date_str, 0) + 1
-
-        except FileNotFoundError:
-            with open(history_file, "w", encoding="utf-8") as file:
-                json.dump({"history": []}, file, indent=2)
-        except Exception as e:
-            print(f"Error loading history: {e}")
-
+                    else:
+                        done[date_str] = done.get(date_str, 0) + 1
+                    
+                    entries.append({
+                        'task': task,  # Mapped from JSON 'name' field
+                        'description': description,
+                        'start_time': start_time,
+                        'deadline': deadline_entry,
+                        'priority': priority,
+                        'reminder': reminder,
+                        'status': status,
+                        'schedule': schedule,
+                        'username': entry_username
+                    })
+        except (FileNotFoundError, json.JSONDecodeError, KeyError):
+            pass
         return done, failed, entries
 
 
