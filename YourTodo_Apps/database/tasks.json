@@ -1,0 +1,59 @@
+{
+  "tasks": [
+    {
+      "name": "Sekolah",
+      "description": "",
+      "start_time": "2025-04-24 07:44",
+      "deadline": "",
+      "priority": "None",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "Rangga"
+    },
+    {
+      "name": "Makan Mie Ayam",
+      "description": "",
+      "start_time": "2025-04-28 20:15",
+      "deadline": "2025-04-28 21:15",
+      "priority": "None",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "Argiansah1"
+    },
+    {
+      "name": "Gym Sore",
+      "description": "",
+      "start_time": "2025-04-28 16:20",
+      "deadline": "2025-04-28 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "daily",
+      "username": "Argiansah1"
+    },
+    {
+      "name": "Makan mie ayam",
+      "description": "",
+      "start_time": "2025-04-28 22:19",
+      "deadline": "",
+      "priority": "None",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "Sopian1"
+    },
+    {
+      "name": "ewe",
+      "description": "ewe 1\newe 2\newe 3",
+      "start_time": "2025-05-05 09:58",
+      "deadline": "",
+      "priority": "None",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "darrellrahan2"
+    }
+  ]
+}

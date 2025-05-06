@@ -1,0 +1,19 @@
+{
+  "users": [
+    {
+      "email": "Sopian1@gmail.com",
+      "username": "Sopian1",
+      "password_hash": "4a690f0b4980e41104c19926be65d6b315dc2b9a2ae44db7d324a51af4d2edd6"
+    },
+    {
+      "email": "darrell@gmail.com",
+      "username": "darrellrahan",
+      "password_hash": "62cf9b8d278b556cb8f6248e3005feb5633bd25b45e4bfe61328de1f60c39324"
+    },
+    {
+      "email": "darrell2@gmail.com",
+      "username": "darrellrahan2",
+      "password_hash": "6e7a644a5694e107b1eef57391af8ee6c728a767db59f9ce2a14e71c1de9a3e9"
+    }
+  ]
+}

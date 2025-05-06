@@ -11,10 +11,12 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QTimer, QDateTime
 from PyQt5.QtGui import QFont, QIcon
+import json
 
 from main_components import TaskItemWidget, LoadingWidget
 from path_utils import get_image_path, get_database_path
 from filter import TaskFilter
+
 
 class TaskManager:
     def __init__(self, main_app):
@@ -74,7 +76,7 @@ class TaskManager:
         filter_layout = QHBoxLayout(filter_container)
         filter_layout.setContentsMargins(0, 0, 0, 0)
         filter_layout.setSpacing(5)
-        
+
         # Filter combo box
         self.filter_combo = QComboBox()
         self.filter_combo.addItem("All Tasks")
@@ -95,7 +97,7 @@ class TaskManager:
         )
         self.filter_combo.currentIndexChanged.connect(self.applyFilters)
         filter_layout.addWidget(self.filter_combo)
-        
+
         header_layout.addWidget(filter_container)
         header_layout.addStretch()
 
@@ -175,189 +177,119 @@ class TaskManager:
 
     def loadTasks(self):
         """Load tasks from file for the current user and update UI."""
-        if self.task_list_layout:
-            while self.task_list_layout.count():
-                item = self.task_list_layout.takeAt(0)
-                if item.widget():
-                    item.widget().deleteLater()
-
         try:
             if not self.main_app.current_user:
                 return
 
             tasks_data = []
-            task_file = get_database_path("tasks.txt")
-            schedule_file = get_database_path("scheduled_tasks.txt")
-            # Load tasks from tasks.txt
+            task_file = get_database_path("tasks.json")
+
+            # Load tasks from tasks.json
             try:
                 with open(task_file, "r", encoding="utf-8") as file:
-                    for line in file:
-                        data = line.strip().split(" | ")
-                        if len(data) >= 9 and data[-1] == self.main_app.current_user:
-                            task_dict = {
-                                "name": data[0],
-                                "description": data[1],
-                                "start_time": data[2],
-                                "deadline": data[3],
-                                "priority": data[4],
-                                "reminder": data[5],
-                                "status": data[6],
-                                "schedule": data[7],
-                                "username": data[8]
-                            }
-                            tasks_data.append(task_dict)
+                    data = json.load(file)
+                    for task in data.get("tasks", []):
+                        if task["username"] == self.main_app.current_user:
+                            tasks_data.append(task)
             except FileNotFoundError:
-                open(task_file, "w", encoding="utf-8").close()
+                with open(task_file, "w", encoding="utf-8") as file:
+                    json.dump({"tasks": []}, file, indent=2)
+            except json.JSONDecodeError:
+                QMessageBox.critical(self, "Error", "Invalid JSON format in tasks file")
+                return
 
-            # Load tasks from scheduled_tasks.txt
-            try:
-                with open(schedule_file, "r", encoding="utf-8") as file:
-                    for line in file:
-                        if line.startswith('#'):  # Skip comments
-                            continue
-                        data = line.strip().split(" | ")
-                        if len(data) >= 9 and data[-1] == self.main_app.current_user:
-                            task_dict = {
-                                "name": data[0],
-                                "description": data[1],
-                                "start_time": data[2],
-                                "deadline": data[3],
-                                "priority": data[4],
-                                "reminder": data[5],
-                                "status": data[6],
-                                "schedule": data[7],
-                                "username": data[8]
-                            }
-                            # Only add if not already in tasks_data (avoid duplicates)
-                            if not any(t["name"] == task_dict["name"] and 
-                                     t["description"] == task_dict["description"] and
-                                     t["start_time"] == task_dict["start_time"] and
-                                     t["deadline"] == task_dict["deadline"] for t in tasks_data):
-                                tasks_data.append(task_dict)
-            except FileNotFoundError:
-                pass
+            # Clear existing tasks from UI
+            for i in reversed(range(self.task_list_layout.count())):
+                self.task_list_layout.itemAt(i).widget().setParent(None)
 
+            # Add tasks to UI
             for task_data in tasks_data:
                 task_widget = TaskItemWidget(task_data, self.main_app)
                 self.task_list_layout.addWidget(task_widget)
 
         except Exception as e:
-            QMessageBox.critical(self.main_app, "Error", f"Error loading tasks: {e}")
+            QMessageBox.critical(None, "Error", f"Error loading tasks: {str(e)}")
 
         self.updateTaskCount()
 
     def addTask(self):
         """Open dialog to create a new task."""
         from create import TodoCreator
+
         TodoCreator.add_task(self.main_app, self.saveNewTask)
 
     def saveNewTask(self, task_data):
         """Save new task and update UI."""
-
-        schedule_file = get_database_path("scheduled_tasks.txt")
         try:
             task_widget = TaskItemWidget(task_data, self.main_app)
             self.task_list_layout.addWidget(task_widget)
-            
-            # Save task to tasks.txt
+
+            # Save task to tasks.json
             self.saveTasks()
-            
-            # If task has a schedule, save it to scheduled_tasks.txt
+
+            # If task has a schedule, save it to scheduled_tasks.json
             schedule = task_data.get("schedule", "None")
             if schedule and schedule.lower() != "none":
+                schedule_file = get_database_path("scheduled_tasks.json")
                 try:
                     # Read existing scheduled tasks
-                    scheduled_tasks = []
                     try:
                         with open(schedule_file, "r", encoding="utf-8") as file:
-                            for line in file:
-                                if not line.startswith('#'):  # Skip comments
-                                    scheduled_tasks.append(line.strip())
-                    except FileNotFoundError:
-                        # Create file with headers if it doesn't exist
-                        with open(schedule_file, "w", encoding="utf-8") as file:
-                            file.write("# File ini menyimpan task yang memiliki jadwal (daily, weekly, monthly)\n")
-                            file.write("# Format: name | description | start_time | deadline | priority | reminder | status | schedule | username\n")
-                    
-                    # Create task string
-                    task_str = f"{task_data['name']} | {task_data['description']} | {task_data['start_time']} | {task_data['deadline']} | {task_data['priority']} | {task_data.get('reminder', 'None')} | {task_data['status']} | {schedule} | {self.main_app.current_user}"
-                    
-                    # Add new task
-                    scheduled_tasks.append(task_str)
-                    
-                    # Write back to file
+                            data = json.load(file)
+                            scheduled_tasks = data.get("scheduled_tasks", [])
+                    except (FileNotFoundError, json.JSONDecodeError):
+                        scheduled_tasks = []
+
+                    # Add new scheduled task
+                    task_data["is_active"] = True
+                    task_data["last_run_date"] = task_data["start_time"].split()[0]
+                    scheduled_tasks.append(task_data)
+
+                    # Save updated scheduled tasks
                     with open(schedule_file, "w", encoding="utf-8") as file:
-                        file.write("# File ini menyimpan task yang memiliki jadwal (daily, weekly, monthly)\n")
-                        file.write("# Format: name | description | start_time | deadline | priority | reminder | status | schedule | username\n\n")
-                        for task in scheduled_tasks:
-                            file.write(task)
-                            
-                    print(f"Saved scheduled task to scheduled_tasks.txt: {task_data['name']}")
+                        json.dump({"scheduled_tasks": scheduled_tasks}, file, indent=2)
+
                 except Exception as e:
-                    print(f"Error saving to scheduled_tasks.txt: {e}")
-            
-            self.updateTaskCount()
+                    QMessageBox.critical(
+                        None, "Error", f"Error saving scheduled task: {str(e)}"
+                    )
+
         except Exception as e:
-            print(f"Error saving task: {e}")
-            # Don't show error message to prevent crashes
-            # QMessageBox.critical(self.main_app, "Error", f"Error saving task: {e}")
+            QMessageBox.critical(None, "Error", f"Error adding task: {str(e)}")
 
     def saveTasks(self):
-        """Save all tasks to file, preserving tasks from other users."""
-        tasks_file = get_database_path("tasks.txt")
-
+        """Save all tasks to file."""
         try:
-            if not self.main_app or not hasattr(self.main_app, 'current_user') or not self.main_app.current_user:
-                print("Cannot save tasks: No current user")
-                return
+            tasks_data = []
+            task_file = get_database_path("tasks.json")
 
-            # First, read all existing tasks
-            all_tasks = []
+            # Get existing tasks for other users
             try:
-                with open(tasks_file, "r", encoding="utf-8") as file:
-                    for line in file:
-                        data = line.strip().split(" | ")
-                        if len(data) >= 7 and data[-1] != self.main_app.current_user:
-                            all_tasks.append(line.strip())
+                with open(task_file, "r", encoding="utf-8") as file:
+                    data = json.load(file)
+                    tasks_data = [
+                        task
+                        for task in data.get("tasks", [])
+                        if task["username"] != self.main_app.current_user
+                    ]
             except FileNotFoundError:
                 pass
+            except json.JSONDecodeError:
+                QMessageBox.critical(self, "Error", "Invalid JSON format in tasks file")
+                return
 
             # Add current user's tasks
-            if self.task_list_layout:
-                for i in range(self.task_list_layout.count()):
-                    widget = self.task_list_layout.itemAt(i).widget()
-                    if isinstance(widget, TaskItemWidget):
-                        task_data = widget.task_data
-                        task_data["username"] = self.main_app.current_user
-                        
-                        # Ensure schedule is "None" if it's "Add as Schedule"
-                        schedule = task_data.get("schedule", "None")
-                        if schedule == "Add as Schedule":
-                            schedule = "None"
-                            
-                        data = [
-                            task_data["name"],
-                            task_data["description"],
-                            task_data["start_time"],
-                            task_data["deadline"],
-                            task_data["priority"],
-                            task_data.get("reminder", "None"),
-                            task_data["status"],
-                            schedule,
-                            task_data["username"]
-                        ]
-                        all_tasks.append(" | ".join(data))
+            for i in range(self.task_list_layout.count()):
+                widget = self.task_list_layout.itemAt(i).widget()
+                if isinstance(widget, TaskItemWidget):
+                    tasks_data.append(widget.task_data)
 
-            # Write all tasks back to file
-            with open(tasks_file, "w", encoding="utf-8") as file:
-                for task in all_tasks:
-                    file.write(task+"\n")
+            # Save all tasks
+            with open(task_file, "w", encoding="utf-8") as file:
+                json.dump({"tasks": tasks_data}, file, indent=2)
 
-            self.updateTaskCount()
         except Exception as e:
-            print(f"Error saving tasks: {e}")
-            # Don't show error message to prevent crashes
-            # QMessageBox.critical(self.main_app, "Error", f"Error saving tasks: {e}")
+            QMessageBox.critical(None, "Error", f"Error saving tasks: {str(e)}")
 
     def updateTaskCount(self):
         """Update the task count display."""
@@ -376,3 +308,69 @@ class TaskManager:
         # Then save to preserve any changes
         self.saveTasks()
         self.content_stack.setCurrentWidget(self.content_stack.widget(0))
+
+    def deleteTask(self, task_widget):
+        """Delete a task."""
+        try:
+            # Remove from UI
+            task_widget.setParent(None)
+
+            # Save changes to file
+            self.saveTasks()
+
+            # If it's a scheduled task, remove from scheduled_tasks.json
+            if task_widget.task_data.get("schedule", "None").lower() != "none":
+                schedule_file = get_database_path("scheduled_tasks.json")
+                try:
+                    with open(schedule_file, "r", encoding="utf-8") as file:
+                        data = json.load(file)
+                        scheduled_tasks = data.get("scheduled_tasks", [])
+
+                    # Remove matching task
+                    scheduled_tasks = [
+                        task
+                        for task in scheduled_tasks
+                        if not (
+                            task["name"] == task_widget.task_data["name"]
+                            and task["username"] == task_widget.task_data["username"]
+                        )
+                    ]
+
+                    with open(schedule_file, "w", encoding="utf-8") as file:
+                        json.dump({"scheduled_tasks": scheduled_tasks}, file, indent=2)
+
+                except Exception as e:
+                    QMessageBox.critical(
+                        None, "Error", f"Error removing scheduled task: {str(e)}"
+                    )
+
+        except Exception as e:
+            QMessageBox.critical(None, "Error", f"Error deleting task: {str(e)}")
+
+    def moveToHistory(self, task_widget):
+        """Move a completed or failed task to history."""
+        try:
+            history_file = get_database_path("history.json")
+
+            # Load existing history
+            try:
+                with open(history_file, "r", encoding="utf-8") as file:
+                    data = json.load(file)
+                    history = data.get("history", [])
+            except (FileNotFoundError, json.JSONDecodeError):
+                history = []
+
+            # Add task to history
+            history.append(task_widget.task_data)
+
+            # Save updated history
+            with open(history_file, "w", encoding="utf-8") as file:
+                json.dump({"history": history}, file, indent=2)
+
+            # Delete task from active tasks
+            self.deleteTask(task_widget)
+
+        except Exception as e:
+            QMessageBox.critical(
+                None, "Error", f"Error moving task to history: {str(e)}"
+            )

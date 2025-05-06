@@ -7,11 +7,11 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QMessageBox,
     QWidget,
-    QAction
+    QAction,
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont, QIcon
-import hashlib, re
+import hashlib, re, json
 from path_utils import get_image_path, get_database_path
 
 
@@ -177,19 +177,17 @@ class LoginDialog(QDialog):
         return hashlib.sha256(password.encode()).hexdigest()
 
     def _load_users(self):
-        """Load user credentials from the users.txt file."""
+        """Load user credentials from the users.json file."""
         users = {}
         try:
-            users_file = get_database_path("users.txt")
+            users_file = get_database_path("users.json")
             with open(users_file, "r") as file:
-                for line in file:
-                    parts = line.strip().split(" | ")
-                    if len(parts) == 3:
-                        email, username, password_hash = parts
-                        users[email] = (username, password_hash)
+                data = json.load(file)
+                for user in data.get("users", []):
+                    users[user["email"]] = (user["username"], user["password_hash"])
         except FileNotFoundError:
             with open(users_file, "w", encoding="utf-8") as file:
-                file.write("")
+                json.dump({"users": []}, file, indent=2)
         except Exception as e:
             QMessageBox.critical(None, "Error", f"Error loading users: {str(e)}")
             return {}
@@ -207,13 +205,13 @@ class LoginDialog(QDialog):
         users = self._load_users()
         password_hash = self._hash_password(password)
 
-        if email in users: 
+        if email in users:
             stored_username, stored_hash = users[email]
             if stored_hash == password_hash:
                 self.username = stored_username
                 self.accept()
                 return
-            elif stored_hash != password_hash :
+            elif stored_hash != password_hash:
                 QMessageBox.warning(self, "Error", "Password Invalid")
         else:
             QMessageBox.warning(self, "Error", "Invalid Email or Email not found!")
@@ -222,17 +220,20 @@ class LoginDialog(QDialog):
         """Open the registration dialog."""
         dialog = RegistrationDialog(self)
         dialog.exec_()
-    
-    # update 22 April 2025 
-    # for toggling password visibility 
+
+    # update 22 April 2025
+    # for toggling password visibility
     # using staticmethod to allow easy access from RegistrationDialog
     @staticmethod
     def add_toggle_action(line_edit, parent):
         # Create toggle action for any QLineEdit
         toggle_action = QAction(parent)
         toggle_action.setIcon(QIcon(get_image_path("eye_closed.png")))
-        toggle_action.triggered.connect(lambda: LoginDialog.toggle_visibility(line_edit, toggle_action))
+        toggle_action.triggered.connect(
+            lambda: LoginDialog.toggle_visibility(line_edit, toggle_action)
+        )
         line_edit.addAction(toggle_action, QLineEdit.TrailingPosition)
+
     @staticmethod
     def toggle_visibility(line_edit, action):
         # Generic method to toggle any QLineEdit's visibility
@@ -426,12 +427,14 @@ class RegistrationDialog(QDialog):
         if not email or not username or not password or not confirm_password:
             QMessageBox.warning(self, "Error", "Please fill in all fields")
             return
-        
+
         if len(email) < 6 or len(email) > 30:
-            QMessageBox.warning(self, "Error", "Email must be between 6 and 30 character long")
+            QMessageBox.warning(
+                self, "Error", "Email must be between 6 and 30 character long"
+            )
             return
-        
-        if not re.search(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
+
+        if not re.search(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email):
             QMessageBox.warning(self, "Error", "Email Format not valid")
             return
 
@@ -444,52 +447,53 @@ class RegistrationDialog(QDialog):
                 self, "Error", "Password must be at least 8 characters long"
             )
             return
-        
-        if not re.search(r'[A-Z]', password):
+
+        if not re.search(r"[A-Z]", password):
             QMessageBox.warning(
                 self, "Error", "Password must containt an uppercase letter"
             )
             return
 
-        if not re.search(r'[a-z]', password):
+        if not re.search(r"[a-z]", password):
             QMessageBox.warning(
                 self, "Error", "Password must containt a lowercase letter"
             )
             return
-        
-        if not re.search(r'[0-9]', password):
-            QMessageBox.warning(
-                self, "Error", "Password must containt a number"
-            )
+
+        if not re.search(r"[0-9]", password):
+            QMessageBox.warning(self, "Error", "Password must containt a number")
             return
 
-        users_file = get_database_path("users.txt")
-
-        # Check for existing username
+        users_file = get_database_path("users.json")
         try:
-            with open(users_file, "r", encoding="utf-8") as file:
-                for line in file:
-                    parts = line.strip().split(" | ")
-                    if len(parts) == 3:
-                        existing_email = line.strip().split(" | ")[0]
-                        if email == existing_email:
-                            QMessageBox.warning(self, "Error", "Email already exists")
-                            return
-                        existing_username = line.strip().split(" | ")[1]
-                        if username == existing_username:
-                            QMessageBox.warning(self, "Error", "Username already exists")
-                            return
-        except FileNotFoundError:
-            pass
+            # Load existing users
+            try:
+                with open(users_file, "r") as file:
+                    data = json.load(file)
+            except (FileNotFoundError, json.JSONDecodeError):
+                data = {"users": []}
 
-        # Create new user account
-        password_hash = self._hash_password(password)
-        try:
-            with open(users_file, "a") as file:
-                file.write(f"{email} | {username} | {password_hash}\n")
-            QMessageBox.information(
-                self, "Success", "Registration successful! You can now login."
+            # Check if email already exists
+            if any(user["email"] == email for user in data["users"]):
+                QMessageBox.warning(self, "Error", "Email already registered")
+                return
+
+            # Add new user
+            data["users"].append(
+                {
+                    "email": email,
+                    "username": username,
+                    "password_hash": self._hash_password(password),
+                }
             )
+
+            # Save updated users
+            with open(users_file, "w") as file:
+                json.dump(data, file, indent=2)
+
+            QMessageBox.information(self, "Success", "Registration successful!")
             self.accept()
+
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"Error registering user: {e}")
+            QMessageBox.critical(self, "Error", f"Registration failed: {str(e)}")
+            return

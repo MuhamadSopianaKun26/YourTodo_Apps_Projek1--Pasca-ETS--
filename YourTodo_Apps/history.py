@@ -1,7 +1,17 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
-    QDateEdit, QPushButton, QListWidget, QFileDialog, 
-    QMessageBox, QStackedWidget, QSizePolicy, QListWidgetItem
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QComboBox,
+    QDateEdit,
+    QPushButton,
+    QListWidget,
+    QFileDialog,
+    QMessageBox,
+    QStackedWidget,
+    QSizePolicy,
+    QListWidgetItem,
 )
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QFont
@@ -13,8 +23,7 @@ from datetime import datetime, timedelta
 from matplotlib.backends.backend_pdf import PdfPages
 from path_utils import get_database_path
 import re
-
-
+import json
 
 
 class HistoryManager:
@@ -23,85 +32,69 @@ class HistoryManager:
         done = {}
         failed = {}
         entries = []
-        
-        history_file = get_database_path("history.txt")
+
+        history_file = get_database_path("history.json")
         try:
-            with open(history_file, "r") as f:
-                for line in f:
-                    parts = line.strip().split(" | ")
-                    if len(parts) < 7:
+            with open(history_file, "r", encoding="utf-8") as file:
+                data = json.load(file)
+                history_entries = data.get("history", [])
+
+                for entry in history_entries:
+                    if entry["username"] != username:
                         continue
 
-                    # Handle both 7-field and 9-field formats
-                    if len(parts) >= 9:
-                        # 9-field format: task, description, start_time, deadline, priority, reminder, status, schedule, entry_username
-                        task, description, start_time, deadline, priority, reminder, status, schedule, entry_username = parts[:9]
-                    else:
-                        # 7-field format: task, description, start_time, deadline, priority, status, entry_username
-                        task, description, start_time, deadline, priority, status, entry_username = parts[:7]
-                        reminder = ""
-                        schedule = ""
-                    
-                    # Filter by username first
-                    if entry_username != username:
+                    status = entry["status"].lower()
+                    if status_filter != "all":
+                        if status_filter == "done" and not status.startswith("done"):
+                            continue
+                        if status_filter == "failed" and not status.startswith(
+                            "failed"
+                        ):
+                            continue
+
+                    # Convert dates for comparison
+                    entry_date = datetime.strptime(
+                        entry["start_time"].split()[0], "%Y-%m-%d"
+                    )
+                    if start_time and entry_date < datetime.strptime(
+                        start_time, "%Y-%m-%d"
+                    ):
                         continue
-                    
-                    # Extract completion date from status
-                    if "on" in status:
-                        # Extract the completion date by splitting on "on " and taking the last part
-                        # For example: "done - Completed on 2025-04-07" -> "2025-04-07"
-                        date_part = status.split("on ")[-1].strip()
-                        try:
-                            status_date = datetime.strptime(date_part, "%Y-%m-%d").date()
-                        except ValueError:
-                            # Try alternative date formats if needed
-                            continue
-                    else:
-                        try:
-                            status_date = datetime.strptime(status, "%Y-%m-%d").date()
-                        except ValueError:
-                            continue
-                        
-                    # NEW STATUS DETECTION
-                    status_type = "failed" if "failed" in status.lower() else "done"
-                    if status_filter not in ["all", status_type]:
+                    if deadline and entry_date > datetime.strptime(
+                        deadline, "%Y-%m-%d"
+                    ):
                         continue
 
-                    date_str = status_date.strftime("%Y-%m-%d")
-                    if status_type == "failed":
-                        failed[date_str] = failed.get(date_str, 0) + 1
-                    else:
+                    entries.append(entry)
+
+                    # Track completion status
+                    date_str = entry["start_time"].split()[0]
+                    if status.startswith("done"):
                         done[date_str] = done.get(date_str, 0) + 1
-                    
-                    entries.append({
-                        'task': task,
-                        'description': description,
-                        'start_time': start_time,
-                        'deadline': deadline,
-                        'priority': priority,
-                        'reminder': reminder,
-                        'status': status,
-                        'schedule': schedule,
-                        'username': entry_username
-                    })
+                    elif status.startswith("failed"):
+                        failed[date_str] = failed.get(date_str, 0) + 1
+
         except FileNotFoundError:
-            pass
-        print(done)
-        print(failed)
+            with open(history_file, "w", encoding="utf-8") as file:
+                json.dump({"history": []}, file, indent=2)
+        except Exception as e:
+            print(f"Error loading history: {e}")
+
         return done, failed, entries
-    
-class HistoryWidget(QWidget):    
+
+
+class HistoryWidget(QWidget):
     def __init__(self, username):
         super().__init__()
         self.username = username  # NEW: Store username
         self.initUI()
-        self.load_initial_data() 
-    
+        self.load_initial_data()
+
     def load_initial_data(self):
         """Load data with default date range on first open"""
         self.update_date_range()  # Sets default dates
         self.update_display()
-    
+
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 10, 20, 10)
@@ -115,39 +108,39 @@ class HistoryWidget(QWidget):
         header.addWidget(title)
         header.addStretch()
         main_layout.addLayout(header)
-        
-        # Controls container 
+
+        # Controls container
         controls_container = QWidget()
         controls_layout = QHBoxLayout(controls_container)
         controls_layout.setContentsMargins(0, 0, 0, 0)
         controls_layout.setSpacing(10)
 
-        # Initialize control widgets 
+        # Initialize control widgets
         self.range_combo = QComboBox()
-        
+
         self.status_combo = QComboBox()
-        
+
         self.view_combo = QComboBox()
-        
+
         self.start_date = QDateEdit(calendarPopup=True)
-        
+
         self.end_date = QDateEdit(calendarPopup=True)
-        
+
         self.export_btn = QPushButton("Export PDF")
 
         # Add controls to layout
         controls_layout.addWidget(self.range_combo)
         controls_layout.addWidget(self.status_combo)
-        
+
         controls_layout.addWidget(QLabel("View:"))
         controls_layout.addWidget(self.view_combo)
-        
+
         controls_layout.addWidget(QLabel("From:"))
         controls_layout.addWidget(self.start_date)
-        
+
         controls_layout.addWidget(QLabel("To:"))
         controls_layout.addWidget(self.end_date)
-        
+
         controls_layout.addWidget(self.export_btn)
 
         main_layout.addWidget(controls_container)
@@ -159,21 +152,23 @@ class HistoryWidget(QWidget):
         # Initialize views
         self.figure = Figure(figsize=(10, 5), tight_layout=True)
         self.canvas = FigureCanvas(self.figure)
-        
+
         # Configure list style
         self.history_list = QListWidget()
-        self.history_list.setStyleSheet("""
+        self.history_list.setStyleSheet(
+            """
             QListWidget {
                 background: white;
                 border-radius: 8px;
                 padding: 8px;
             }
-        """)
+        """
+        )
 
         # Add views to stack
         self.stacked_widget.addWidget(self.canvas)
         self.stacked_widget.addWidget(self.history_list)
-        
+
         main_layout.addWidget(self.stacked_widget, 1)
 
         # Configure control widgets
@@ -186,19 +181,25 @@ class HistoryWidget(QWidget):
     def _configure_controls(self):
         # Combo box items
         self.range_combo.addItems(["This Week", "This Month", "This Year", "Custom"])
-        
+
         self.status_combo.addItems(["All", "Done", "Failed"])
-        
+
         self.view_combo.addItems(["Graph View", "Text View"])
 
         # Style controls
         control_style = "padding: 5px; border-radius: 5px;"
-        for widget in [self.range_combo, self.status_combo, 
-                      self.view_combo, self.start_date, self.end_date]:
+        for widget in [
+            self.range_combo,
+            self.status_combo,
+            self.view_combo,
+            self.start_date,
+            self.end_date,
+        ]:
             widget.setStyleSheet(control_style)
 
         # Export button style
-        self.export_btn.setStyleSheet("""
+        self.export_btn.setStyleSheet(
+            """
             QPushButton {
                 background-color: #00B4D8;
                 color: white;
@@ -206,7 +207,8 @@ class HistoryWidget(QWidget):
                 padding: 8px 15px;
             }
             QPushButton:hover { background-color: #0096B7; }
-        """)
+        """
+        )
 
         # Connect signals
         self.range_combo.currentIndexChanged.connect(self.update_date_range)
@@ -235,7 +237,7 @@ class HistoryWidget(QWidget):
                 # We need to go back (dayOfWeek() - 1) days to get to Monday
                 days_to_monday = today.dayOfWeek() - 1
                 start = today.addDays(-days_to_monday)
-                
+
                 # Calculate the end of the week (Sunday)
                 # Go forward 6 days from Monday to get to Sunday
                 end = start.addDays(6)
@@ -245,20 +247,20 @@ class HistoryWidget(QWidget):
             else:  # This Year
                 start = QDate(today.year(), 1, 1)
                 end = today
-            
+
             self.start_date.setDate(start)
             self.end_date.setDate(end)
             self.start_date.setEnabled(False)
             self.end_date.setEnabled(False)
-        
+
         self.update_display()
 
     def update_display(self):
-        
+
         start = self.start_date.date().toPyDate()
         end = self.end_date.date().toPyDate()
-        
-        status_filter = "all" 
+
+        status_filter = "all"
         match self.status_combo.currentText():
             case "Done":
                 status_filter = "done"
@@ -288,43 +290,65 @@ class HistoryWidget(QWidget):
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)
-        
+
         bar_width = 0.35  # Width of the bars
-        
+
         if status_filter == "all":
             # Convert dates to numbers for proper bar positioning
             x = [mdates.date2num(d) for d in dates]
-            
+
             # Plot bars side by side
-            done_bars = ax.bar([xi - bar_width/2 for xi in x], done_counts, 
-                             bar_width, label='Done', color='#4CAF50')
-            failed_bars = ax.bar([xi + bar_width/2 for xi in x], failed_counts, 
-                                bar_width, label='Failed', color='#FF4444')
-            
+            done_bars = ax.bar(
+                [xi - bar_width / 2 for xi in x],
+                done_counts,
+                bar_width,
+                label="Done",
+                color="#4CAF50",
+            )
+            failed_bars = ax.bar(
+                [xi + bar_width / 2 for xi in x],
+                failed_counts,
+                bar_width,
+                label="Failed",
+                color="#FF4444",
+            )
+
             # Add value labels on top of bars
             for bars in [done_bars, failed_bars]:
                 for bar in bars:
                     height = bar.get_height()
                     if height > 0:  # Only show label if there's a value
-                        ax.text(bar.get_x() + bar.get_width()/2, height,
-                               f'{int(height)}',
-                               ha='center', va='bottom')
+                        ax.text(
+                            bar.get_x() + bar.get_width() / 2,
+                            height,
+                            f"{int(height)}",
+                            ha="center",
+                            va="bottom",
+                        )
         elif status_filter == "done":
-            bars = ax.bar(dates, done_counts, color='#4CAF50')
+            bars = ax.bar(dates, done_counts, color="#4CAF50")
             for bar in bars:
                 height = bar.get_height()
                 if height > 0:
-                    ax.text(bar.get_x() + bar.get_width()/2, height,
-                           f'{int(height)}',
-                           ha='center', va='bottom')
+                    ax.text(
+                        bar.get_x() + bar.get_width() / 2,
+                        height,
+                        f"{int(height)}",
+                        ha="center",
+                        va="bottom",
+                    )
         else:
-            bars = ax.bar(dates, failed_counts, color='#FF4444')
+            bars = ax.bar(dates, failed_counts, color="#FF4444")
             for bar in bars:
                 height = bar.get_height()
                 if height > 0:
-                    ax.text(bar.get_x() + bar.get_width()/2, height,
-                           f'{int(height)}',
-                           ha='center', va='bottom')
+                    ax.text(
+                        bar.get_x() + bar.get_width() / 2,
+                        height,
+                        f"{int(height)}",
+                        ha="center",
+                        va="bottom",
+                    )
 
         ax.xaxis.set_major_locator(mdates.AutoDateLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
@@ -343,7 +367,8 @@ class HistoryWidget(QWidget):
         self.history_list.clear()
 
         # Style the QListWidget itself
-        self.history_list.setStyleSheet("""
+        self.history_list.setStyleSheet(
+            """
             QListWidget {
                 background-color: #f5f5f5;  /* Light gray background */
                 border-radius: 8px;
@@ -358,34 +383,35 @@ class HistoryWidget(QWidget):
             QListWidget::item:hover {
                 background-color: #e8f4f8;   /* Light blue on hover */
             }
-        """)
+        """
+        )
 
         # Add a separator item at the beginning
         self.history_list.addItem("")
-        
+
         # Filter entries by date range
         filtered_entries = []
         for entry in entries:
             status_date_str = None
-            if "on" in entry['status']:
-                status_date_str = entry['status'].split("on ")[-1].strip()
+            if "on" in entry["status"]:
+                status_date_str = entry["status"].split("on ")[-1].strip()
             else:
-                status_date_str = entry['status'].strip()
-            
+                status_date_str = entry["status"].strip()
+
             try:
                 # Parse the date
                 status_date = datetime.strptime(status_date_str, "%Y-%m-%d").date()
-                
+
                 # Check if the date is within the selected range
                 if start <= status_date <= end:
                     filtered_entries.append(entry)
             except ValueError:
                 # Skip entries with invalid date formats
                 continue
-        
+
         # Display filtered entries
         for entry in filtered_entries:
-            status = "🔴 Failed" if "failed" in entry['status'].lower() else "🟢 Done"
+            status = "🔴 Failed" if "failed" in entry["status"].lower() else "🟢 Done"
             text = (
                 f"Task: {entry['task']}\n"
                 f"Description: {entry['description']}\n"
@@ -402,15 +428,14 @@ class HistoryWidget(QWidget):
         filename, _ = QFileDialog.getSaveFileName(
             self, "Save PDF", "", "PDF Files (*.pdf)", options=options
         )
-        
+
         if filename:
-            if not filename.endswith('.pdf'):
-                filename += '.pdf'
-            
+            if not filename.endswith(".pdf"):
+                filename += ".pdf"
+
             try:
                 with PdfPages(filename) as pdf:
                     pdf.savefig(self.figure)
                 QMessageBox.information(self, "Success", "PDF exported successfully!")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Export failed: {str(e)}")
-    

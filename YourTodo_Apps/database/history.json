@@ -1,0 +1,26 @@
+{
+  "history": [
+    {
+      "name": "Makan",
+      "description": "",
+      "start_time": "2025-04-22 10:31",
+      "deadline": "",
+      "priority": "Medium",
+      "reminder": "None",
+      "status": "done - Completed on 2025-04-22",
+      "schedule": "None",
+      "username": "Rizki123"
+    },
+    {
+      "name": "Tidur",
+      "description": "",
+      "start_time": "2025-04-22 10:31",
+      "deadline": "2025-04-22 10:35",
+      "priority": "Medium",
+      "reminder": "5 minutes before",
+      "status": "failed - Completed on 2025-04-22",
+      "schedule": "None",
+      "username": "Rizki123"
+    }
+  ]
+}
