@@ -15,9 +15,11 @@ from PyQt5.QtWidgets import (
     QTextEdit,
     QTimeEdit,
     QMessageBox,
+    QMenu,
+    QAction,
 )
-from PyQt5.QtGui import QFont, QColor, QPalette, QBrush, QMovie
-from PyQt5.QtCore import Qt, QDate, QDateTime, QTimer, QTime
+from PyQt5.QtGui import QFont, QColor, QPalette, QBrush, QMovie, QIcon
+from PyQt5.QtCore import Qt, QDate, QDateTime, QTimer, QTime, QSize
 import os
 from datetime import datetime, timedelta
 import calendar
@@ -382,7 +384,7 @@ class ScheduleWidget(QWidget):
         movie = QMovie(get_image_path("loading.gif"))
         loading_label.setMovie(movie)
         loading_label.setAlignment(Qt.AlignCenter)
-        loading_label.setFixedSize(50, 50)  # Set fixed size for loading animation
+        loading_label.setFixedSize(50, 50)
 
         text_label = QLabel("Refreshing schedule...")
         text_label.setAlignment(Qt.AlignCenter)
@@ -518,11 +520,11 @@ class ScheduleWidget(QWidget):
             or not hasattr(self.main_app, "current_user")
             or not self.main_app.current_user
         ):
-            print("No current user found for highlighting dates")
+            # print("No current user found for highlighting dates")
             return
 
         try:
-            print(f"Reading tasks.json for user: {self.main_app.current_user}")
+            # print(f"Reading tasks.json for user: {self.main_app.current_user}")
             with open(tasks_file, "r", encoding="utf-8") as file:
                 data = json.load(file)
                 for task in data.get("tasks", []):
@@ -570,7 +572,7 @@ class ScheduleWidget(QWidget):
                     f"Applied yellow highlight to date: {date.toString('yyyy-MM-dd')}"
                 )
 
-        print(f"Total dates with tasks: {len(dates_with_tasks)}")
+        # print(f"Total dates with tasks: {len(dates_with_tasks)}")
 
     def updateTaskList(self, date):
         """Update the task list when a date is selected."""
@@ -935,6 +937,18 @@ class ScheduleWidget(QWidget):
 
     def deleteScheduledTask(self, task):
         """Delete a task from scheduled_tasks.json."""
+        # Add confirmation dialog
+        reply = QMessageBox.question(
+            self,
+            "Delete Scheduled Task",
+            "Are you sure you want to delete this scheduled task? This action cannot be undone.",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+
+        if reply == QMessageBox.No:
+            return
+
         schedule_file = get_database_path("scheduled_tasks.json")
 
         try:
@@ -954,11 +968,22 @@ class ScheduleWidget(QWidget):
             with open(schedule_file, "w", encoding="utf-8") as file:
                 json.dump({"scheduled_tasks": scheduled_tasks}, file, indent=2)
 
+            # Show success message
+            QMessageBox.information(
+                self,
+                "Success",
+                "Scheduled task has been deleted successfully!"
+            )
+
             # Refresh the schedule display
             self.refreshSchedule()
 
         except Exception as e:
-            print(f"Error deleting scheduled task: {e}")
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Failed to delete scheduled task: {str(e)}"
+            )
 
     def switchView(self, view_name):
         """Switch between calendar and repeated tasks views."""
@@ -990,51 +1015,276 @@ class ScheduleWidget(QWidget):
         except Exception as e:
             print(f"Error updating repeated tasks list: {e}")
 
+    def _addTaskToRepeatedList(self, task_dict):
+        # Create task item
+        item = QListWidgetItem()
+        
+        # Create task widget
+        task_widget = QFrame()
+        task_widget.setStyleSheet("""
+            QFrame {
+                background-color: white;
+                border-radius: 10px;
+                margin: 5px;
+                padding: 10px;
+            }
+            QFrame:hover {
+                background-color: #f5f5f5;
+            }
+        """)
+
+        # Create main layout
+        main_layout = QVBoxLayout()
+        top_layout = QHBoxLayout()
+
+        # Left side - Task info
+        info_layout = QVBoxLayout()
+        name_label = QLabel(task_dict["name"])
+        name_label.setFont(QFont("Arial", 12, QFont.Bold))
+        
+        desc_label = QLabel(task_dict.get("description", ""))
+        desc_label.setStyleSheet("color: #666;")
+        
+        info_layout.addWidget(name_label)
+        info_layout.addWidget(desc_label)
+        top_layout.addLayout(info_layout, stretch=2)
+
+        # Middle - Times layout
+        times_layout = QVBoxLayout()
+        if task_dict["start_time"] and task_dict["start_time"] != "None":
+            start_time = datetime.strptime(task_dict["start_time"], "%Y-%m-%d %H:%M")
+            start_time_str = start_time.strftime("%H:%M")
+            start_label = QLabel(f"StartLine: {start_time_str}")
+            times_layout.addWidget(start_label)
+
+        if task_dict["deadline"] and task_dict["deadline"] != "None":
+            deadline = datetime.strptime(task_dict["deadline"], "%Y-%m-%d %H:%M")
+            deadline_str = deadline.strftime("%H:%M")
+            deadline_label = QLabel(f"Deadline: {deadline_str}")
+            times_layout.addWidget(deadline_label)
+
+        top_layout.addLayout(times_layout, stretch=1)
+
+        # Right side container for schedule, priority and status
+        right_container = QVBoxLayout()
+        right_container.setSpacing(0)
+        right_container.setContentsMargins(0, 0, 0, 0)
+        
+        # Add schedule info if exists
+        schedule = task_dict.get("schedule", "")
+        if schedule:
+            schedule_label = QLabel(f"🔄scheduled: {schedule}")
+            schedule_label.setStyleSheet("color: #666; font-size: 14px;")
+            schedule_label.setContentsMargins(0, 8, 0, 8)
+            schedule_label.setFixedHeight(32)
+            schedule_label.setMinimumWidth(120)
+            schedule_label.setAlignment(Qt.AlignCenter | Qt.AlignVCenter)
+            right_container.addWidget(schedule_label)
+        
+        # Create container for priority, status and kebab menu
+        buttons_container = QWidget()
+        buttons_container.setStyleSheet("background-color: white;")
+        buttons_layout = QHBoxLayout(buttons_container)
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_layout.setSpacing(5)
+        
+        # Add priority and status buttons
+        priority_status_layout = QHBoxLayout()
+        priority_status_layout.setSpacing(5)
+        priority_status_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Priority button
+        priority = task_dict.get("priority", "None")
+        priority_colors = {
+            "High": "#FF4444",
+            "Medium": "#FF8C00",
+            "Low": "#FFD700",
+            "None": "#999999"
+        }
+        priority_btn = QPushButton(priority)
+        priority_btn.setFixedWidth(80)
+        priority_btn.setFixedHeight(32)
+        priority_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {priority_colors.get(priority, "#999999")};
+                color: white;
+                border: none;
+                border-radius: 10px;
+                padding: 5px;
+                font-size: 12px;
+            }}
+        """)
+        priority_status_layout.addWidget(priority_btn)
+
+        # Status button
+        status = task_dict.get("status", "due")
+        status_text = "done" if "done" in status.lower() else "failed" if "failed" in status.lower() else "due"
+        status_colors = {
+            "done": "#4CAF50",
+            "failed": "#FF4444",
+            "due": "#999999"
+        }
+        status_btn = QPushButton(status_text)
+        status_btn.setFixedWidth(80)
+        status_btn.setFixedHeight(32)
+        status_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {status_colors.get(status_text, "#999999")};
+                color: white;
+                border: none;
+                border-radius: 10px;
+                padding: 5px;
+                font-weight: bold;
+                font-size: 12px;
+            }}
+        """)
+        priority_status_layout.addWidget(status_btn)
+        
+        # Add kebab menu
+        kebab_btn = QPushButton()
+        kebab_btn.setIcon(QIcon(get_image_path("kebab.png")))
+        kebab_btn.setIconSize(QSize(16, 16))
+        kebab_btn.setFixedSize(32, 32)
+        kebab_btn.setStyleSheet("""
+            QPushButton {
+                border: none;
+                border-radius: 16px;
+                padding: 8px;
+                background-color: transparent;
+            }
+            QPushButton:hover {
+                background-color: #E3F8FF;
+            }
+        """)
+
+        # Create kebab menu
+        menu = QMenu()
+        menu.setStyleSheet("""
+            QMenu {
+                background-color: white;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QMenu::item {
+                padding: 8px 20px;
+                border-radius: 3px;
+            }
+            QMenu::item:selected {
+                background-color: #E3F8FF;
+                color: #00B4D8;
+            }
+        """)
+
+        # Add menu actions
+        actions = [
+            ("Delete Schedule", get_image_path("delete.png")),
+        ]
+
+        for text, icon_path in actions:
+            action = QAction(QIcon(icon_path), text, self)
+            action.triggered.connect(lambda checked, t=task_dict: self.deleteScheduledTask(t))
+            menu.addAction(action)
+
+        kebab_btn.clicked.connect(
+            lambda: menu.exec_(kebab_btn.mapToGlobal(kebab_btn.rect().bottomLeft()))
+        )
+        
+        # Add layouts to buttons container
+        buttons_layout.addLayout(priority_status_layout)
+        buttons_layout.addWidget(kebab_btn)
+        
+        # Add buttons container to right container
+        right_container.addWidget(buttons_container)
+        
+        # Add right container to top layout
+        top_layout.addLayout(right_container)
+
+        main_layout.addLayout(top_layout)
+        task_widget.setLayout(main_layout)
+
+        # Set item widget
+        item.setSizeHint(task_widget.sizeHint())
+        self.repeated_tasks_list.addItem(item)
+        self.repeated_tasks_list.setItemWidget(item, task_widget)
+
     def show_add_repeated_task_dialog(self):
         """Show the dialog for adding a new repeated task."""
         schedule_file = get_database_path("scheduled_tasks.json")
 
         try:
-            # Get task data from dialog
-            task = self._getTaskDataFromDialog()
-            if not task:
-                return
+            # Membuka addRepeataed task dialog
+            dialog = AddRepeatedTaskDialog(self)
 
-            # Validate required fields
-            required_fields = ["name", "start_time", "schedule", "username"]
-            for field in required_fields:
-                if not task.get(field):
-                    QMessageBox.warning(
-                        self, "Error", f"Missing required field: {field}"
-                    )
-                    return
+            if dialog.exec_():
+                try:
+                    task_data = dialog.get_task_data()
 
-            # Add task to scheduled_tasks.json
-            try:
-                with open(schedule_file, "r", encoding="utf-8") as file:
-                    data = json.load(file)
-                    scheduled_tasks = data.get("scheduled_tasks", [])
-            except (FileNotFoundError, json.JSONDecodeError):
-                scheduled_tasks = []
+                    #Validasi nama repeated task
+                    if not task_data["name"]:
+                        QMessageBox.warning(self, "Error", "Task Name is required!")
+                        return
+                    
+                    try:
+                        start_time = datetime.strptime(task_data["start_time"], "%H:%M").time()
+                    except ValueError:
+                        QMessageBox.warning(self, "Error", "Invalid time fomat!")
+                    
+                    #menginisiasi dengan current date dan time
+                    current_date = datetime.now()
+                    start_datetime = datetime.combine(current_date.date(), start_time)
+                    
+                    #->ototmatis mengset deadline pada 23:59 di hari yang sama
+                    deadline_time = datetime.combine(current_date.date(), datetime.strptime("23:59","%H:%M").time())
 
-            task["is_active"] = True
-            task["last_run_date"] = task["start_time"].split()[0]
-            scheduled_tasks.append(task)
 
-            with open(schedule_file, "w", encoding="utf-8") as file:
-                json.dump({"scheduled_tasks": scheduled_tasks}, file, indent=2)
+                    # Create task dari data yang diinput
+                    form_task = {
+                        "name": task_data["name"],
+                        "description": task_data["description"],
+                        "start_time": start_datetime.strftime("%Y-%m-%d %H:%M"),
+                        "deadline": deadline_time.strftime("%Y-%m-%d %H:%M"),
+                        "priority": task_data["priority"],
+                        "reminder": "None",
+                        "status": "due",
+                        "schedule": task_data["schedule"],
+                        "username" : self.main_app.current_user
+                    }
 
-            # Refresh the display
-            self.updateRepeatedTasksList()
-            QMessageBox.information(
-                self, "Success", "Task has been added successfully."
-            )
+                    #validasi seluruh fields yang harus diisi
+                    required_fields = ["name", "start_time", "deadline", "priority", "schedule", "username"]
+                    for field in required_fields:
+                        if not form_task.get(field):
+                            QMessageBox.warning(self, "Error", f"Missing required field: {field}")
+                            return
+                
+                    #baca data lama
+                    try : 
+                        with open(schedule_file, "r", encoding="utf-8") as file:
+                            data = json.load(file)
+                            scheduled_tasks = data.get("scheduled_tasks", [])
+                    except (FileNotFoundError, json.JSONDecodeError) as e:
+                        scheduled_tasks = []
+
+                    #tambah task baru ke dalam dict
+                    scheduled_tasks.append(form_task)
+
+                    #tambah data ke dalam file schedule_task.txt
+                    with open (schedule_file, "w", encoding="utf-8") as file :
+                        json.dump({"scheduled_tasks":scheduled_tasks}, file, indent=2)
+
+                    QMessageBox.information(self, " Succes", "Task saved to database")
+
+                    #updatet isi halaman
+                    self.updateRepeatedTasksList()
+
+
+                except Exception as e:
+                    QMessageBox.critical(self, "Error", f"Error processing task data: {str(e)}")
 
         except Exception as e:
-            QMessageBox.critical(
-                self, "Error", f"Failed to add repeated task: {str(e)}"
-            )
-            print(f"Error in addRepeatedTask: {str(e)}")  # For debugging
+            QMessageBox.critical(self, "Error", f"failed opening dialog: {str(e)}")
+
 
     def eventFilter(self, obj, event):
         """Event filter to detect when dropdown is opened/closed."""
@@ -1082,21 +1332,6 @@ class ScheduleWidget(QWidget):
                 QMessageBox.critical(
                     self, "Error", f"Failed to clear scheduled tasks: {str(e)}"
                 )
-
-    def _getTaskDataFromDialog(self):
-        """Get task data from the dialog."""
-        # Implementation of _getTaskDataFromDialog method
-        # This method should return a dictionary containing the task data
-        # based on the user input from the AddRepeatedTaskDialog
-        # The implementation should be provided in the AddRepeatedTaskDialog class
-        pass
-
-    def _addTaskToRepeatedList(self, task):
-        """Add a task to the repeated tasks list."""
-        # Implementation of _addTaskToRepeatedList method
-        # This method should add the given task to the repeated_tasks_list
-        # The implementation should be provided in the ScheduleWidget class
-        pass
 
 
 class AddRepeatedTaskDialog(QDialog):

@@ -1,50 +1,10 @@
 [
-  {
-    "task_id": "Makan_2025-04-22 10:31_",
-    "message": "Task 'Makan' has started!",
-    "type": "start_time",
-    "timestamp": "2025-04-22 10:31:25",
-    "read": false,
-    "username": "Rizki123"
-  },
-  {
-    "task_id": "Tidur_2025-04-22 10:31_2025-04-22 10:35",
-    "message": "Task 'Tidur' deadline is in 5 minutes!",
-    "type": "reminder",
-    "timestamp": "2025-04-22 10:32:25",
-    "read": false,
-    "username": "Rizki123"
-  },
-  {
-    "task_id": "Makan_2025-04-22 10:31_",
-    "message": "Task 'Makan' has been completed!",
-    "type": "done",
-    "timestamp": "2025-04-22 10:32:51",
-    "read": false,
-    "username": "Rizki123"
-  },
-  {
-    "task_id": "Tidur_2025-04-22 10:31_2025-04-22 10:35",
-    "message": "Task 'Tidur' has been marked as failed!",
-    "type": "failed",
-    "timestamp": "2025-04-22 10:32:59",
-    "read": false,
-    "username": "Rizki123"
-  },
-  {
-    "task_id": "Makan Mie Ayam_2025-04-28 20:15_2025-04-28 21:15",
-    "message": "Task 'Makan Mie Ayam' has started!",
-    "type": "start_time",
-    "timestamp": "2025-04-28 20:15:47",
-    "read": false,
-    "username": "Argiansah1"
-  },
-  {
-    "task_id": "Makan mie ayam_2025-04-28 22:19_",
-    "message": "Task 'Makan mie ayam' has started!",
-    "type": "start_time",
-    "timestamp": "2025-04-28 22:19:03",
-    "read": false,
-    "username": "Sopian1"
-  }
+    {
+        "task_id": "Makan_2025-05-12 09:23_2025-05-13 09:23",
+        "message": "Task 'Makan' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-12 09:23:57",
+        "read": false,
+        "username": "MuhamadSopiana"
+    }
 ]

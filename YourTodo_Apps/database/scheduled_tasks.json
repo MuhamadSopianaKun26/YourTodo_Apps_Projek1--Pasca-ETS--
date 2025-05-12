@@ -1,30 +1,15 @@
 {
   "scheduled_tasks": [
     {
-      "name": "Makan",
+      "name": "test",
       "description": "",
-      "start_time": "2025-04-22 10:33",
-      "deadline": "2025-04-22 23:59",
+      "start_time": "2025-05-12 21:29",
+      "deadline": "2025-05-12 23:59",
       "priority": "High",
       "reminder": "None",
       "status": "due",
       "schedule": "daily",
-      "username": "Rizki123",
-      "is_active": true,
-      "last_run_date": "2025-04-22"
-    },
-    {
-      "name": "Gym Sore",
-      "description": "",
-      "start_time": "2025-04-28 16:20",
-      "deadline": "2025-04-28 23:59",
-      "priority": "High",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "daily",
-      "username": "Argiansah1",
-      "is_active": true,
-      "last_run_date": "2025-04-28"
+      "username": "MuhamadSopiana"
     }
   ]
 }
