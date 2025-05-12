@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QSize, QDateTime
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QMovie
-from path_utils import get_image_path
+from _sopian.path_utils import get_image_path
 
 
 class HeaderWidget(QWidget):
@@ -466,7 +466,7 @@ class TaskItemWidget(QFrame):
     def _handleAction(self, action):
         """Handle menu action selections."""
         if action == "Update":
-            from update import TodoUpdater
+            from _darrel.update import TodoUpdater
 
             # Preserve username when updating task
             current_username = self.task_data.get("username")
@@ -474,11 +474,11 @@ class TaskItemWidget(QFrame):
             if current_username:
                 self.task_data["username"] = current_username
         elif action == "Delete":
-            from delete import TodoDeleter
+            from _darrel.delete import TodoDeleter
 
             TodoDeleter.delete_task(self, self._notifyParentOfChange)
         elif action == "Mark as Done":
-            from update import TodoUpdater
+            from _darrel.update import TodoUpdater
 
             # Preserve username when marking as done
             current_username = self.task_data.get("username")
@@ -489,7 +489,7 @@ class TaskItemWidget(QFrame):
             # Trigger notification for task completion
             self._trigger_task_completion_notification()
         elif action == "Mark as Failed":
-            from update import TodoUpdater
+            from _darrel.update import TodoUpdater
 
             # Preserve username when marking as failed
             current_username = self.task_data.get("username")
@@ -500,7 +500,7 @@ class TaskItemWidget(QFrame):
             # Trigger notification for task failure
             self._trigger_task_failure_notification()
         elif action == "Move to History":
-            from update import TodoUpdater
+            from _darrel.update import TodoUpdater
 
             TodoUpdater.move_task_to_history(self, self._notifyParentOfChange)
 

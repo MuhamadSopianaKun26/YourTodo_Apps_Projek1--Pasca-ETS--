@@ -13,9 +13,9 @@ from PyQt5.QtCore import Qt, QTimer, QDateTime
 from PyQt5.QtGui import QFont, QIcon
 import json
 
-from main_components import TaskItemWidget, LoadingWidget
-from path_utils import get_image_path, get_database_path
-from filter import TaskFilter
+from _sopian.main_components import TaskItemWidget, LoadingWidget
+from _sopian.path_utils import get_image_path, get_database_path
+from _rizqi.filter import TaskFilter
 
 
 class TaskManager:

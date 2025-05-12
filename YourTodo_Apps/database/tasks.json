@@ -21,17 +21,6 @@
       "status": "due",
       "schedule": "None",
       "username": "MuhamadSopiana"
-    },
-    {
-      "name": "Makan 2",
-      "description": "test\ntest\ntest",
-      "start_time": "2025-05-13 23:25",
-      "deadline": "",
-      "priority": "None",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "None",
-      "username": "MuhamadSopiana"
     }
   ]
 }

@@ -15,7 +15,7 @@ from PyQt5.QtCore import Qt, QDateTime, QTimer, QPropertyAnimation, QEasingCurve
 import os
 import json
 from datetime import datetime, timedelta
-from path_utils import get_image_path, get_database_path
+from _sopian.path_utils import get_image_path, get_database_path
 
 class NotificationSystem:
     """

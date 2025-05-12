@@ -13,19 +13,19 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QIcon
 import sys
 
-from create import TodoCreator
-from main_components import (
+from _darrel.create import TodoCreator
+from _sopian.main_components import (
     HeaderWidget, 
     SidebarWidget, 
     TaskItemWidget, 
     LoadingWidget,
 )
-from auth import LoginDialog
-from history import HistoryWidget
-from task import TaskManager
-from notification import NotificationWidget, NotificationSystem
-from schedule import ScheduleWidget
-from welcome_screen import WelcomeScreen
+from _praditama.auth import LoginDialog
+from _fauzan.history import HistoryWidget
+from _darrel.task import TaskManager
+from _rizqi.notification import NotificationWidget, NotificationSystem
+from _sopian.schedule import ScheduleWidget
+from _praditama.welcome_screen import WelcomeScreen
 
 
 class ToDoApp(QWidget):

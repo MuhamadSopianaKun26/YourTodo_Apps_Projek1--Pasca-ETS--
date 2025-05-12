@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap
-from path_utils import get_image_path
+from _sopian.path_utils import get_image_path
 
 class WelcomeScreen(QWidget):
     def __init__(self, parent=None):

@@ -23,7 +23,7 @@ from PyQt5.QtCore import Qt, QDate, QDateTime, QTimer, QTime, QSize
 import os
 from datetime import datetime, timedelta
 import calendar
-from path_utils import get_image_path, get_database_path
+from _sopian.path_utils import get_image_path, get_database_path
 import json
 
 

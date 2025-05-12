@@ -18,7 +18,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QTime, QDate, QDateTime
 import os
-from path_utils import get_image_path, get_database_path
+from _sopian.path_utils import get_image_path, get_database_path
 
 
 class DateTimeDialog(QDialog):

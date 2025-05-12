@@ -7,8 +7,10 @@ def get_image_path(image_name):
     """
     # Get the directory where the current file (path_utils.py) is located
     current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up one level to reach the project root
+    project_root = os.path.dirname(current_dir)
     # Construct the path to the images folder
-    images_dir = os.path.join(current_dir, "images")
+    images_dir = os.path.join(project_root, "images")
     # Return the full path to the requested image
     return os.path.join(images_dir, image_name) 
 
@@ -25,7 +27,9 @@ def get_database_path(file_name):
     """
     # Get the directory where the current file (path_utils.py) is located
     current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up one level to reach the project root
+    project_root = os.path.dirname(current_dir)
     # Construct the path to the database folder
-    database_dir = os.path.join(current_dir, "database")
+    database_dir = os.path.join(project_root, "database")
     # Return the full path to the requested database file
     return os.path.join(database_dir, file_name) 

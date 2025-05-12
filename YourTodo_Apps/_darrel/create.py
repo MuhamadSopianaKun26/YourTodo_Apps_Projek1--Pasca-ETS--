@@ -14,8 +14,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import QTime, QDate, Qt, QDateTime
 from PyQt5.QtGui import QFont, QPixmap
-from Add_Task import AddTaskWidget
-from path_utils import get_image_path
+from _sopian.Add_Task import AddTaskWidget
+from _sopian.path_utils import get_image_path
 
 class BaseDialog(QDialog):
     """

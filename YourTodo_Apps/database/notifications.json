@@ -6,5 +6,21 @@
         "timestamp": "2025-05-12 09:23:57",
         "read": false,
         "username": "MuhamadSopiana"
+    },
+    {
+        "task_id": "Makan 2_2025-05-13 23:25_",
+        "message": "Task 'Makan 2' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-13 00:07:47",
+        "read": false,
+        "username": "MuhamadSopiana"
+    },
+    {
+        "task_id": "Makan 2_2025-05-13 23:25_",
+        "message": "Task 'Makan 2' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-05-13 00:07:50",
+        "read": false,
+        "username": "MuhamadSopiana"
     }
 ]

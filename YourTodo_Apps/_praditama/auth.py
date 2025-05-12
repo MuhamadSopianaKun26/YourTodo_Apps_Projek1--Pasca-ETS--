@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 import hashlib, re, json
-from path_utils import get_image_path, get_database_path
+from _sopian.path_utils import get_image_path, get_database_path
 
 
 class LoginDialog(QDialog):

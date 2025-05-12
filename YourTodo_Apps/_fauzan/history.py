@@ -21,7 +21,7 @@ import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 from datetime import datetime, timedelta
 from matplotlib.backends.backend_pdf import PdfPages
-from path_utils import get_database_path
+from _sopian.path_utils import get_database_path
 import re
 import json
 

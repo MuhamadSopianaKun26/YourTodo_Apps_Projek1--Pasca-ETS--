@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QDate
-from create import TaskDialog
-from path_utils import get_database_path
+from _darrel.create import TaskDialog
+from _sopian.path_utils import get_database_path
 
 
 class TodoUpdater:
