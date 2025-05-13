@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import QDate
 from _darrel.create import TaskDialog
 from _sopian.path_utils import get_database_path
+import json
 
 
 class TodoUpdater:
@@ -75,25 +76,23 @@ class TodoUpdater:
             )
             return
 
-        history_file = get_database_path("history.txt")
+        history_file = get_database_path("history.json")
         try:
-            with open(history_file, "a", encoding="utf-8") as file:
-                data = [
-                    task_widget.task_data[key]
-                    for key in [
-                        "name",
-                        "description",
-                        "start_time",
-                        "deadline",
-                        "priority",
-                        "reminder",
-                        "status",
-                        "schedule",
-                        "username"
-                    ]
-                ]
-                file.write(" | ".join(data) + "\n")
+            # Read existing history
+            try:
+                with open(history_file, "r", encoding="utf-8") as file:
+                    history_data = json.load(file)
+            except (FileNotFoundError, json.JSONDecodeError):
+                history_data = {"history": []}
 
+            # Add new task to history
+            history_data["history"].append(task_widget.task_data)
+
+            # Write updated history back to file
+            with open(history_file, "w", encoding="utf-8") as file:
+                json.dump(history_data, file, indent=2)
+
+            # Remove task widget from UI
             parent_layout = task_widget.parent().layout()
             parent_layout.removeWidget(task_widget)
             task_widget.deleteLater()

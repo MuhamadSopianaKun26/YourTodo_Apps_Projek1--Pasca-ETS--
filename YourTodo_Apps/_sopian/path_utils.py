@@ -2,8 +2,8 @@ import os
 
 def get_image_path(image_name):
     """
-    Get the absolute path for an image file.
-    This ensures images can be found regardless of where the application is run from.
+    Dapatkan path absolut untuk file gambar.
+    Memastikan gambar dapat ditemukan terlepas dari lokasi aplikasi dijalankan.
     """
     # Get the directory where the current file (path_utils.py) is located
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,14 +16,14 @@ def get_image_path(image_name):
 
 def get_database_path(file_name):
     """
-    Get the absolute path for a database file.
-    This ensures database files can be found regardless of where the application is run from.
+    Dapatkan path absolut untuk file database.
+    Memastikan file database dapat ditemukan terlepas dari lokasi aplikasi dijalankan.
     
     Args:
-        file_name (str): Name of the database file (e.g., 'users.txt', 'tasks.txt', etc.)
+        file_name (str): Nama file database (contoh: 'users.txt', 'tasks.txt', dll)
         
     Returns:
-        str: Absolute path to the database file
+        str: Path absolut ke file database
     """
     # Get the directory where the current file (path_utils.py) is located
     current_dir = os.path.dirname(os.path.abspath(__file__))

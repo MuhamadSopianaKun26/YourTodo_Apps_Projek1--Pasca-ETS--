@@ -1,0 +1,3 @@
+-- Bug ditemukan -- 
+
+> [Hisotry] history.txt masih terbentuk, belum bisa membaca dan menampilkan data pada database history

@@ -1,3 +1,17 @@
 {
-  "scheduled_tasks": []
+  "scheduled_tasks": [
+    {
+      "name": "Makan mie ayam",
+      "description": "",
+      "start_time": "2025-05-13 18:05",
+      "deadline": "2025-05-13 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "daily",
+      "username": "Argi",
+      "is_active": true,
+      "last_run_date": "2025-05-13"
+    }
+  ]
 }

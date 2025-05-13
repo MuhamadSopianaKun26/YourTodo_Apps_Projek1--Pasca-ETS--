@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QIcon
 import sys
+import time
 
 from _darrel.create import TodoCreator
 from _sopian.main_components import (
@@ -26,7 +27,11 @@ from _darrel.task import TaskManager
 from _rizqi.notification import NotificationWidget, NotificationSystem
 from _sopian.schedule import ScheduleWidget
 from _praditama.welcome_screen import WelcomeScreen
+from _sopian.Add_Task import IconManager
 
+def log_time(message):
+    """Helper function untuk logging waktu"""
+    print(f"[{time.strftime('%H:%M:%S')}] {message}")
 
 class ToDoApp(QWidget):
     """
@@ -53,6 +58,11 @@ class ToDoApp(QWidget):
                 background-color: #0096B7;
             }
         """
+        # Preload icons saat aplikasi pertama kali dibuka
+        start_time = time.time()
+        IconManager.preload_icons()
+        end_time = time.time()
+        log_time(f"Application startup completed in {end_time - start_time:.3f} seconds")
         self.initUI()
 
     def initUI(self):

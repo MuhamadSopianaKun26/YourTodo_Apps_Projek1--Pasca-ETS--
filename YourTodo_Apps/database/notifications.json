@@ -22,5 +22,29 @@
         "timestamp": "2025-05-13 00:07:50",
         "read": false,
         "username": "MuhamadSopiana"
+    },
+    {
+        "task_id": "Makan_2025-05-12 09:23_2025-05-13 09:23",
+        "message": "Task 'Makan' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-13 00:15:34",
+        "read": false,
+        "username": "MuhamadSopiana"
+    },
+    {
+        "task_id": "Makan mie ayam_2025-05-13 00:21_",
+        "message": "Task 'Makan mie ayam' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-13 00:21:12",
+        "read": false,
+        "username": "Argi"
+    },
+    {
+        "task_id": "Makan mie ayam_2025-05-13 18:05_",
+        "message": "Task 'Makan mie ayam' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-13 18:05:51",
+        "read": false,
+        "username": "Argi"
     }
 ]

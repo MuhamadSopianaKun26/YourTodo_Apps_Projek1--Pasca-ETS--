@@ -14,12 +14,65 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox,
     QMenu,
 )
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QIcon, QPixmap, QImage
 from PyQt5.QtCore import QTime, QDate, QDateTime
 import os
+import time
 from _sopian.path_utils import get_image_path, get_database_path
 
+def log_time(message):
+    """Helper function untuk logging waktu"""
+    print(f"[{time.strftime('%H:%M:%S')}] {message}")
+
+class IconManager:
+    """Class untuk mengelola dan preload semua ikon"""
+    _instance = None
+    _icons = {}
+    _required_icons = [
+        "Calender_icon.png",
+        "Flag_icon.png",
+        "Reminder_icon.png",
+        "HighPriority_icon.png",
+        "MediumPriority_icon.png",
+        "LowPriority_icon.png"
+    ]
+    _icon_size = QSize(24, 24)
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(IconManager, cls).__new__(cls)
+        return cls._instance
+
+    @classmethod
+    def preload_icons(cls):
+        """Preload semua ikon yang dibutuhkan"""
+        if not cls._icons:  # Only preload if not already done
+            start_time = time.time()
+            for icon_file in cls._required_icons:
+                icon_path = get_image_path(icon_file)
+                if os.path.exists(icon_path):
+                    # Load dan cache pixmap dengan ukuran yang optimal
+                    pixmap = QPixmap(icon_path)
+                    if not pixmap.isNull():
+                        # Scale pixmap ke ukuran yang dibutuhkan
+                        pixmap = pixmap.scaled(cls._icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                        # Convert ke format yang lebih efisien
+                        image = pixmap.toImage()
+                        image = image.convertToFormat(QImage.Format_ARGB32_Premultiplied)
+                        pixmap = QPixmap.fromImage(image)
+                        cls._icons[icon_file] = QIcon(pixmap)
+                    else:
+                        cls._icons[icon_file] = QIcon()
+                else:
+                    cls._icons[icon_file] = QIcon()
+            end_time = time.time()
+            log_time(f"Preloaded {len(cls._required_icons)} icons in {end_time - start_time:.3f} seconds")
+
+    @classmethod
+    def get_icon(cls, icon_file):
+        """Get icon from cache"""
+        return cls._icons.get(icon_file, QIcon())
 
 class DateTimeDialog(QDialog):
     def __init__(self, parent=None, title="Select Date and Time", is_start_time=False, deadline=None):
@@ -118,133 +171,112 @@ class DateTimeDialog(QDialog):
 ## main program ##
 class AddTaskWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
+        start_time = time.time()
         super().__init__(parent)
+        log_time("Starting AddTaskWidget initialization")
         
-        self.setGeometry(QtCore.QRect(110, 190, 855, 290))
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.setObjectName("AddTodo")
-        # Prevent horizontal scrolling
-        self.setMaximumWidth(855)
         self.setMinimumWidth(855)
+        self.setMaximumWidth(855)
+
+        # Setup main layout
+        main_layout = QtWidgets.QVBoxLayout(self)
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(10)
+        log_time("Main layout setup completed")
 
         # Task Name Input
-        self.TaskName = QtWidgets.QLineEdit(self)
-        self.TaskName.setGeometry(QtCore.QRect(20, 20, 791, 21))
+        self.TaskName = QtWidgets.QLineEdit()
         self.TaskName.setObjectName("TaskName")
         self.TaskName.setPlaceholderText("Task Name")
-        self.TaskName.textChanged.connect(self.validate_input)
+        self.TaskName.textChanged.connect(self._delayed_validate)
+        main_layout.addWidget(self.TaskName)
+        log_time("Task name input setup completed")
 
         # Task Description Input
-        self.DescTask = QtWidgets.QTextEdit(self)
-        self.DescTask.setGeometry(QtCore.QRect(20, 50, 791, 61))
-        self.DescTask.setLineWrapMode(QtWidgets.QTextEdit.WidgetWidth)
+        self.DescTask = QtWidgets.QTextEdit()
         self.DescTask.setObjectName("DescTask")
         self.DescTask.setPlaceholderText("Description")
-        # Enable vertical scrolling only for description
         self.DescTask.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.DescTask.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.DescTask.setLineWrapMode(QtWidgets.QTextEdit.WidgetWidth)
+        main_layout.addWidget(self.DescTask)
+        log_time("Task description setup completed")
 
-        # Line Separator
-        self.line_3 = QtWidgets.QFrame(self)
-        self.line_3.setGeometry(QtCore.QRect(20, 160, 801, 16))
-        self.line_3.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line_3.setObjectName("line_3")
+        # Setup buttons
+        self._setup_buttons(main_layout)
+        log_time("Buttons setup completed")
 
-        # Container untuk tombol-tombol utama
-        self.button_container = QtWidgets.QWidget(self)
-        self.button_container.setGeometry(QtCore.QRect(20, 130, 801, 28))
-        self.button_container.setObjectName("button_container")
+        # Setup validation timer
+        self._validation_timer = QtCore.QTimer()
+        self._validation_timer.setSingleShot(True)
+        self._validation_timer.timeout.connect(self.validate_input)
         
-        # Layout horizontal untuk tombol-tombol utama
+        end_time = time.time()
+        log_time(f"AddTaskWidget initialization completed in {end_time - start_time:.3f} seconds")
+
+    def _setup_buttons(self, main_layout):
+        """Setup all buttons and their containers"""
+        # Container untuk tombol-tombol utama
+        self.button_container = QtWidgets.QWidget()
         self.button_layout = QtWidgets.QHBoxLayout(self.button_container)
         self.button_layout.setSpacing(10)
         self.button_layout.setContentsMargins(0, 0, 0, 0)
 
-        # Buttons (Start Time, Deadline, Priority, Reminder)
-        icon_path = get_image_path("")
-        self.StartTime = self.create_button("StartTime", get_image_path("Calender_icon.png"), "Start time")
-        self.Deadline = self.create_button("Deadline", get_image_path("Calender_icon.png"), "Deadline")
-        self.Priority = self.create_button("Priority", get_image_path("Flag_icon.png"), "Priority")
-        self.Reminder = self.create_button("Reminder", get_image_path("Reminder_icon.png"), "Reminder")
+        # Get icon manager instance
+        icon_manager = IconManager()
 
-        # Tambahkan tombol ke layout utama
+        # Buttons (Start Time, Deadline, Priority, Reminder)
+        self.StartTime = self.create_button("StartTime", "Calender_icon.png", "Start time", icon_manager)
+        self.Deadline = self.create_button("Deadline", "Calender_icon.png", "Deadline", icon_manager)
+        self.Priority = self.create_button("Priority", "Flag_icon.png", "Priority", icon_manager)
+        self.Reminder = self.create_button("Reminder", "Reminder_icon.png", "Reminder", icon_manager)
+
         self.button_layout.addWidget(self.StartTime)
         self.button_layout.addWidget(self.Deadline)
         self.button_layout.addWidget(self.Priority)
         self.button_layout.addWidget(self.Reminder)
         self.button_layout.addStretch()
+        main_layout.addWidget(self.button_container)
+
+        # Line Separator
+        self.line_3 = QtWidgets.QFrame()
+        self.line_3.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_3.setObjectName("line_3")
+        main_layout.addWidget(self.line_3)
 
         # Container untuk tombol aksi
-        self.action_container = QtWidgets.QWidget(self)
-        self.action_container.setGeometry(QtCore.QRect(20, 180, 801, 28))
-        self.action_container.setObjectName("action_container")
-        
-        # Layout horizontal untuk tombol aksi
+        self.action_container = QtWidgets.QWidget()
         self.action_layout = QtWidgets.QHBoxLayout(self.action_container)
         self.action_layout.setSpacing(10)
         self.action_layout.setContentsMargins(0, 0, 0, 0)
-        
-        # Buttons (Add & Cancel) dengan style yang baru
+
         self.Cancel = self.create_action_button("Cancel", "Cancel")
         self.AddTask = self.create_action_button("Add Task", "AddTask")
         self.AddTask.setEnabled(False)
-        
-        # Tambahkan tombol aksi ke layout
+
         self.action_layout.addStretch()
         self.action_layout.addWidget(self.Cancel)
         self.action_layout.addWidget(self.AddTask)
+        main_layout.addWidget(self.action_container)
 
         # Connect action buttons
         self.Cancel.clicked.connect(self.cancel_toggle)
         self.AddTask.clicked.connect(self.set_save_handler)
         self.StartTime.clicked.connect(lambda: self.show_datetime_dialog(self.StartTime))
         self.Deadline.clicked.connect(lambda: self.show_datetime_dialog(self.Deadline))
-        
+
         # Create dropdown menus
-        self.priority_dropdown = self.create_dropdown_menu(self.Priority, ["None", "Low", "Medium", "High"])
-        self.reminder_dropdown = self.create_dropdown_menu(self.Reminder, ["None", "5 minutes before", "15 minutes before", "30 minutes before", "1 hour before"])
+        self.priority_dropdown = self.create_dropdown_menu(self.Priority, ["None", "Low", "Medium", "High"], icon_manager)
+        self.reminder_dropdown = self.create_dropdown_menu(self.Reminder, ["None", "5 minutes before", "15 minutes before", "30 minutes before", "1 hour before"], icon_manager)
 
         # Connect dropdown buttons
         self.Priority.clicked.connect(lambda: self.toggle_dropdown(self.priority_dropdown, self.Priority))
         self.Reminder.clicked.connect(lambda: self.toggle_dropdown(self.reminder_dropdown, self.Reminder))
 
-    def set_save_handler(self, save_handler):
-        """Terima refrensi method dari parrent widget"""
-        self.save_handler = save_handler
-        self.AddTask.clicked.disconnect()
-        self.AddTask.clicked.connect(self._handle_save)
-
-    def _handle_save(self):
-        try:
-            if not self.TaskName.text().strip():
-                QMessageBox.warning(self, "Error", "Task name is required")
-                return
-                
-            if not hasattr(self, 'save_handler') or not callable(self.save_handler):
-                QMessageBox.critical(self, "Error", "Save handler is not properly set")
-                return
-
-            # Validasi deadline sebelum menyimpan
-            if not self.validate_deadline():
-                return
-
-            # Get parent dialog
-            parent_dialog = self.parent()
-            if parent_dialog and isinstance(parent_dialog, QDialog):
-                # Call the save handler first
-                self.save_handler()
-                # Then accept the dialog
-                parent_dialog.accept()
-            else:
-                QMessageBox.critical(self, "Error", "Invalid dialog parent")
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to save: {str(e)}")
-            # Don't close the dialog if there's an error
-            return
-
-    def create_button(self, name, icon_file, text):
+    def create_button(self, name, icon_file, text, icon_manager):
         """Helper untuk membuat QPushButton dengan ikon dan ukuran yang dinamis."""
         button = QtWidgets.QPushButton(text)
         button.setObjectName(name)
@@ -252,18 +284,11 @@ class AddTaskWidget(QtWidgets.QWidget):
         button.setFixedHeight(28)
         button.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         
-        icon_path = get_image_path(icon_file)
-        if not os.path.exists(icon_path):
-            print(f"Icon not found: {icon_path}")  # Debug
-            icon = QIcon()  # Gunakan ikon kosong jika file tidak ada
-        else:
-            icon = QIcon(icon_path)
-        # Set ikon
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        # Get icon from manager
+        icon = icon_manager.get_icon(icon_file)
         button.setIcon(icon)
+        button.setIconSize(IconManager._icon_size)
         
-        # Set style untuk padding dan alignment
         button.setStyleSheet(f"""
             QPushButton {{
                 padding: 5px 10px;
@@ -280,13 +305,10 @@ class AddTaskWidget(QtWidgets.QWidget):
         return button
 
     def create_action_button(self, name, object_name):
-        """Helper untuk membuat tombol aksi (Add Task & Cancel)."""
         button = QtWidgets.QPushButton(name)
         button.setObjectName(object_name)
         button.setFixedWidth(93)
         button.setFixedHeight(28)
-        
-        # Set style khusus untuk tombol aksi
         button.setStyleSheet(f"""
             QPushButton {{
                 padding: 5px 10px;
@@ -318,82 +340,57 @@ class AddTaskWidget(QtWidgets.QWidget):
                 background-color: #da190b;
             }}
         """)
-        
         return button
 
-    def create_dropdown_menu(self, button, items):
+    def create_dropdown_menu(self, button, items, icon_manager):
         """Helper untuk membuat menu dropdown."""
         menu = QMenu(self)
-        
-        # Khusus untuk dropdown priority
         if button == self.Priority:
-            # Dictionary untuk mengaitkan prioritas dengan ikon
             priority_icons = {
-                "None": get_image_path("Flag_icon.png"),  # Kembali ke ikon default
-                "High": get_image_path("HighPriority_icon.png"),
-                "Medium": get_image_path("MediumPriority_icon.png"),
-                "Low": get_image_path("LowPriority_icon.png")
+                "None": icon_manager.get_icon("Flag_icon.png"),
+                "High": icon_manager.get_icon("HighPriority_icon.png"),
+                "Medium": icon_manager.get_icon("MediumPriority_icon.png"),
+                "Low": icon_manager.get_icon("LowPriority_icon.png")
             }
-            
             for item in items:
                 action = menu.addAction(item)
-                # Set ikon untuk setiap item
-                icon = QtGui.QIcon()
-                icon.addPixmap(QtGui.QPixmap(priority_icons[item]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-                action.setIcon(icon)
+                action.setIcon(priority_icons[item])
                 action.triggered.connect(lambda checked, text=item: self.handle_dropdown_selection(button, text))
         else:
-            # Untuk dropdown lainnya (reminder dan repeated)
             for item in items:
                 action = menu.addAction(item)
                 action.triggered.connect(lambda checked, text=item: self.handle_dropdown_selection(button, text))
-        
         return menu
 
     def toggle_dropdown(self, menu, button):
-        """Toggle visibility of dropdown menu."""
-        # Hide all other dropdowns first
         self.hide_all_dropdowns()
-        
-        # Show the clicked dropdown
         pos = button.mapToGlobal(button.rect().bottomLeft())
         menu.exec_(pos)
 
     def hide_all_dropdowns(self):
-        """Hide all dropdown menus."""
         self.priority_dropdown.hide()
         self.reminder_dropdown.hide()
 
     def handle_dropdown_selection(self, button, text):
         """Handle pemilihan item dari dropdown menu."""
         if button == self.Priority:
-            # Dictionary untuk mengaitkan prioritas dengan ikon
+            icon_manager = IconManager()
             priority_icons = {
-                "None": get_image_path("Flag_icon.png"),  # Kembali ke ikon default
-                "High": get_image_path("HighPriority_icon.png"),
-                "Medium": get_image_path("MediumPriority_icon.png"),
-                "Low": get_image_path("LowPriority_icon.png")
+                "None": icon_manager.get_icon("Flag_icon.png"),
+                "High": icon_manager.get_icon("HighPriority_icon.png"),
+                "Medium": icon_manager.get_icon("MediumPriority_icon.png"),
+                "Low": icon_manager.get_icon("LowPriority_icon.png")
             }
-            
-            # Set teks button
             button.setText(text if text != "None" else "Priority")
-            
-            # Set ikon sesuai prioritas yang dipilih
-            icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap(priority_icons[text]), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-            button.setIcon(icon)
-            button.setIconSize(QtCore.QSize(24, 24))
-            
+            button.setIcon(priority_icons[text])
+            button.setIconSize(IconManager._icon_size)
         elif button == self.Reminder:
             button.setText(text if text != "None" else "Reminder")
 
     def validate_input(self):
-        """Validasi input untuk mengaktifkan/menonaktifkan tombol Add Task."""
         self.AddTask.setEnabled(bool(self.TaskName.text().strip()))
 
-   
     def clear_inputs(self):
-        """Hapus isi input."""
         self.TaskName.clear()
         self.DescTask.clear()
         self.StartTime.setText("Start time")
@@ -404,9 +401,7 @@ class AddTaskWidget(QtWidgets.QWidget):
         self.hide_all_dropdowns()
 
     def cancel_toggle(self):
-        """Toggle visibility of the widget dan clear inputs."""
         self.clear_inputs()
-        # Dapatkan parent dialog dan tutup
         parent_dialog = self.parent()
         if parent_dialog and isinstance(parent_dialog, QDialog):
             parent_dialog.reject()
@@ -414,38 +409,29 @@ class AddTaskWidget(QtWidgets.QWidget):
             self.hide()
 
     def show_datetime_dialog(self, button):
-        """Menampilkan dialog untuk memilih tanggal dan waktu."""
         title = "Select Start Time" if button == self.StartTime else "Select Deadline"
         is_start_time = button == self.StartTime
-        
-        # Dapatkan nilai deadline atau start time yang sudah dipilih
         current_datetime = QDateTime.currentDateTime()
         default_time = f"{current_datetime.date().toString('yyyy-MM-dd')} {current_datetime.time().toString('HH:mm')}"
-        
         dialog = DateTimeDialog(self, title, is_start_time, default_time)
         if dialog.exec_():
             selected_datetime = dialog.get_datetime()
             button.setText(selected_datetime)
-            
-            # Validasi deadline setelah dipilih
             if not is_start_time:
                 if not self.validate_deadline():
                     button.setText("Deadline")
         else:
-            # Jika dialog dibatalkan, kembalikan ke teks default
             if is_start_time:
                 button.setText("Start time")
             else:
                 button.setText("Deadline")
 
     def validate_start_time(self):
-        """Validasi start time terhadap deadline yang sudah dipilih."""
         if self.StartTime.text() != "Start time" and self.Deadline.text() != "Deadline":
             start_date = QDate.fromString(self.StartTime.text().split(" ")[0], "yyyy-MM-dd")
             start_time = QTime.fromString(self.StartTime.text().split(" ")[1], "HH:mm")
             deadline_date = QDate.fromString(self.Deadline.text().split(" ")[0], "yyyy-MM-dd")
             deadline_time = QTime.fromString(self.Deadline.text().split(" ")[1], "HH:mm")
-
             if start_date > deadline_date or (start_date == deadline_date and start_time >= deadline_time):
                 QMessageBox.warning(
                     self,
@@ -455,11 +441,8 @@ class AddTaskWidget(QtWidgets.QWidget):
                 self.StartTime.setText("Start time")
 
     def validate_deadline(self):
-        """Validasi deadline terhadap start time yang sudah dipilih."""
         if self.Deadline.text() in ["Deadline", ""]:
             return True
-        
-        # Jika start time tidak diisi, gunakan waktu saat ini
         if self.StartTime.text() in ["Start time", ""]:
             current_datetime = QDateTime.currentDateTime()
             start_date = current_datetime.date()
@@ -467,10 +450,8 @@ class AddTaskWidget(QtWidgets.QWidget):
         else:
             start_date = QDate.fromString(self.StartTime.text().split(" ")[0], "yyyy-MM-dd")
             start_time = QTime.fromString(self.StartTime.text().split(" ")[1], "HH:mm")
-
         deadline_date = QDate.fromString(self.Deadline.text().split(" ")[0], "yyyy-MM-dd")
         deadline_time = QTime.fromString(self.Deadline.text().split(" ")[1], "HH:mm")
-
         if deadline_date < start_date or (deadline_date == start_date and deadline_time <= start_time):
             QMessageBox.warning(
                 self,
@@ -481,21 +462,30 @@ class AddTaskWidget(QtWidgets.QWidget):
             return False
         return True
 
-    def set_task_data(self, task_data):
-        """Set task data to form fields."""
-        if task_data:
-            self.TaskName.setText(task_data.get("name", ""))
-            self.DescTask.setText(task_data.get("description", ""))
-            self.StartTime.setText(task_data.get("start_time", "Start time"))
-            self.Deadline.setText(task_data.get("deadline", "Deadline"))
-            
-            # Handle priority and reminder with proper defaults
-            priority = task_data.get("priority", "None")
-            reminder = task_data.get("reminder", "None")
-            
-            # Set button text based on values
-            self.Priority.setText(priority if priority != "None" else "Priority")
-            self.Reminder.setText(reminder if reminder != "None" else "Reminder")
-            
-            # Enable Add Task button if name is not empty
-            self.AddTask.setEnabled(bool(task_data.get("name", "").strip()))
+    def set_save_handler(self, save_handler):
+        self.save_handler = save_handler
+        self.AddTask.clicked.disconnect()
+        self.AddTask.clicked.connect(self._handle_save)
+
+    def _handle_save(self):
+        try:
+            if not self.TaskName.text().strip():
+                QMessageBox.warning(self, "Error", "Task name is required")
+                return
+            if not hasattr(self, 'save_handler') or not callable(self.save_handler):
+                QMessageBox.critical(self, "Error", "Save handler is not properly set")
+                return
+            if not self.validate_deadline():
+                return
+            parent_dialog = self.parent()
+            if parent_dialog and isinstance(parent_dialog, QDialog):
+                self.save_handler()
+                parent_dialog.accept()
+            else:
+                QMessageBox.critical(self, "Error", "Invalid dialog parent")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to save: {str(e)}")
+            return
+
+    def _delayed_validate(self):
+        self._validation_timer.start(300)

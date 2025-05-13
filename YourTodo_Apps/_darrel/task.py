@@ -16,6 +16,7 @@ import json
 from _sopian.main_components import TaskItemWidget, LoadingWidget
 from _sopian.path_utils import get_image_path, get_database_path
 from _rizqi.filter import TaskFilter
+from _darrel.create import TodoCreator
 
 
 class TaskManager:
@@ -214,8 +215,6 @@ class TaskManager:
 
     def addTask(self):
         """Open dialog to create a new task."""
-        from create import TodoCreator
-
         TodoCreator.add_task(self.main_app, self.saveNewTask)
 
     def saveNewTask(self, task_data):
