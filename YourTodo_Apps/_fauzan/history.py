@@ -22,7 +22,11 @@ import matplotlib.ticker as ticker
 from datetime import datetime, timedelta
 from matplotlib.backends.backend_pdf import PdfPages
 from _sopian.path_utils import get_database_path
-import re
+import pandas as pd
+from openpyxl import Workbook 
+from openpyxl.utils import get_column_letter
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
 import json
 
 
@@ -139,7 +143,12 @@ class HistoryWidget(QWidget):
 
         self.end_date = QDateEdit(calendarPopup=True)
 
-        self.export_btn = QPushButton("Export PDF")
+        self.export_btn = QPushButton("Export")
+
+        # Update 19 Mei 2025
+        # Export format combo
+        self.export_format_combo = QComboBox()
+        self.export_format_combo.addItems(["PDF", "Excel"])
 
         # Add controls to layout
         controls_layout.addWidget(self.range_combo)
@@ -154,7 +163,9 @@ class HistoryWidget(QWidget):
         controls_layout.addWidget(QLabel("To:"))
         controls_layout.addWidget(self.end_date)
 
+        controls_layout.addWidget(self.export_format_combo)
         controls_layout.addWidget(self.export_btn)
+        
 
         main_layout.addWidget(controls_container)
 
@@ -222,11 +233,14 @@ class HistoryWidget(QWidget):
             QPushButton:hover { background-color: #0096B7; }
         """
         )
+        
+        
+        self.export_format_combo.setStyleSheet(control_style)
 
         # Connect signals
         self.range_combo.currentIndexChanged.connect(self.update_date_range)
         self.view_combo.currentIndexChanged.connect(self.toggle_view)
-        self.export_btn.clicked.connect(self.export_pdf)
+        self.export_btn.clicked.connect(self.handle_export)
         self.status_combo.currentIndexChanged.connect(self.update_display)
         self.start_date.dateChanged.connect(self.update_display)
         self.end_date.dateChanged.connect(self.update_display)
@@ -436,6 +450,15 @@ class HistoryWidget(QWidget):
             # Add a separator item after each task
             self.history_list.addItem("")
 
+    # Update 19 Mei 2025
+    # makeing option for export
+    def handle_export(self):
+        format = self.export_format_combo.currentText()
+        if format == "PDF":
+            self.export_pdf()
+        else:
+            self.export_excel()
+
     def export_pdf(self):
         options = QFileDialog.Options()
         filename, _ = QFileDialog.getSaveFileName(
@@ -452,3 +475,103 @@ class HistoryWidget(QWidget):
                 QMessageBox.information(self, "Success", "PDF exported successfully!")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Export failed: {str(e)}")
+
+    # update 19 Mei 2025
+    # Export to Excel
+    def export_excel(self):
+        try:
+            # Get date range and filter
+            start = self.start_date.date().toPyDate()
+            end = self.end_date.date().toPyDate()
+            status_filter = "all"
+            match self.status_combo.currentText():
+                case "Done":
+                    status_filter = "done"
+                case "Failed":
+                    status_filter = "failed"
+
+            # Retrieve data
+            _, _, entries = HistoryManager.load_history(
+                self.username, start, end, status_filter
+            )
+            if not entries:
+                QMessageBox.warning(self, "No Data", "No data to export.")
+                return
+
+            # Create DataFrame
+            df = pd.DataFrame(entries)
+            df["Status Type"] = df["status"].apply(
+                lambda x: "Failed" if "failed" in x.lower() else "Done"
+            )
+
+            # File dialog
+            options = QFileDialog.Options()
+            filename, _ = QFileDialog.getSaveFileName(
+                self, "Save Excel File", "", "Excel Files (*.xlsx)", options=options
+            )
+            if not filename:
+                return
+
+            if not filename.endswith(".xlsx"):
+                filename += ".xlsx"
+
+            # Save to Excel
+            df.to_excel(filename, index=False, engine="openpyxl")
+            wb = load_workbook(filename)
+            ws = wb.active
+
+            # Set widths for specific columns (example mapping)
+            column_widths = {
+                "task": 30,        # Wider for task names
+                "description": 40, # Extra wide for descriptions
+                "start_time": 17,  # Fixed width for start time
+                "deadline": 17,   # Fixed width for deadline
+                "status": 30,      # Fixed width for status
+                "priority": 10     # Narrow for priority
+            }
+
+            # Apply widths to columns
+            for idx, column_name in enumerate(df.columns, 1):
+                column_letter = get_column_letter(idx)
+                if column_name.lower() in column_widths:
+                    ws.column_dimensions[column_letter].width = column_widths[column_name.lower()]
+                else:
+                    ws.column_dimensions[column_letter].width = 12  # Default width
+
+            # Define colors
+            header_fill = PatternFill(
+                start_color="4F81BD", end_color="4F81BD", fill_type="solid"  # Blue
+            )
+            done_fill = PatternFill(
+                start_color="A8D08D", end_color="A8D08D", fill_type="solid"  # Green
+            )
+            failed_fill = PatternFill(
+                start_color="FF0000", end_color="FF0000", fill_type="solid"  # Red
+            )
+
+            # Color headers
+            for cell in ws[1]:  # First row is headers
+                cell.fill = header_fill
+
+            # Find "Status Type" column index
+            status_col_idx = df.columns.get_loc("Status Type") + 1  # +1 for Excel's 1-based index
+
+            # Color rows based on status
+            for row_idx, row in enumerate(ws.iter_rows(min_row=2), start=2):  # Start from row 2
+                status_cell = ws.cell(row=row_idx, column=status_col_idx)
+                fill = failed_fill if status_cell.value == "Failed" else done_fill
+
+                for cell in row:
+                    cell.fill = fill
+
+            wb.save(filename)
+            QMessageBox.information(self, "Success", "Excel file exported successfully!")
+
+        except ImportError:
+            QMessageBox.critical(
+                self,
+                "Error",
+                "Required libraries (pandas/openpyxl) not installed.",
+            )
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Export failed: {str(e)}")
