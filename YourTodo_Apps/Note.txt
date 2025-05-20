@@ -9,3 +9,8 @@
 
 > [notif] penyesuaian kemunculan notif bekum sempurna
 > [notif] penyimpanan reminder di json blom efekti
+
+-- Update Feature--
+> [19 Mei 2025] - Menambah Format export baru yaitu export to excel
+                - Memperbaiki button export supaya ada selection baru
+                - Belum ditemukan bug pada history
