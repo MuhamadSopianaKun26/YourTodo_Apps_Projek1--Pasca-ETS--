@@ -18,3 +18,8 @@
     - memperbaiki bug pada schedule task yang tidak tertambahkan secara otomatis
     - memperbaiki susunan penyimpanan di dalam json schedule
     - memperbaiki kecepatan debug Add_Task UI nya (lemot karena create button otomatis)
+    
+-- Update Feature--
+> [19 Mei 2025] - Menambah Format export baru yaitu export to excel
+                - Memperbaiki button export supaya ada selection baru
+                - Belum ditemukan bug pada history
