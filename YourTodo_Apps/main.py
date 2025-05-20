@@ -185,6 +185,7 @@ class ToDoApp(QWidget):
                 self.notification_widget.loadNotifications()
             elif section == "schedule":
                 # Refresh schedule page when schedule button is clicked
+                self.schedule_widget.checkAndAddScheduledTasks()
                 self.schedule_widget.refreshSchedule()
             elif section == "tasks":
                 # Check and add scheduled tasks when switching to tasks page

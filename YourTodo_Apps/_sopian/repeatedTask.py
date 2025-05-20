@@ -345,12 +345,33 @@ class RepeatedTaskManager:
             except (FileNotFoundError, json.JSONDecodeError):
                 data = {"tasks": []}
 
-            # Tambahkan tugas baru
-            data["tasks"].append(task)
+            # Cek apakah task sudah ada
+            task_exists = False
+            for existing_task in data["tasks"]:
+                # Untuk task terjadwal, cek berdasarkan nama, username, dan tanggal
+                if task.get("schedule", "None").lower() != "none":
+                    if (
+                        existing_task["name"] == task["name"]
+                        and existing_task["username"] == task["username"]
+                        and existing_task["start_time"].startswith(task["start_time"].split()[0])
+                    ):
+                        task_exists = True
+                        break
+                # Untuk task biasa, cek berdasarkan nama dan username saja
+                else:
+                    if (
+                        existing_task["name"] == task["name"]
+                        and existing_task["username"] == task["username"]
+                    ):
+                        task_exists = True
+                        break
 
-            # Simpan tugas yang diperbarui
-            with open(tasks_file, "w", encoding="utf-8") as file:
-                json.dump(data, file, indent=2)
+            # Tambahkan tugas baru jika belum ada
+            if not task_exists:
+                data["tasks"].append(task)
+                with open(tasks_file, "w", encoding="utf-8") as file:
+                    json.dump(data, file, indent=2)
+                print(f"Successfully added task: {task['name']} to tasks.json")
 
         except Exception as e:
             print(f"Error adding task to file: {e}")
@@ -358,109 +379,151 @@ class RepeatedTaskManager:
     @staticmethod
     def checkAndAddScheduledTasks(parent):
         """Memeriksa dan menambahkan tugas berdasarkan jadwal."""
-        tasks_file = get_database_path("tasks.json")
-        schedule_file = get_database_path("scheduled_tasks.json")
-
-        if (
-            not parent.main_app
-            or not hasattr(parent.main_app, "current_user")
-            or not parent.main_app.current_user
-        ):
+        if not parent.main_app or not hasattr(parent.main_app, 'current_user') or not parent.main_app.current_user:
             return
-
+            
         current_date = datetime.now()
         current_day = current_date.day
-        current_weekday = current_date.weekday()  # 0 = Monday, 6 = Sunday
-
+        current_weekday = current_date.weekday()  # 0 = Senin, 6 = Minggu
+        today_str = current_date.strftime("%Y-%m-%d")
+        
         try:
-            # Baca tugas yang dijadwalkan
-            with open(schedule_file, "r", encoding="utf-8") as file:
-                data = json.load(file)
-                scheduled_tasks = data.get("scheduled_tasks", [])
+            # Baca task terjadwal dari JSON
+            schedule_file = get_database_path("scheduled_tasks.json")
+            try:
+                with open(schedule_file, "r", encoding="utf-8") as file:
+                    data = json.load(file)
+                    scheduled_tasks = data.get("scheduled_tasks", [])
+            except (FileNotFoundError, json.JSONDecodeError):
+                scheduled_tasks = []
 
-            # Proses setiap tugas yang dijadwalkan
+            # Baca tasks.json untuk cek duplikasi
+            tasks_file = get_database_path("tasks.json")
+            try:
+                with open(tasks_file, "r", encoding="utf-8") as file:
+                    tasks_data = json.load(file)
+                    existing_tasks = tasks_data.get("tasks", [])
+            except (FileNotFoundError, json.JSONDecodeError):
+                existing_tasks = []
+
+            tasks_updated = False
             for task in scheduled_tasks:
                 if task["username"] != parent.main_app.current_user:
                     continue
 
-                schedule = task.get("schedule", "").lower()
-                if not schedule or schedule == "none":
+                # Periksa apakah task perlu ditambahkan berdasarkan jadwal
+                should_add = False
+                
+                try:
+                    schedule_type = task["schedule"].split("_")[0]
+                    
+                    # Untuk daily task
+                    if schedule_type == "daily":
+                        # Cek apakah task sudah ada di tasks.json untuk hari ini
+                        task_exists = False
+                        for existing_task in existing_tasks:
+                            if (
+                                existing_task["name"] == task["name"]
+                                and existing_task["username"] == task["username"]
+                                and existing_task["schedule"] == task["schedule"]
+                                and existing_task["start_time"].startswith(today_str)
+                            ):
+                                task_exists = True
+                                break
+                        
+                        # Jika task belum ada di tasks.json untuk hari ini
+                        if not task_exists:
+                            # Cek last_run_date
+                            last_run = task.get("last_run_date")
+                            if last_run:
+                                last_run_date = datetime.strptime(last_run, "%Y-%m-%d")
+                                # Jika last_run_date lebih kecil dari current_date, tambahkan task
+                                if last_run_date.date() < current_date.date():
+                                    should_add = True
+                                    
+                            else:
+                                # Jika belum ada last_run_date, tambahkan task
+                                should_add = True
+                                                            
+                    elif schedule_type == "weekly":
+                        # Task mingguan ditambahkan setiap hari yang sama dalam minggu
+                        selected_day = task["schedule"].split("_")[1]
+                        days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+                        if days[current_weekday] == selected_day:
+                            should_add = True
+                            
+                    elif schedule_type == "monthly":
+                        # Task bulanan ditambahkan setiap tanggal yang sama dalam bulan
+                        selected_date = int(task["schedule"].split("_")[1])
+                        if current_day == selected_date:
+                            should_add = True
+                            
+                except (ValueError, TypeError) as e:
+                    print(f"Error parsing schedule: {e}")
                     continue
-
-                last_run = datetime.strptime(task["last_run_date"], "%Y-%m-%d").date()
-                current = current_date.date()
-
-                should_run = False
-                if schedule == "daily" and last_run < current:
-                    should_run = True
-                elif schedule == "weekly" and (current - last_run).days >= 7:
-                    should_run = True
-                elif (
-                    schedule == "monthly"
-                    and current_day == 1
-                    and last_run.month < current.month
-                ):
-                    should_run = True
-
-                if should_run:
-                    # Buat instance tugas baru
-                    new_task = task.copy()
-                    new_task["start_time"] = current_date.strftime("%Y-%m-%d %H:%M")
-                    new_task["status"] = "due"
-
-                    # Tambahkan ke tasks.json
-                    try:
-                        with open(tasks_file, "r", encoding="utf-8") as file:
-                            tasks_data = json.load(file)
-                    except (FileNotFoundError, json.JSONDecodeError):
-                        tasks_data = {"tasks": []}
-
-                    tasks_data["tasks"].append(new_task)
-
-                    with open(tasks_file, "w", encoding="utf-8") as file:
-                        json.dump(tasks_data, file, indent=2)
-
-                    # Update tanggal terakhir dijalankan
-                    task["last_run_date"] = current_date.strftime("%Y-%m-%d")
-
-            # Simpan tugas yang dijadwalkan yang diperbarui
-            with open(schedule_file, "w", encoding="utf-8") as file:
-                json.dump({"scheduled_tasks": scheduled_tasks}, file, indent=2)
-
-            # Perbarui tampilan
-            parent.loadScheduledTasks()
-
+                
+                # Jika task perlu ditambahkan
+                if should_add:
+                    # Buat task baru dengan tanggal hari ini
+                    new_task = RepeatedTaskManager._createNewScheduledTask(task, current_date)
+                    if new_task:
+                        RepeatedTaskManager._addTaskToFile(new_task)
+                        task["last_run_date"] = today_str
+                        tasks_updated = True
+            
+            # Simpan perubahan ke file jika ada yang diupdate
+            if tasks_updated:
+                with open(schedule_file, "w", encoding="utf-8") as file:
+                    json.dump({"scheduled_tasks": scheduled_tasks}, file, indent=2)
+                
+                # Refresh tampilan
+                parent.refreshSchedule()
+        
         except Exception as e:
             print(f"Error checking scheduled tasks: {e}")
 
     @staticmethod
-    def _updateTaskStatusInFile(task_dict):
-        """Memperbarui status tugas dalam file tasks.json."""
-        tasks_file = get_database_path("tasks.json")
+    def _createNewScheduledTask(original_task, current_date):
+        """Buat task baru berdasarkan task asli dengan tanggal saat ini."""
         try:
-            # Baca semua tugas
-            with open(tasks_file, "r", encoding="utf-8") as file:
-                data = json.load(file)
-                for task in data.get("tasks", []):
-                    if (
-                        task["name"] == task_dict["name"]
-                        and task["description"] == task_dict["description"]
-                        and task["start_time"] == task_dict["start_time"]
-                        and task["deadline"] == task_dict["deadline"]
-                        and task["priority"] == task_dict["priority"]
-                        and task["reminder"] == task_dict["reminder"]
-                        and task["schedule"] == task_dict["schedule"]
-                        and task["username"] == task_dict["username"]
-                    ):
-                        # Update the status
-                        task["status"] = task_dict["status"]
-
-            # Save updated tasks
-            with open(tasks_file, "w", encoding="utf-8") as file:
-                json.dump(data, file, indent=2)
-
-        except Exception as e:
-            print(f"Error updating task status in file: {e}")
+            # Parse waktu asli
+            original_start = datetime.strptime(original_task["start_time"], "%Y-%m-%d %H:%M")
+            original_deadline = datetime.strptime(original_task["deadline"], "%Y-%m-%d %H:%M")
+            
+            # Hitung selisih waktu antara start dan deadline
+            time_diff = original_deadline - original_start
+            
+            # Buat waktu start baru dengan tanggal hari ini
+            new_start = datetime(
+                current_date.year, 
+                current_date.month, 
+                current_date.day,
+                original_start.hour,
+                original_start.minute
+            )
+            
+            # Buat deadline baru dengan menambahkan selisih waktu
+            new_deadline = new_start + time_diff
+            
+            # Buat task baru
+            new_task = {
+                "name": original_task["name"],
+                "description": original_task["description"],
+                "start_time": new_start.strftime("%Y-%m-%d %H:%M"),
+                "deadline": new_deadline.strftime("%Y-%m-%d %H:%M"),
+                "priority": original_task["priority"],
+                "reminder": original_task.get("reminder", "None"),
+                "status": "due",  # Status baru selalu "due"
+                "schedule": original_task["schedule"],  # Preserve the original schedule type
+                "username": original_task["username"],
+                "last_run_date": current_date.strftime("%Y-%m-%d")  # Tambahkan last_run_date
+            }
+            
+            return new_task
+            
+        except (ValueError, TypeError) as e:
+            print(f"Error creating new scheduled task: {e}")
+            return None
 
 class AddRepeatedTaskDialog(QDialog):
     """Dialog untuk add schedule task"""
@@ -761,6 +824,7 @@ class AddRepeatedTaskDialog(QDialog):
                         "status": "due",
                         "schedule": task_data["schedule"],
                         "username": parent.main_app.current_user,
+                        "last_run_date": start_datetime.strftime("%Y-%m-%d")
                     }
 
                     # Validate all required fields
@@ -788,8 +852,6 @@ class AddRepeatedTaskDialog(QDialog):
                     except (FileNotFoundError, json.JSONDecodeError):
                         scheduled_tasks = []
 
-                    task["is_active"] = True
-                    task["last_run_date"] = task["start_time"].split()[0]
                     scheduled_tasks.append(task)
 
                     with open(schedule_file, "w", encoding="utf-8") as file:

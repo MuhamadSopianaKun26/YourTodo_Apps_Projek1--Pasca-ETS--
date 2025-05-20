@@ -48,11 +48,6 @@ class ScheduleWidget(QWidget):
         # Panggil highlightDatesWithTasks setelah inisialisasi
         self.highlightDatesWithTasks()
 
-        # Set up timer untuk memeriksa dan menambahkan task terjadwal
-        self.schedule_timer = QTimer(self)
-        self.schedule_timer.timeout.connect(self.checkAndAddScheduledTasks)
-        self.schedule_timer.start(15000)  # Periksa setiap 15 detik
-
     def initUI(self):
         """Inisialisasi komponen UI widget jadwal."""
         layout = QVBoxLayout()
@@ -413,6 +408,7 @@ class ScheduleWidget(QWidget):
         tasks_file = get_database_path("tasks.json")
         schedule_file = get_database_path("scheduled_tasks.json")
 
+        # jika tidak atribut current user tidak ada (menghindari akses tanpa username)
         if (
             not self.main_app
             or not hasattr(self.main_app, "current_user")
@@ -430,9 +426,7 @@ class ScheduleWidget(QWidget):
                         and task.get("schedule", "None").lower() != "none"
                     ):
                         self.scheduled_tasks.append(task)
-                        print(
-                            f"Loaded scheduled task: {task['name']} with schedule {task['schedule']}"
-                        )
+
         except FileNotFoundError:
             with open(tasks_file, "w", encoding="utf-8") as file:
                 json.dump({"tasks": []}, file, indent=2)
@@ -445,15 +439,14 @@ class ScheduleWidget(QWidget):
                 data = json.load(file)
                 for task in data.get("scheduled_tasks", []):
                     if task["username"] == self.main_app.current_user:
+                        # memastikan tidak ada task yang sudah ditambahkan pada task.json dari schedule_task.json
                         if not any(
                             t["name"] == task["name"]
                             and t["start_time"] == task["start_time"]
                             for t in self.scheduled_tasks
                         ):
                             self.scheduled_tasks.append(task)
-                            print(
-                                f"Loaded scheduled task: {task['name']} with schedule {task['schedule']}"
-                            )
+
         except FileNotFoundError:
             with open(schedule_file, "w", encoding="utf-8") as file:
                 json.dump({"scheduled_tasks": []}, file, indent=2)
@@ -549,9 +542,6 @@ class ScheduleWidget(QWidget):
                                 and task_date.year() == current_year
                             ):
                                 dates_with_tasks.add(task_date)
-                                print(
-                                    f"Added date with task: {task_date.toString('yyyy-MM-dd')}"
-                                )
 
                         except (ValueError, TypeError) as e:
                             print(f"Error processing task: {e}")
@@ -621,9 +611,6 @@ class ScheduleWidget(QWidget):
                             except Exception as e:
                                 print(f"Error checking deadline: {e}")
 
-                        print(
-                            f"Found task: {task_dict['name']} with start time: {task_dict['start_time']}"
-                        )
 
                         # Periksa apakah tugas terkait dengan tanggal yang dipilih
                         start_time = task_dict["start_time"]
@@ -640,13 +627,9 @@ class ScheduleWidget(QWidget):
                                 start_datetime.day,
                             )
 
-                            print(
-                                f"Task date: {task_date.toString('yyyy-MM-dd')}, Selected date: {date.toString('yyyy-MM-dd')}"
-                            )
 
                             # Tampilkan tugas jika sesuai dengan tanggal yang dipilih
                             if task_date == date:
-                                print(f"Menambahkan tugas ke daftar: {task_dict['name']}")
                                 # Buat item tugas
                                 item = QListWidgetItem()
 

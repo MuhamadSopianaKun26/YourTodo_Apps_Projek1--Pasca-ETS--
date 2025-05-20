@@ -1,17 +1,6 @@
 {
   "tasks": [
     {
-      "name": "Makan mie ayam",
-      "description": "",
-      "start_time": "2025-05-07 08:36",
-      "deadline": "",
-      "priority": "None",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "None",
-      "username": "MuhamadSopiana1"
-    },
-    {
       "name": "beribadah",
       "description": "",
       "start_time": "2025-05-13 00:21",
@@ -23,37 +12,40 @@
       "username": "MuhamadSopiana"
     },
     {
-      "name": "Makan mie ayam",
+      "name": "Daily",
       "description": "",
-      "start_time": "2025-05-13 18:05",
-      "deadline": "",
-      "priority": "None",
+      "start_time": "2025-05-21 17:30",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
       "reminder": "None",
       "status": "due",
-      "schedule": "None",
-      "username": "Argi"
+      "schedule": "daily",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-05-21"
     },
     {
-      "name": "makan bomn",
+      "name": "weekly wednesday",
       "description": "",
-      "start_time": "2025-05-13 18:05",
-      "deadline": "",
-      "priority": "None",
+      "start_time": "2025-05-21 19:29",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
       "reminder": "None",
       "status": "due",
-      "schedule": "None",
-      "username": "Argi"
+      "schedule": "weekly_wednesday",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-05-21"
     },
     {
-      "name": "22",
+      "name": "task weekly wednesday",
       "description": "",
-      "start_time": "2025-05-22 18:06",
-      "deadline": "",
-      "priority": "None",
+      "start_time": "2025-05-21 19:40",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
       "reminder": "None",
       "status": "due",
-      "schedule": "None",
-      "username": "Argi"
+      "schedule": "weekly_wednesday",
+      "username": "sopiansah",
+      "last_run_date": "2025-05-21"
     }
   ]
 }

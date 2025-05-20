@@ -240,7 +240,6 @@ class TaskManager:
                         scheduled_tasks = []
 
                     # Add new scheduled task
-                    task_data["is_active"] = True
                     task_data["last_run_date"] = task_data["start_time"].split()[0]
                     scheduled_tasks.append(task_data)
 

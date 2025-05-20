@@ -21,9 +21,6 @@ import os
 import time
 from _sopian.path_utils import get_image_path, get_database_path
 
-def log_time(message):
-    """Helper function untuk logging waktu"""
-    print(f"[{time.strftime('%H:%M:%S')}] {message}")
 
 class IconManager:
     """Class untuk mengelola dan preload semua ikon"""
@@ -67,7 +64,6 @@ class IconManager:
                 else:
                     cls._icons[icon_file] = QIcon()
             end_time = time.time()
-            log_time(f"Preloaded {len(cls._required_icons)} icons in {end_time - start_time:.3f} seconds")
 
     @classmethod
     def get_icon(cls, icon_file):
@@ -173,7 +169,6 @@ class AddTaskWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         start_time = time.time()
         super().__init__(parent)
-        log_time("Starting AddTaskWidget initialization")
         
         self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
         self.setObjectName("AddTodo")
@@ -184,7 +179,6 @@ class AddTaskWidget(QtWidgets.QWidget):
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(10)
-        log_time("Main layout setup completed")
 
         # Task Name Input
         self.TaskName = QtWidgets.QLineEdit()
@@ -192,7 +186,6 @@ class AddTaskWidget(QtWidgets.QWidget):
         self.TaskName.setPlaceholderText("Task Name")
         self.TaskName.textChanged.connect(self._delayed_validate)
         main_layout.addWidget(self.TaskName)
-        log_time("Task name input setup completed")
 
         # Task Description Input
         self.DescTask = QtWidgets.QTextEdit()
@@ -202,11 +195,9 @@ class AddTaskWidget(QtWidgets.QWidget):
         self.DescTask.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.DescTask.setLineWrapMode(QtWidgets.QTextEdit.WidgetWidth)
         main_layout.addWidget(self.DescTask)
-        log_time("Task description setup completed")
 
         # Setup buttons
         self._setup_buttons(main_layout)
-        log_time("Buttons setup completed")
 
         # Setup validation timer
         self._validation_timer = QtCore.QTimer()
@@ -214,7 +205,6 @@ class AddTaskWidget(QtWidgets.QWidget):
         self._validation_timer.timeout.connect(self.validate_input)
         
         end_time = time.time()
-        log_time(f"AddTaskWidget initialization completed in {end_time - start_time:.3f} seconds")
 
     def _setup_buttons(self, main_layout):
         """Setup all buttons and their containers"""

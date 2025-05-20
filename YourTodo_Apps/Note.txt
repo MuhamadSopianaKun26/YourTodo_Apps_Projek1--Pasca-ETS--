@@ -1,11 +1,20 @@
 -- Bug ditemukan -- 
 
-> [Hisotry] history.txt masih terbentuk, belum bisa membaca dan menampilkan data pada database history
 > [Task] saat input tanggal tertentu (misal 02-04-2025) oke, lalu menekan kembali tanggal dan menkan cancel, input jadi tereset, harusnya tidak
 > [repeated] schedule task belum otomatis ditambahkan kedalam task
 
+{20 05 2025}
+> [schedule task] saat menambahkan weekly atau monthly, misal task yang sudah ada dihapus, task malah ditambahkan kembali
+  kedalam tasks.json. seharuanys tidak
 
 -- Perlu pengembangan --
 
 > [notif] penyesuaian kemunculan notif bekum sempurna
 > [notif] penyimpanan reminder di json blom efekti
+
+
+-- Progress --
+> [sopian] {20 5 2025} :
+    - memperbaiki bug pada schedule task yang tidak tertambahkan secara otomatis
+    - memperbaiki susunan penyimpanan di dalam json schedule
+    - memperbaiki kecepatan debug Add_Task UI nya (lemot karena create button otomatis)
