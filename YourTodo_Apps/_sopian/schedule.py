@@ -413,6 +413,7 @@ class ScheduleWidget(QWidget):
         tasks_file = get_database_path("tasks.json")
         schedule_file = get_database_path("scheduled_tasks.json")
 
+        # jika tidak atribut current user tidak ada (menghindari akses tanpa username)
         if (
             not self.main_app
             or not hasattr(self.main_app, "current_user")
@@ -430,9 +431,7 @@ class ScheduleWidget(QWidget):
                         and task.get("schedule", "None").lower() != "none"
                     ):
                         self.scheduled_tasks.append(task)
-                        print(
-                            f"Loaded scheduled task: {task['name']} with schedule {task['schedule']}"
-                        )
+
         except FileNotFoundError:
             with open(tasks_file, "w", encoding="utf-8") as file:
                 json.dump({"tasks": []}, file, indent=2)
@@ -445,15 +444,14 @@ class ScheduleWidget(QWidget):
                 data = json.load(file)
                 for task in data.get("scheduled_tasks", []):
                     if task["username"] == self.main_app.current_user:
+                        # memastikan tidak ada task yang sudah ditambahkan pada task.json dari schedule_task.json
                         if not any(
                             t["name"] == task["name"]
                             and t["start_time"] == task["start_time"]
                             for t in self.scheduled_tasks
                         ):
                             self.scheduled_tasks.append(task)
-                            print(
-                                f"Loaded scheduled task: {task['name']} with schedule {task['schedule']}"
-                            )
+
         except FileNotFoundError:
             with open(schedule_file, "w", encoding="utf-8") as file:
                 json.dump({"scheduled_tasks": []}, file, indent=2)

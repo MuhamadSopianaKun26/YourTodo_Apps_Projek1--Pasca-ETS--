@@ -433,35 +433,6 @@ class RepeatedTaskManager:
         except Exception as e:
             print(f"Error checking scheduled tasks: {e}")
 
-    @staticmethod
-    def _updateTaskStatusInFile(task_dict):
-        """Memperbarui status tugas dalam file tasks.json."""
-        tasks_file = get_database_path("tasks.json")
-        try:
-            # Baca semua tugas
-            with open(tasks_file, "r", encoding="utf-8") as file:
-                data = json.load(file)
-                for task in data.get("tasks", []):
-                    if (
-                        task["name"] == task_dict["name"]
-                        and task["description"] == task_dict["description"]
-                        and task["start_time"] == task_dict["start_time"]
-                        and task["deadline"] == task_dict["deadline"]
-                        and task["priority"] == task_dict["priority"]
-                        and task["reminder"] == task_dict["reminder"]
-                        and task["schedule"] == task_dict["schedule"]
-                        and task["username"] == task_dict["username"]
-                    ):
-                        # Update the status
-                        task["status"] = task_dict["status"]
-
-            # Save updated tasks
-            with open(tasks_file, "w", encoding="utf-8") as file:
-                json.dump(data, file, indent=2)
-
-        except Exception as e:
-            print(f"Error updating task status in file: {e}")
-
 class AddRepeatedTaskDialog(QDialog):
     """Dialog untuk add schedule task"""
 

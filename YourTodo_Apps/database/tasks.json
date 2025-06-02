@@ -1,17 +1,6 @@
 {
   "tasks": [
     {
-      "name": "Makan mie ayam",
-      "description": "",
-      "start_time": "2025-05-07 08:36",
-      "deadline": "",
-      "priority": "None",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "None",
-      "username": "MuhamadSopiana1"
-    },
-    {
       "name": "beribadah",
       "description": "",
       "start_time": "2025-05-13 00:21",
@@ -21,39 +10,6 @@
       "status": "due",
       "schedule": "None",
       "username": "MuhamadSopiana"
-    },
-    {
-      "name": "Makan mie ayam",
-      "description": "",
-      "start_time": "2025-05-13 18:05",
-      "deadline": "",
-      "priority": "None",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "None",
-      "username": "Argi"
-    },
-    {
-      "name": "makan bomn",
-      "description": "",
-      "start_time": "2025-05-13 18:05",
-      "deadline": "",
-      "priority": "None",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "None",
-      "username": "Argi"
-    },
-    {
-      "name": "22",
-      "description": "",
-      "start_time": "2025-05-22 18:06",
-      "deadline": "",
-      "priority": "None",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "None",
-      "username": "Argi"
     }
   ]
 }

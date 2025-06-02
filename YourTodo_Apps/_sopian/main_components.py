@@ -20,9 +20,8 @@ from _sopian.path_utils import get_image_path
 
 class HeaderWidget(QWidget):
     """
-    A widget that represents the application header.
-    Contains the application logo, search functionality, notifications,
-    and user management components.
+    Mengatur widget utama, diantaranya header, logo, search, 
+    notifikasi, informasi pengguna, dan tombol logout.
     """
 
     def __init__(self, parent=None):
@@ -32,7 +31,7 @@ class HeaderWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        """Initialize the header UI components and layout."""
+        """Mengatur komponen UI header dan layout."""
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 10, 0)
         layout.setSpacing(0)
@@ -44,7 +43,7 @@ class HeaderWidget(QWidget):
         self.setStyleSheet("QWidget { background-color: white; }")
 
     def _createLogoContainer(self):
-        """Create and return the logo container widget."""
+        """Membuat dan mengembalikan widget container logo."""
         container = QWidget()
         container.setFixedWidth(200)
         container.setFixedHeight(100)
@@ -70,7 +69,7 @@ class HeaderWidget(QWidget):
         return container
 
     def _createMainContainer(self):
-        """Create and return the main container with search, notifications, and user info."""
+        """Membuat dan mengembalikan container utama dengan pencarian, notifikasi, dan informasi pengguna."""
         container = QWidget()
         container.setStyleSheet("background-color: white;")
         layout = QHBoxLayout(container)
@@ -88,7 +87,7 @@ class HeaderWidget(QWidget):
         return container
 
     def _createSearchBar(self):
-        """Create and return the search bar widget."""
+        """Membuat dan mengembalikan widget pencarian."""
         search_bar = QLineEdit()
         search_bar.setPlaceholderText("Search tasks...")
         search_bar.setStyleSheet(
@@ -106,7 +105,7 @@ class HeaderWidget(QWidget):
         return search_bar
 
     def _createNotificationButton(self):
-        """Create and return the notification button widget."""
+        """Membuat dan mengembalikan widget tombol notifikasi."""
         notif_btn = QPushButton()
         notif_btn.setIcon(QIcon(get_image_path("notification.png")))
         notif_btn.setIconSize(QSize(24, 24))
@@ -133,7 +132,7 @@ class HeaderWidget(QWidget):
         return notif_btn
 
     def _createUserContainer(self):
-        """Create and return the user information container with username and logout."""
+        """Membuat dan mengembalikan container informasi pengguna dengan username dan logout."""
         container = QWidget()
         layout = QHBoxLayout(container)
         layout.setSpacing(10)
@@ -173,7 +172,7 @@ class HeaderWidget(QWidget):
         return container
 
     def updateUsername(self):
-        """Update the username display based on the current user."""
+        """Memperbarui tampilan username berdasarkan pengguna saat ini."""
         if self.username_label:
             if self.main_window and hasattr(self.main_window, "current_user"):
                 self.username_label.setText(
@@ -183,7 +182,7 @@ class HeaderWidget(QWidget):
                 self.username_label.setText("Welcome!")
 
     def _handle_logout(self):
-        """Handle the logout button click with confirmation."""
+        """Menangani klik tombol logout dengan konfirmasi."""
         if self.main_window:
             reply = QMessageBox.question(
                 self,
@@ -198,8 +197,8 @@ class HeaderWidget(QWidget):
 
 class SidebarButton(QPushButton):
     """
-    Custom button widget for sidebar navigation.
-    Provides consistent styling and behavior for sidebar buttons.
+    Tombol kustom untuk navigasi sidebar.
+    Menawarkan gaya dan perilaku konsisten untuk tombol sidebar.
     """
 
     def __init__(self, text, icon_path=None, parent=None):
@@ -207,7 +206,7 @@ class SidebarButton(QPushButton):
         self.initUI(icon_path)
 
     def initUI(self, icon_path):
-        """Initialize the button's UI with icon and styling."""
+        """Mengatur UI tombol dengan ikon dan gaya."""
         if icon_path:
             self.setIcon(QIcon(icon_path))
             self.setIconSize(QSize(24, 24))
@@ -245,8 +244,8 @@ class SidebarButton(QPushButton):
 
 class SidebarWidget(QWidget):
     """
-    Widget that provides navigation functionality through a sidebar.
-    Contains buttons for different sections of the application.
+    Widget yang menyediakan fungsionalitas navigasi melalui sidebar.
+    Berisi tombol untuk berbagai bagian aplikasi.
     """
 
     def __init__(self, parent=None):
@@ -254,7 +253,7 @@ class SidebarWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        """Initialize the sidebar UI with navigation buttons."""
+        """Mengatur UI sidebar dengan tombol navigasi."""
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 15, 0, 15)
         layout.setSpacing(8)
@@ -279,8 +278,8 @@ class SidebarWidget(QWidget):
 
 class TaskItemWidget(QFrame):
     """
-    Widget representing a single task item.
-    Displays task information and provides actions for task management.
+    Widget yang mewakili item tugas tunggal.
+    Menampilkan informasi tugas dan menyediakan aksi untuk pengelolaan tugas.
     """
 
     PRIORITY_COLORS = {
@@ -305,7 +304,7 @@ class TaskItemWidget(QFrame):
         self.initUI()
 
     def checkDeadline(self):
-        """Check if task deadline has passed and update status accordingly."""
+        """Memeriksa apakah batas waktu tugas telah melewati dan memperbarui status sesuai."""
         if self.task_data.get("status", "").startswith("due"):
             deadline_str = self.task_data.get("deadline", "")
             if deadline_str:
@@ -324,7 +323,7 @@ class TaskItemWidget(QFrame):
                     print(f"Error checking deadline: {e}")
 
     def _trigger_deadline_passed_notification(self):
-        """Trigger a notification when a deadline has passed."""
+        """Memicu notifikasi ketika batas waktu telah melewati."""
         if self.main_window and hasattr(self.main_window, 'notification_system'):
             task_id = f"{self.task_data['name']}_{self.task_data['start_time']}_{self.task_data['deadline']}"
             self.main_window.notification_system.add_notification(
@@ -335,7 +334,7 @@ class TaskItemWidget(QFrame):
             self.main_window.notification_system.notified_tasks.add(f"{task_id}_failed")
 
     def initUI(self):
-        """Initialize the task item UI components and layout."""
+        """Mengatur UI komponen tugas dan layout."""
         main_layout = QVBoxLayout()
         top_layout = QHBoxLayout()
 
@@ -406,7 +405,7 @@ class TaskItemWidget(QFrame):
         )
 
     def _createKebabMenu(self):
-        """Create and return the kebab menu button with actions."""
+        """Membuat dan mengembalikan tombol kebab menu dengan aksi."""
         kebab_btn = QPushButton()
         kebab_btn.setIcon(QIcon(get_image_path("kebab.png")))
         kebab_btn.setIconSize(QSize(16, 16))
@@ -464,7 +463,7 @@ class TaskItemWidget(QFrame):
         return kebab_btn
 
     def _handleAction(self, action):
-        """Handle menu action selections."""
+        """Menangani pilihan aksi menu."""
         if action == "Update":
             from _darrel.update import TodoUpdater
 
@@ -505,7 +504,7 @@ class TaskItemWidget(QFrame):
             TodoUpdater.move_task_to_history(self, self._notifyParentOfChange)
 
     def _trigger_task_completion_notification(self):
-        """Trigger a notification for task completion."""
+        """Memicu notifikasi untuk tugas selesai."""
         if self.main_window and hasattr(self.main_window, 'notification_system'):
             task_id = f"{self.task_data['name']}_{self.task_data['start_time']}_{self.task_data['deadline']}"
             self.main_window.notification_system.add_notification(
@@ -516,7 +515,7 @@ class TaskItemWidget(QFrame):
             self.main_window.notification_system.notified_tasks.add(f"{task_id}_done")
             
     def _trigger_task_failure_notification(self):
-        """Trigger a notification for task failure."""
+        """Memicu notifikasi untuk tugas gagal."""
         if self.main_window and hasattr(self.main_window, 'notification_system'):
             task_id = f"{self.task_data['name']}_{self.task_data['start_time']}_{self.task_data['deadline']}"
             self.main_window.notification_system.add_notification(
@@ -527,7 +526,7 @@ class TaskItemWidget(QFrame):
             self.main_window.notification_system.notified_tasks.add(f"{task_id}_failed")
 
     def _refreshWidget(self):
-        """Refresh the widget's display after task data changes."""
+        """Memperbarui tampilan widget setelah perubahan data tugas."""
         try:
             self.checkDeadline()
 
@@ -599,7 +598,7 @@ class TaskItemWidget(QFrame):
             # Don't propagate the error to prevent crashes
 
     def _notifyParentOfChange(self):
-        """Notify parent widget of task data changes."""
+        """Menginformasikan parent widget tentang perubahan data tugas."""
         try:
             if self.main_window and hasattr(self.main_window, 'task_manager'):
                 self.main_window.task_manager.saveTasks()
@@ -612,7 +611,7 @@ class TaskItemWidget(QFrame):
             # Don't propagate the error to prevent crashes
 
     def _createTaskInfo(self):
-        """Create and return the layout for task name and description."""
+        """Membuat dan mengembalikan layout untuk nama dan deskripsi tugas."""
         info_layout = QVBoxLayout()
 
         self.name_label = QLabel(self.task_data.get("name", ""))
@@ -627,7 +626,7 @@ class TaskItemWidget(QFrame):
         return info_layout
 
     def _createTimesLayout(self):
-        """Create and return the layout for start and deadline times."""
+        """Membuat dan mengembalikan layout untuk waktu mulai dan batas waktu."""
         times_layout = QVBoxLayout()
 
         self.start_label = QLabel(f"StartLine: {self.task_data.get('start_time', '')}")
@@ -639,7 +638,7 @@ class TaskItemWidget(QFrame):
         return times_layout
 
     def _createPriorityButton(self):
-        """Create and return the priority indicator button."""
+        """Membuat dan mengembalikan tombol indikator prioritas."""
         priority = self.task_data.get("priority", "None")
         self.priority_btn = QPushButton(priority)
         self.priority_btn.setFixedWidth(80)
@@ -659,7 +658,7 @@ class TaskItemWidget(QFrame):
         return self.priority_btn
 
     def _createStatusButton(self):
-        """Create and return the status indicator button."""
+        """Membuat dan mengembalikan tombol indikator status."""
         status = self.task_data.get("status", "due")
         if "done" in status.lower():
             display_text = "done"
@@ -692,8 +691,8 @@ class TaskItemWidget(QFrame):
 
 class LoadingWidget(QWidget):
     """
-    Widget that displays a loading animation and message
-    while tasks are being refreshed.
+    Widget yang menampilkan animasi loading dan pesan
+    sampai tugas selesai diperbarui.
     """
 
     def __init__(self, parent=None):
@@ -701,7 +700,7 @@ class LoadingWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        """Initialize the loading widget UI components."""
+        """Mengatur UI komponen widget loading."""
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
 
@@ -727,11 +726,11 @@ class LoadingWidget(QWidget):
         self.setLayout(layout)
 
     def showEvent(self, event):
-        """Start the animation when widget becomes visible."""
+        """Memulai animasi saat widget menjadi terlihat."""
         self.movie.start()
         super().showEvent(event)
 
     def hideEvent(self, event):
-        """Stop the animation when widget becomes hidden."""
+        """Menghentikan animasi saat widget menjadi tersembunyi."""
         self.movie.stop()
         super().hideEvent(event)
