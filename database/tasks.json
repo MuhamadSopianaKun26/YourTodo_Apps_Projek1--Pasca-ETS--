@@ -1,0 +1,212 @@
+{
+  "tasks": [
+    {
+      "name": "beribadah",
+      "description": "",
+      "start_time": "2025-05-13 00:21",
+      "deadline": "",
+      "priority": "None",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "MuhamadSopiana"
+    },
+    {
+      "name": "task weekly wednesday",
+      "description": "",
+      "start_time": "2025-05-21 19:40",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "sopiansah",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "copywriting",
+      "description": "qerja ahhh",
+      "start_time": "2025-05-20 21:40",
+      "deadline": "",
+      "priority": "None",
+      "reminder": "None",
+      "status": "done - Completed on 2025-05-20",
+      "schedule": "None",
+      "username": "darrellrahan"
+    },
+    {
+      "name": "coding",
+      "description": "",
+      "start_time": "2025-05-20 21:40",
+      "deadline": "",
+      "priority": "Low",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "darrellrahan"
+    },
+    {
+      "name": "turu",
+      "description": "",
+      "start_time": "2025-05-20 21:40",
+      "deadline": "",
+      "priority": "Medium",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "darrellrahan"
+    },
+    {
+      "name": "bangun pagi",
+      "description": "",
+      "start_time": "2025-05-20 21:40",
+      "deadline": "",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "darrellrahan"
+    },
+    {
+      "name": "gym",
+      "description": "",
+      "start_time": "2025-05-20 21:40",
+      "deadline": "",
+      "priority": "None",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "darrellrahan"
+    },
+    {
+      "name": "cardio",
+      "description": "",
+      "start_time": "2025-05-20 21:41",
+      "deadline": "",
+      "priority": "None",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "darrellrahan"
+    },
+    {
+      "name": "buset",
+      "description": "",
+      "start_time": "2025-05-20 21:41",
+      "deadline": "",
+      "priority": "None",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "darrellrahan"
+    },
+    {
+      "name": "task 1",
+      "description": "",
+      "start_time": "2025-05-21 09:16",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "darrellrahan",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "task 2",
+      "description": "",
+      "start_time": "2025-05-21 09:18",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "darrellrahan",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "task 3",
+      "description": "",
+      "start_time": "2025-05-21 09:19",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "darrellrahan",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "repeated 1",
+      "description": "",
+      "start_time": "2025-05-21 10:10",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "darrellrahan",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "repeated 2",
+      "description": "",
+      "start_time": "2025-05-21 10:09",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "darrellrahan",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "wednesady makan",
+      "description": "",
+      "start_time": "2025-05-21 09:28",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "failed",
+      "schedule": "weekly_wednesday",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "task 3 wednesday",
+      "description": "",
+      "start_time": "2025-05-21 09:29",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "failed",
+      "schedule": "weekly_wednesday",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "Minum air",
+      "description": "",
+      "start_time": "2025-05-21 12:11",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "failed",
+      "schedule": "monthly_21",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "makan mie wedneday",
+      "description": "",
+      "start_time": "2025-06-02 09:27",
+      "deadline": "2025-06-02 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "daily",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-06-02"
+    }
+  ]
+}

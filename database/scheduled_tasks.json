@@ -1,0 +1,112 @@
+{
+  "scheduled_tasks": [
+    {
+      "name": "Task daily",
+      "description": "",
+      "start_time": "2025-05-21 19:39",
+      "deadline": "2025-05-21 23:59",
+      "priority": "Low",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "daily",
+      "username": "sopiansah",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "task weekly wednesday",
+      "description": "",
+      "start_time": "2025-05-21 19:40",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "sopiansah",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "makan mie wedneday",
+      "description": "",
+      "start_time": "2025-05-21 09:27",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "daily",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-06-02"
+    },
+    {
+      "name": "wednesady makan",
+      "description": "",
+      "start_time": "2025-05-21 09:28",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "task 3 wednesday",
+      "description": "",
+      "start_time": "2025-05-21 09:29",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "task 1",
+      "description": "",
+      "start_time": "2025-05-21 10:05",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "daily",
+      "username": "darrellrahan",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "repeated 1",
+      "description": "",
+      "start_time": "2025-05-21 10:10",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "darrellrahan",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "repeated 2",
+      "description": "",
+      "start_time": "2025-05-21 10:09",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_wednesday",
+      "username": "darrellrahan",
+      "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "Minum air",
+      "description": "",
+      "start_time": "2025-05-21 12:11",
+      "deadline": "2025-05-21 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "monthly_21",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-05-21"
+    }
+  ]
+}

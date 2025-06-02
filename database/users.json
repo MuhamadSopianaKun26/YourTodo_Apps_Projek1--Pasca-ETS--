@@ -1,0 +1,29 @@
+{
+  "users": [
+    {
+      "email": "MuhamadSopiana1@gmail.com",
+      "username": "MuhamadSopiana1",
+      "password_hash": "011742669ae734bcbaa4d3b78b79f129d6275cfc2fc42f882f4ee658b5ad013c"
+    },
+    {
+      "email": "MuhamadSopiana@Gmail.com",
+      "username": "MuhamadSopiana",
+      "password_hash": "011742669ae734bcbaa4d3b78b79f129d6275cfc2fc42f882f4ee658b5ad013c"
+    },
+    {
+      "email": "Argi1234@gmail.com",
+      "username": "Argi",
+      "password_hash": "1ad4828bb1700e452c8ca253882cbbd43937d7df1dbadc5314b4e7bb2b14eb4d"
+    },
+    {
+      "email": "sopiansah123@gmail.com",
+      "username": "sopiansah",
+      "password_hash": "3dfe96aa00d555895b851c635dda20ca3638d10f226142126f3ba873f2d0c69d"
+    },
+    {
+      "email": "darrell@gmail.com",
+      "username": "darrellrahan",
+      "password_hash": "62cf9b8d278b556cb8f6248e3005feb5633bd25b45e4bfe61328de1f60c39324"
+    }
+  ]
+}
