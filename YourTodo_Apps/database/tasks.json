@@ -10,6 +10,30 @@
       "status": "due",
       "schedule": "None",
       "username": "MuhamadSopiana"
+    },
+    {
+      "name": "Makan mie ayam",
+      "description": "",
+      "start_time": "2025-06-02 22:12",
+      "deadline": "2025-05-20 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "failed",
+      "schedule": "daily",
+      "username": "MuhamadSopiana1",
+      "is_active": true,
+      "last_run_date": "2025-05-20"
+    },
+    {
+      "name": "minum air",
+      "description": "",
+      "start_time": "2025-06-02 22:12",
+      "deadline": "",
+      "priority": "None",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "None",
+      "username": "MuhamadSopiana1"
     }
   ]
 }
