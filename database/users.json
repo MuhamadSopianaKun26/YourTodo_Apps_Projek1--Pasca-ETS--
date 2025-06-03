@@ -24,6 +24,26 @@
       "email": "darrell@gmail.com",
       "username": "darrellrahan",
       "password_hash": "62cf9b8d278b556cb8f6248e3005feb5633bd25b45e4bfe61328de1f60c39324"
+    },
+    {
+      "email": "Argiansah2@gmail.com",
+      "username": "Argiansah2",
+      "password_hash": "8e0f6481920e59241fcbaa48744e67768197c264ed34cea686090c9f01bef582"
+    },
+    {
+      "email": "raditganteng@gmail.com",
+      "username": "Radit",
+      "password_hash": "658c388476d9481f910639ce6ef101e79bcb999d08b4c4d0a9bf5ab96d0a0681"
+    },
+    {
+      "email": "ivansetiawanihsan@r.com",
+      "username": "ivan2975",
+      "password_hash": "8b3db8aab0615e6271f5dda138d9e553f789289bfcb192c6fc18ec4c72d85b42"
+    },
+    {
+      "email": "Amaliakhoerina25@gmail.com",
+      "username": "Amalia",
+      "password_hash": "925c25c586ec2fd3cfd81b84b643b143c8d20f99fa430acb277c554b35cb80d6"
     }
   ]
 }

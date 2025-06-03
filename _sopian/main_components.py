@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
     QCalendarWidget,
     QListWidgetItem,
 )
-from PyQt5.QtCore import Qt, QSize, QDateTime
+from PyQt5.QtCore import Qt, QSize, QDateTime, QDate
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QMovie
 from _sopian.path_utils import get_image_path
 
@@ -350,7 +350,8 @@ class TaskItemWidget(QFrame):
                     current = QDateTime.currentDateTime()
 
                     if deadline.isValid() and current > deadline:
-                        self.task_data["status"] = "failed"
+                        current_date = QDate.currentDate().toString("yyyy-MM-dd")
+                        self.task_data["status"] = f"failed - Completed on {current_date}"
                         if self.main_window:
                             self.main_window.saveTasks()
 
@@ -515,6 +516,8 @@ class TaskItemWidget(QFrame):
             from _darrel.delete import TodoDeleter
 
             TodoDeleter.delete_task(self, self._notifyParentOfChange)
+
+            
         elif action == "Mark as Done":
             from _darrel.update import TodoUpdater
 
@@ -643,6 +646,7 @@ class TaskItemWidget(QFrame):
         try:
             if self.main_window and hasattr(self.main_window, "task_manager"):
                 self.main_window.task_manager.saveTasks()
+                self.main_window.task_manager.updateTaskCount()
 
                 # Refresh schedule page if it exists
                 if hasattr(self.main_window, "schedule_widget"):

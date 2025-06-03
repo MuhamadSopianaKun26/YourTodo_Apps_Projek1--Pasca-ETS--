@@ -28,6 +28,7 @@ from _rizqi.notification import NotificationWidget, NotificationSystem
 from _sopian.schedule import ScheduleWidget
 from _praditama.welcome_screen import WelcomeScreen
 from _sopian.Add_Task import IconManager
+from _sopian.repeatedTask import RepeatedTaskManager
 
 def log_time(message):
     """Helper function untuk logging waktu"""
@@ -162,9 +163,13 @@ class ToDoApp(QWidget):
                 self.notification_widget.notification_system = self.notification_system
             else:
                 # Update the current user in the notification system
-                self.notification_system.main_app = self
+                self.notification_system.main_app = self 
             
+            # Check and add scheduled tasks after login
+            RepeatedTaskManager.checkAndAddScheduledTasks(self.task_manager)
+            # Load tasks after login
             self.task_manager.loadTasks()
+            
             self.show()
             return True
         return False

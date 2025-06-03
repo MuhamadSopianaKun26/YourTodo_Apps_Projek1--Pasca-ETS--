@@ -93,12 +93,21 @@ class RepeatedTaskManager:
 
         # Sisi kiri - Info tugas
         info_layout = QVBoxLayout()
+        info_layout.setSpacing(5)  # Menambahkan spacing antara name dan description
+        info_layout.setContentsMargins(0, 0, 0, 5) # Menambahkan sedikit margin bawah pada layout info
+        
         name_label = QLabel(task_dict["name"])
         name_label.setFont(QFont("Arial", 12, QFont.Bold))
-
+        name_label.setWordWrap(True)  # Memastikan text wrap aktif
+        name_label.setMinimumHeight(25)  # Mengurangi minimum height sedikit, agar lebih fleksibel
+        name_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)  # Mengatur alignment ke kiri atas
+        
         desc_label = QLabel(task_dict.get("description", ""))
         desc_label.setStyleSheet("color: #666;")
-
+        desc_label.setWordWrap(True)  # Memastikan description wrap juga
+        desc_label.setContentsMargins(0, 0, 0, 8) # Menambahkan margin bawah pada description label (ditingkatkan)
+        desc_label.setAlignment(Qt.AlignTop | Qt.AlignLeft) # Mengatur alignment ke kiri atas
+        
         info_layout.addWidget(name_label)
         info_layout.addWidget(desc_label)
         top_layout.addLayout(info_layout, stretch=2)
@@ -428,9 +437,6 @@ class RepeatedTaskManager:
                 if task["username"] != parent.main_app.current_user:
                     continue
 
-                # Periksa apakah task perlu ditambahkan berdasarkan jadwal
-                should_add = False
-
                 try:
                     schedule_type = task["schedule"].split("_")[0]
 
@@ -452,19 +458,18 @@ class RepeatedTaskManager:
                         if not task_exists:
                             # Cek last_run_date
                             last_run = task.get("last_run_date")
-                            if last_run:
+                            # status is_added
+                            is_added = task.get("is_added")
+                            if last_run and is_added:
                                 last_run_date = datetime.strptime(last_run, "%Y-%m-%d")
                                 # Jika last_run_date lebih kecil dari current_date, tambahkan task
-                                if last_run_date.date() < current_date.date():
-                                    should_add = True
-
-                            else:
-                                # Jika belum ada last_run_date, tambahkan task
-                                should_add = True
+                                if last_run_date.date() != current_date.date():
+                                    is_added = False
 
                     elif schedule_type == "weekly":
                         # Task mingguan ditambahkan setiap hari yang sama dalam minggu
                         selected_day = task["schedule"].split("_")[1]
+                        last_run = task.get("last_run_date")
                         days = [
                             "monday",
                             "tuesday",
@@ -474,21 +479,33 @@ class RepeatedTaskManager:
                             "saturday",
                             "sunday",
                         ]
-                        if days[current_weekday] == selected_day:
-                            should_add = True
+                        # status is_added
+                        is_added = task.get("is_added")
+                        
+                        if last_run and is_added:
+                            last_run_date = datetime.strptime(last_run, "%Y-%m-%d")
+                            if current_date.date() != last_run_date.date():
+                                if days[current_weekday] == selected_day:
+                                    is_added = False
 
                     elif schedule_type == "monthly":
                         # Task bulanan ditambahkan setiap tanggal yang sama dalam bulan
                         selected_date = int(task["schedule"].split("_")[1])
-                        if current_day == selected_date:
-                            should_add = True
+                        last_run = task.get("last_run_date")
+                        is_added = task.get("is_added")
+                        if last_run and is_added:
+                            last_run_date = datetime.strptime(last_run, "%Y-%m-%d")
+                            # status is_added
+                            if current_date.date() != last_run_date.date() :
+                                if current_day == selected_date:
+                                    is_added = False
 
                 except (ValueError, TypeError) as e:
                     print(f"Error parsing schedule: {e}")
                     continue
 
                 # Jika task perlu ditambahkan
-                if should_add:
+                if not is_added:
                     # Buat task baru dengan tanggal hari ini
                     new_task = RepeatedTaskManager._createNewScheduledTask(
                         task, current_date
@@ -496,6 +513,7 @@ class RepeatedTaskManager:
                     if new_task:
                         RepeatedTaskManager._addTaskToFile(new_task)
                         task["last_run_date"] = today_str
+                        task["is_added"] = True
                         tasks_updated = True
 
             # Simpan perubahan ke file jika ada yang diupdate
@@ -552,6 +570,7 @@ class RepeatedTaskManager:
                 "last_run_date": current_date.strftime(
                     "%Y-%m-%d"
                 ),  # Tambahkan last_run_date
+                "is_added": False,  # Tambahkan flag is_added
             }
 
             return new_task
@@ -659,7 +678,7 @@ class AddRepeatedTaskDialog(QDialog):
             QComboBox:focus {
                 border: 1px solid #00B4D8;
             }
-        """
+            """
         )
         schedule_layout.addWidget(schedule_label)
         schedule_layout.addWidget(self.schedule_combo)
@@ -692,7 +711,7 @@ class AddRepeatedTaskDialog(QDialog):
             QComboBox:focus {
                 border: 1px solid #00B4D8;
             }
-        """
+            """
         )
         weekly_layout.addWidget(weekly_day_label)
         weekly_layout.addWidget(self.weekly_day_combo)
@@ -861,6 +880,7 @@ class AddRepeatedTaskDialog(QDialog):
                         "schedule": task_data["schedule"],
                         "username": parent.main_app.current_user,
                         "last_run_date": start_datetime.strftime("%Y-%m-%d"),
+                        "is_added": False,  # Flag to indicate if task is added
                     }
 
                     # Validate all required fields

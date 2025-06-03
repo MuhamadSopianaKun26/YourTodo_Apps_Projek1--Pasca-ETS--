@@ -1,112 +1,56 @@
 {
   "scheduled_tasks": [
     {
-      "name": "Task daily",
-      "description": "",
-      "start_time": "2025-05-21 19:39",
-      "deadline": "2025-05-21 23:59",
-      "priority": "Low",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "daily",
-      "username": "sopiansah",
-      "last_run_date": "2025-05-21"
-    },
-    {
-      "name": "task weekly wednesday",
-      "description": "",
-      "start_time": "2025-05-21 19:40",
-      "deadline": "2025-05-21 23:59",
-      "priority": "High",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "weekly_wednesday",
-      "username": "sopiansah",
-      "last_run_date": "2025-05-21"
-    },
-    {
-      "name": "makan mie wedneday",
-      "description": "",
-      "start_time": "2025-05-21 09:27",
-      "deadline": "2025-05-21 23:59",
+      "name": "Daily 1",
+      "description": "test daily objek\ntest\ntes\ntes\ntes\n",
+      "start_time": "2025-06-03 18:48",
+      "deadline": "2025-06-03 23:59",
       "priority": "High",
       "reminder": "None",
       "status": "due",
       "schedule": "daily",
       "username": "MuhamadSopiana1",
-      "last_run_date": "2025-06-02"
+      "last_run_date": "2025-06-03",
+      "is_added": true
     },
     {
-      "name": "wednesady makan",
+      "name": "weekly selasa",
       "description": "",
-      "start_time": "2025-05-21 09:28",
-      "deadline": "2025-05-21 23:59",
+      "start_time": "2025-06-03 18:57",
+      "deadline": "2025-06-03 23:59",
       "priority": "High",
       "reminder": "None",
       "status": "due",
-      "schedule": "weekly_wednesday",
+      "schedule": "weekly_tuesday",
       "username": "MuhamadSopiana1",
-      "last_run_date": "2025-05-21"
+      "last_run_date": "2025-06-03",
+      "is_added": true
     },
     {
-      "name": "task 3 wednesday",
+      "name": "weekly selasas 2",
       "description": "",
-      "start_time": "2025-05-21 09:29",
-      "deadline": "2025-05-21 23:59",
+      "start_time": "2025-06-03 19:07",
+      "deadline": "2025-06-03 23:59",
       "priority": "High",
       "reminder": "None",
       "status": "due",
-      "schedule": "weekly_wednesday",
+      "schedule": "weekly_tuesday",
       "username": "MuhamadSopiana1",
-      "last_run_date": "2025-05-21"
+      "last_run_date": "2025-06-03",
+      "is_added": true
     },
     {
-      "name": "task 1",
+      "name": "monthly 3",
       "description": "",
-      "start_time": "2025-05-21 10:05",
-      "deadline": "2025-05-21 23:59",
+      "start_time": "2025-06-03 19:08",
+      "deadline": "2025-06-03 23:59",
       "priority": "High",
       "reminder": "None",
       "status": "due",
-      "schedule": "daily",
-      "username": "darrellrahan",
-      "last_run_date": "2025-05-21"
-    },
-    {
-      "name": "repeated 1",
-      "description": "",
-      "start_time": "2025-05-21 10:10",
-      "deadline": "2025-05-21 23:59",
-      "priority": "High",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "weekly_wednesday",
-      "username": "darrellrahan",
-      "last_run_date": "2025-05-21"
-    },
-    {
-      "name": "repeated 2",
-      "description": "",
-      "start_time": "2025-05-21 10:09",
-      "deadline": "2025-05-21 23:59",
-      "priority": "High",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "weekly_wednesday",
-      "username": "darrellrahan",
-      "last_run_date": "2025-05-21"
-    },
-    {
-      "name": "Minum air",
-      "description": "",
-      "start_time": "2025-05-21 12:11",
-      "deadline": "2025-05-21 23:59",
-      "priority": "High",
-      "reminder": "None",
-      "status": "due",
-      "schedule": "monthly_21",
+      "schedule": "monthly_3",
       "username": "MuhamadSopiana1",
-      "last_run_date": "2025-05-21"
+      "last_run_date": "2025-06-03",
+      "is_added": true
     }
   ]
 }

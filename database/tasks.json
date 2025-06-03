@@ -161,52 +161,77 @@
       "last_run_date": "2025-05-21"
     },
     {
-      "name": "wednesady makan",
+      "name": "test 4",
       "description": "",
-      "start_time": "2025-05-21 09:28",
-      "deadline": "2025-05-21 23:59",
+      "start_time": "2025-06-07 02:34",
+      "deadline": "2025-06-07 23:59",
       "priority": "High",
       "reminder": "None",
       "status": "failed",
-      "schedule": "weekly_wednesday",
-      "username": "MuhamadSopiana1",
-      "last_run_date": "2025-05-21"
+      "schedule": "daily",
+      "username": "Amalia",
+      "last_run_date": "2025-06-07"
     },
     {
-      "name": "task 3 wednesday",
+      "name": "asdD",
       "description": "",
-      "start_time": "2025-05-21 09:29",
-      "deadline": "2025-05-21 23:59",
-      "priority": "High",
+      "start_time": "2025-06-07 02:40",
+      "deadline": "2025-06-07 02:58",
+      "priority": "Low",
       "reminder": "None",
       "status": "failed",
-      "schedule": "weekly_wednesday",
-      "username": "MuhamadSopiana1",
-      "last_run_date": "2025-05-21"
+      "schedule": "None",
+      "username": "Amalia"
     },
     {
-      "name": "Minum air",
-      "description": "",
-      "start_time": "2025-05-21 12:11",
-      "deadline": "2025-05-21 23:59",
-      "priority": "High",
+      "name": "test 3",
+      "description": ".",
+      "start_time": "2025-06-08 02:31",
+      "deadline": "2025-06-08 23:59",
+      "priority": "Medium",
       "reminder": "None",
-      "status": "failed",
-      "schedule": "monthly_21",
-      "username": "MuhamadSopiana1",
-      "last_run_date": "2025-05-21"
+      "status": "due",
+      "schedule": "daily",
+      "username": "Amalia",
+      "last_run_date": "2025-06-08"
     },
     {
-      "name": "makan mie wedneday",
+      "name": "test 4",
       "description": "",
-      "start_time": "2025-06-02 09:27",
-      "deadline": "2025-06-02 23:59",
+      "start_time": "2025-06-08 02:34",
+      "deadline": "2025-06-08 23:59",
       "priority": "High",
       "reminder": "None",
       "status": "due",
       "schedule": "daily",
+      "username": "Amalia",
+      "last_run_date": "2025-06-08"
+    },
+    {
+      "name": "weekly selasas 2",
+      "description": "",
+      "start_time": "2025-06-03 19:07",
+      "deadline": "2025-06-03 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_tuesday",
       "username": "MuhamadSopiana1",
-      "last_run_date": "2025-06-02"
+      "last_run_date": "2025-06-03",
+      "is_added": false
+    },
+    {
+      "name": "monthly 3",
+      "description": "",
+      "start_time": "2025-06-03 19:08",
+      "deadline": "2025-06-03 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "monthly_3",
+      "username": "MuhamadSopiana1",
+      "last_run_date": "2025-06-03",
+      "is_added": false
     }
   ]
 }

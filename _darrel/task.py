@@ -14,6 +14,7 @@ from PyQt5.QtGui import QFont, QIcon
 import json
 
 from _sopian.main_components import TaskItemWidget, LoadingWidget
+from _sopian.repeatedTask import RepeatedTaskManager
 from _sopian.path_utils import get_image_path, get_database_path
 from _rizqi.filter import TaskFilter
 from _darrel.create import TodoCreator
@@ -315,6 +316,8 @@ class TaskManager:
 
     def _performRefresh(self):
         """Perform the actual refresh operation."""
+        # Checking the unAdded scheduled task
+        RepeatedTaskManager.checkAndAddScheduledTasks(self)
         # Load tasks first to ensure we have all tasks
         self.loadTasks()
         # Then save to preserve any changes
