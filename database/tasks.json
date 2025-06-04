@@ -207,6 +207,28 @@
       "schedule": "daily",
       "username": "MuhamadSopiana1",
       "last_run_date": "2025-06-02"
+    },
+    {
+      "name": "Tugas 2",
+      "description": "Tugas 3",
+      "start_time": "2025-06-03 10:01",
+      "deadline": "2025-06-04 10:01",
+      "priority": "Low",
+      "reminder": "1 hour before",
+      "status": "due",
+      "schedule": "None",
+      "username": "dimas"
+    },
+    {
+      "name": "Modul jam 12",
+      "description": "pengen modol",
+      "start_time": "2025-06-03 11:18",
+      "deadline": "2025-06-03 11:20",
+      "priority": "High",
+      "reminder": "5 minutes before",
+      "status": "failed",
+      "schedule": "None",
+      "username": "Dino"
     }
   ]
 }

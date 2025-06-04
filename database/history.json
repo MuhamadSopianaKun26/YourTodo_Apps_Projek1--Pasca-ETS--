@@ -109,6 +109,83 @@
       "status": "failed - Completed on 2025-05-20",
       "schedule": "None",
       "username": "darrellrahan"
+    },
+    {
+      "name": "Tugas Proyek",
+      "description": "Aplikasi",
+      "start_time": "2025-06-03 09:55",
+      "deadline": "2025-06-03 10:05",
+      "priority": "Medium",
+      "reminder": "5 minutes before",
+      "status": "done - Completed on 2025-06-03",
+      "schedule": "None",
+      "username": "dimas"
+    },
+    {
+      "name": "aw",
+      "description": "aw",
+      "start_time": "2025-06-03 06:24",
+      "deadline": "2025-06-03 10:25",
+      "priority": "High",
+      "reminder": "5 minutes before",
+      "status": "done - Completed on 2025-06-03",
+      "schedule": "None",
+      "username": "Dino"
+    },
+    {
+      "name": "aw",
+      "description": "gg",
+      "start_time": "2025-06-03 10:32",
+      "deadline": "2025-06-03 10:33",
+      "priority": "High",
+      "reminder": "1 hour before",
+      "status": "failed",
+      "schedule": "None",
+      "username": "Dino"
+    },
+    {
+      "name": "aw",
+      "description": "aw",
+      "start_time": "2025-06-03 11:04",
+      "deadline": "2025-06-03 11:06",
+      "priority": "High",
+      "reminder": "1 hour before",
+      "status": "failed",
+      "schedule": "None",
+      "username": "Dino"
+    },
+    {
+      "name": "aw",
+      "description": "",
+      "start_time": "2025-06-03 11:07",
+      "deadline": "2025-06-03 11:09",
+      "priority": "High",
+      "reminder": "5 minutes before",
+      "status": "failed",
+      "schedule": "None",
+      "username": "Dino"
+    },
+    {
+      "name": "pulang",
+      "description": "bahsab",
+      "start_time": "2025-06-03 11:30",
+      "deadline": "2025-06-03 13:30",
+      "priority": "High",
+      "reminder": "None",
+      "status": "done - Completed on 2025-06-03",
+      "schedule": "None",
+      "username": "Afriza"
+    },
+    {
+      "name": "haha",
+      "description": "habsha",
+      "start_time": "2025-06-03 11:27",
+      "deadline": "2025-06-03 11:50",
+      "priority": "Low",
+      "reminder": "5 minutes before",
+      "status": "failed - Completed on 2025-06-03",
+      "schedule": "None",
+      "username": "Afriza"
     }
   ]
 }

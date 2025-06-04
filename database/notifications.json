@@ -262,5 +262,149 @@
         "timestamp": "2025-05-21 10:10:10",
         "read": false,
         "username": "darrellrahan"
+    },
+    {
+        "task_id": "Tugas Proyek_2025-06-03 09:55_2025-06-03 10:05",
+        "message": "Task 'Tugas Proyek' deadline is in 5 minutes!",
+        "type": "reminder",
+        "timestamp": "2025-06-03 10:00:06",
+        "read": false,
+        "username": "dimas"
+    },
+    {
+        "task_id": "Tugas Proyek_2025-06-03 09:55_2025-06-03 10:05",
+        "message": "Task 'Tugas Proyek' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-03 10:00:23",
+        "read": false,
+        "username": "dimas"
+    },
+    {
+        "task_id": "Tugas 2_2025-06-03 10:01_2025-06-04 10:01",
+        "message": "Task 'Tugas 2' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-03 10:01:51",
+        "read": false,
+        "username": "dimas"
+    },
+    {
+        "task_id": "aw_2025-06-03 05:21_2025-06-03 10:24",
+        "message": "Task 'aw' deadline is in 1 minutes!",
+        "type": "reminder",
+        "timestamp": "2025-06-03 10:23:03",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "aw_2025-06-03 06:24_2025-06-03 10:25",
+        "message": "Task 'aw' deadline is in 5 minutes!",
+        "type": "reminder",
+        "timestamp": "2025-06-03 10:24:48",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "aw_2025-06-03 06:24_2025-06-03 10:25",
+        "message": "Task 'aw' deadline has arrived!",
+        "type": "deadline",
+        "timestamp": "2025-06-03 10:25:03",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "aw_2025-06-03 06:24_2025-06-03 10:25",
+        "message": "Task 'aw' has failed (deadline passed)!",
+        "type": "failed",
+        "timestamp": "2025-06-03 10:25:03",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "aw_2025-06-03 06:24_2025-06-03 10:25",
+        "message": "Task 'aw' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-03 10:31:26",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "aw_2025-06-03 10:32_2025-06-03 10:33",
+        "message": "Task 'aw' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-03 10:32:48",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "aw_2025-06-03 10:32_2025-06-03 10:33",
+        "message": "Task 'aw' deadline is in 1 minutes!",
+        "type": "reminder",
+        "timestamp": "2025-06-03 10:32:48",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "aw_2025-06-03 10:32_2025-06-03 10:33",
+        "message": "Task 'aw' deadline has arrived!",
+        "type": "deadline",
+        "timestamp": "2025-06-03 10:33:03",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "aw_2025-06-03 10:32_2025-06-03 10:33",
+        "message": "Task 'aw' has failed (deadline passed)!",
+        "type": "failed",
+        "timestamp": "2025-06-03 10:33:03",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "Modul jam 12_2025-06-03 11:18_2025-06-03 11:20",
+        "message": "Task 'Modul jam 12' deadline is in 5 minutes!",
+        "type": "reminder",
+        "timestamp": "2025-06-03 11:19:08",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "Modul jam 12_2025-06-03 11:18_2025-06-03 11:20",
+        "message": "Task 'Modul jam 12' deadline has arrived!",
+        "type": "deadline",
+        "timestamp": "2025-06-03 11:20:08",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "Modul jam 12_2025-06-03 11:18_2025-06-03 11:20",
+        "message": "Task 'Modul jam 12' has failed (deadline passed)!",
+        "type": "failed",
+        "timestamp": "2025-06-03 11:20:08",
+        "read": false,
+        "username": "Dino"
+    },
+    {
+        "task_id": "pulang_2025-06-03 11:30_2025-06-03 13:30",
+        "message": "Task 'pulang' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-03 11:26:53",
+        "read": false,
+        "username": "Afriza"
+    },
+    {
+        "task_id": "haha_2025-06-03 11:27_2025-06-03 11:50",
+        "message": "Task 'haha' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-03 11:27:34",
+        "read": false,
+        "username": "Afriza"
+    },
+    {
+        "task_id": "haha_2025-06-03 11:27_2025-06-03 11:50",
+        "message": "Task 'haha' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-03 11:27:34",
+        "read": false,
+        "username": "Afriza"
     }
 ]

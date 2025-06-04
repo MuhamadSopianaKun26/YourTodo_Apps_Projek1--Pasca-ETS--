@@ -28,6 +28,9 @@ class LoginDialog(QDialog):
         self.setFixedSize(1100, 650)
         self._setup_styles()
         self.initUI()
+        self._last_login_attempt = False
+        self.email.textChanged.connect(self._update_forgotPass_state)
+        self.password.textChanged.connect(self._update_forgotPass_state)
 
     def _setup_styles(self):
         """Configure the styling for the login dialog components."""
@@ -117,6 +120,7 @@ class LoginDialog(QDialog):
         left_layout.addSpacing(10)
         left_layout.addWidget(login_btn)
         left_layout.addWidget(self._create_register_link())
+        left_layout.addWidget(self._create_ForgotPass_link())
         left_layout.addStretch()
         left_layout.addWidget(self._create_logo())
 
@@ -141,6 +145,33 @@ class LoginDialog(QDialog):
         register_layout.setAlignment(Qt.AlignLeft)
         register_container.setLayout(register_layout)
         return register_container
+    
+    def _create_ForgotPass_link(self):
+        """Create and return the Forgot Password link widget."""
+        forgotPass_container = QWidget()
+        forgotPass_layout = QHBoxLayout()
+
+        forgotPass_label = QLabel("Forgot Your Password?")
+        forgotPass_label.setStyleSheet("color: #666;")
+
+        self.forgotPass_btn = QPushButton("Reset Password")
+        self.forgotPass_btn.setObjectName("forgotPassBtn")
+        self.forgotPass_btn.setCursor(Qt.PointingHandCursor)
+        self.forgotPass_btn.clicked.connect(self.ForgotPass)
+        self.forgotPass_btn.setEnabled(False)
+        self.forgotPass_btn.setStyleSheet("""
+            color: #9E9E9E;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            font-size: 18px;
+        """)
+
+        forgotPass_layout.addWidget(forgotPass_label)
+        forgotPass_layout.addWidget(self.forgotPass_btn)
+        forgotPass_layout.setAlignment(Qt.AlignLeft)
+        forgotPass_container.setLayout(forgotPass_layout)
+        return forgotPass_container
 
     def _create_logo(self):
         """Create and return the logo widget."""
@@ -171,6 +202,47 @@ class LoginDialog(QDialog):
         right_layout.addWidget(illustration_label)
         right_widget.setLayout(right_layout)
         return right_widget
+    
+    def _update_forgotPass_state(self):
+        """Update the state of the forgot password button based on input fields."""
+        email = self.email.text().strip()
+        password = self.password.text()
+        
+        enable_reset = False
+        
+        # Only check further conditions if we have both email and password
+        if email and password:
+            users_data = self._load_users()
+            
+            user = next((u for u in users_data.get("users", []) if u["email"].lower() == email.lower()), None)
+
+            if user:
+                stored_hash = user["password_hash"]
+                password_hash = self._hash_password(password)
+                
+                if self._last_login_attempt and stored_hash != password_hash:
+                    enable_reset = True
+        
+        self.forgotPass_btn.setEnabled(enable_reset)
+        
+        # Update button styling based on state
+        if enable_reset:
+            self.forgotPass_btn.setStyleSheet("""
+                color: #2196F3;
+                text-decoration: underline;
+                background: none;
+                border: none;
+                font-size: 18px;
+            """)
+        else:
+            self.forgotPass_btn.setStyleSheet("""
+                color: #9E9E9E;
+                text-decoration: underline;
+                background: none;
+                border: none;
+                font-size: 18px;
+            """)
+
 
     def _hash_password(self, password):
         """Hash the password using SHA-256."""
@@ -212,13 +284,22 @@ class LoginDialog(QDialog):
                 self.accept()
                 return
             elif stored_hash != password_hash:
+                self._last_login_attempt = True
                 QMessageBox.warning(self, "Error", "Password Invalid")
         else:
             QMessageBox.warning(self, "Error", "Invalid Email or Email not found!")
 
+        self._update_forgotPass_state()
+
     def register(self):
         """Open the registration dialog."""
         dialog = RegistrationDialog(self)
+        dialog.exec_()
+    
+    def ForgotPass(self):
+        """Open the Forgot Password Dialog"""
+        current_email = self.email.text()
+        dialog = ForgotPassDialog(current_email)
         dialog.exec_()
 
     # update 22 April 2025
@@ -497,3 +578,229 @@ class RegistrationDialog(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Registration failed: {str(e)}")
             return
+
+class ForgotPassDialog(QDialog):
+    """
+    A dialog for user who forgot password and want to change password
+    without make a new account
+    """
+
+    def __init__(self, email, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Reset Password")
+        self.setFixedSize(1100, 750)
+        self._setup_styles()
+        self.current_email = email #Store the email passed from LoginDialog
+        self.initUI()
+        
+    def _setup_styles(self):
+        """Configure the styling for the registration dialog components."""
+        self.setStyleSheet(
+            """
+            QDialog {
+                background: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 1,
+                    stop: 0 #E0F7FA,
+                    stop: 1 #B2EBF2
+                );
+            }
+            QLabel {
+                color: #333;
+                font-size: 18px;
+            }
+            QLineEdit {
+                padding: 12px;
+                border: 1px solid #E0E0E0;
+                border-radius: 6px;
+                background: white;
+                font-size: 18px;
+                min-width: 300px;
+            }
+            QPushButton#resetBtn {
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 12px;
+                font-size: 18px;
+                min-width: 300px;
+            }
+            QPushButton#resetBtn:hover {
+                background-color: #1976D2;
+            }
+            QPushButton#registerBtn {
+                background: none;
+                border: none;
+                color: #2196F3;
+                text-decoration: underline;
+                font-size: 18px;
+            }
+            QPushButton#registerBtn:hover {
+                color: #1976D2;
+            }
+        """
+        )
+
+    def initUI(self):
+        """Initialize and setup the user interface components."""
+        main_layout = QHBoxLayout()
+        main_layout.addWidget(self._create_registration_form())
+        main_layout.addWidget(self._create_illustration())
+        self.setLayout(main_layout)
+
+    def _create_reset_form(self):
+        """Create and return the registration form widget."""
+        left_widget = QWidget()
+        left_layout = QVBoxLayout()
+        left_layout.setContentsMargins(50, 50, 50, 50)
+        left_layout.setSpacing(15)
+
+        title = QLabel("Reset Password")
+        title.setFont(QFont("Arial", 48, QFont.Bold))
+        title.setStyleSheet("color: #333; font-size: 48px;")
+
+        self.email = QLineEdit()
+        self.email.setPlaceholderText("Enter Your Email...")
+
+        self.username = QLineEdit()
+        self.email.setText(self.current_email)
+        self.email.setReadOnly(True)
+        # self.username.setPlaceholderText("Enter Your Username...")
+
+        self.password = QLineEdit()
+        self.password.setPlaceholderText("Enter Your Password...")
+        self.password.setEchoMode(QLineEdit.Password)
+        LoginDialog.add_toggle_action(self.password, self)
+
+        self.confirm_password = QLineEdit()
+        self.confirm_password.setPlaceholderText("Confirm Your Password...")
+        self.confirm_password.setEchoMode(QLineEdit.Password)
+        LoginDialog.add_toggle_action(self.confirm_password, self)
+
+        register_btn = QPushButton("Reset Password")
+        register_btn.setObjectName("loginBtn")
+        register_btn.setCursor(Qt.PointingHandCursor)
+        register_btn.clicked.connect(self.register)
+
+        left_layout.addWidget(title)
+        left_layout.addSpacing(20)
+        left_layout.addWidget(QLabel("Email"))
+        left_layout.addWidget(self.email)
+        left_layout.addWidget(QLabel("Username"))
+        left_layout.addWidget(self.username)
+        left_layout.addWidget(QLabel("Password"))
+        left_layout.addWidget(self.password)
+        left_layout.addWidget(QLabel("Confirm Password"))
+        left_layout.addWidget(self.confirm_password)
+        left_layout.addSpacing(10)
+        left_layout.addWidget(register_btn)
+        left_layout.addWidget(self._create_login_link())
+        left_layout.addStretch()
+        left_layout.addWidget(self._create_logo())
+
+        left_widget.setLayout(left_layout)
+        return left_widget
+
+    def _create_logo(self):
+        """Create and return the logo widget."""
+        logo_label = QLabel()
+        logo_pixmap = QPixmap(get_image_path("logo.png"))
+        if not logo_pixmap.isNull():
+            logo_pixmap = logo_pixmap.scaled(
+                250, 250, Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
+            logo_label.setPixmap(logo_pixmap)
+            logo_label.setAlignment(Qt.AlignCenter)
+        return logo_label
+
+    def _create_illustration(self):
+        """Create and return the illustration widget."""
+        right_widget = QWidget()
+        right_layout = QVBoxLayout()
+
+        illustration_label = QLabel()
+        illustration_pixmap = QPixmap(get_image_path("auth_illustration.png"))
+        if not illustration_pixmap.isNull():
+            illustration_pixmap = illustration_pixmap.scaled(
+                500, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
+            illustration_label.setPixmap(illustration_pixmap)
+            illustration_label.setAlignment(Qt.AlignCenter)
+
+        right_layout.addWidget(illustration_label)
+        right_widget.setLayout(right_layout)
+        return right_widget
+
+    def _hash_password(self, password):
+        """Hash the password using SHA-256."""
+        return hashlib.sha256(password.encode()).hexdigest()
+
+    def register(self):
+        """Handle the registration process with validation."""
+        email = self.email.text().strip()
+        username = self.username.text().strip()
+        password = self.password.text()
+        confirm_password = self.confirm_password.text()
+
+        if not email or not username or not password or not confirm_password:
+            QMessageBox.warning(self, "Error", "Please fill in all fields")
+            return
+
+        if password != confirm_password:
+            QMessageBox.warning(self, "Error", "Passwords do not match")
+            return
+
+        if len(password) < 8:
+            QMessageBox.warning(
+                self, "Error", "Password must be at least 8 characters long"
+            )
+            return
+        
+        if not re.search(r'[A-Z]', password):
+            QMessageBox.warning(
+                self, "Error", "Password must containt an uppercase letter"
+            )
+            return
+
+        if not re.search(r'[a-z]', password):
+            QMessageBox.warning(
+                self, "Error", "Password must containt a lowercase letter"
+            )
+            return
+        
+        if not re.search(r'[0-9]', password):
+            QMessageBox.warning(
+                self, "Error", "Password must containt a number"
+            )
+            return
+
+        users_file = get_database_path("users.txt")
+
+        # Check for existing username
+        try:
+            with open(users_file, "r", encoding="utf-8") as file:
+                for line in file:
+                    parts = line.strip().split(" | ")
+                    if len(parts) == 3:
+                        existing_email = line.strip().split(" | ")[0]
+                        if email == existing_email:
+                            QMessageBox.warning(self, "Error", "Email already exists")
+                            return
+                        existing_username = line.strip().split(" | ")[1]
+                        if username == existing_username:
+                            QMessageBox.warning(self, "Error", "Username already exists")
+                            return
+        except FileNotFoundError:
+            pass
+
+        # Create new user account
+        password_hash = self._hash_password(password)
+        try:
+            with open(users_file, "a") as file:
+                file.write(f"{email} | {username} | {password_hash}\n")
+            QMessageBox.information(
+                self, "Success", "Registration successful! You can now login."
+            )
+            self.accept()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error registering user: {e}")

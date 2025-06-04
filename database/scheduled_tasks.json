@@ -107,6 +107,30 @@
       "schedule": "monthly_21",
       "username": "MuhamadSopiana1",
       "last_run_date": "2025-05-21"
+    },
+    {
+      "name": "Tugas Projek",
+      "description": "Aplikasi",
+      "start_time": "2025-06-03 09:57",
+      "deadline": "2025-06-03 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "daily",
+      "username": "dimas",
+      "last_run_date": "2025-06-03"
+    },
+    {
+      "name": "aduh",
+      "description": "pengen aja",
+      "start_time": "2025-06-03 09:25",
+      "deadline": "2025-06-03 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "weekly_monday",
+      "username": "Dino",
+      "last_run_date": "2025-06-03"
     }
   ]
 }
