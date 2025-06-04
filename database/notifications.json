@@ -1,0 +1,586 @@
+[
+    {
+        "task_id": "Makan_2025-05-12 09:23_2025-05-13 09:23",
+        "message": "Task 'Makan' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-12 09:23:57",
+        "read": false,
+        "username": "MuhamadSopiana"
+    },
+    {
+        "task_id": "Makan 2_2025-05-13 23:25_",
+        "message": "Task 'Makan 2' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-13 00:07:47",
+        "read": false,
+        "username": "MuhamadSopiana"
+    },
+    {
+        "task_id": "Makan 2_2025-05-13 23:25_",
+        "message": "Task 'Makan 2' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-05-13 00:07:50",
+        "read": false,
+        "username": "MuhamadSopiana"
+    },
+    {
+        "task_id": "Makan_2025-05-12 09:23_2025-05-13 09:23",
+        "message": "Task 'Makan' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-13 00:15:34",
+        "read": false,
+        "username": "MuhamadSopiana"
+    },
+    {
+        "task_id": "Makan mie ayam_2025-05-13 00:21_",
+        "message": "Task 'Makan mie ayam' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-13 00:21:12",
+        "read": false,
+        "username": "Argi"
+    },
+    {
+        "task_id": "Makan mie ayam_2025-05-13 18:05_",
+        "message": "Task 'Makan mie ayam' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-13 18:05:51",
+        "read": false,
+        "username": "Argi"
+    },
+    {
+        "task_id": "Makan mie ayam_2025-05-14 04:16_2025-05-13 23:59",
+        "message": "Task 'Makan mie ayam' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-14 04:16:39",
+        "read": false,
+        "username": "Argi"
+    },
+    {
+        "task_id": "makan bomn_2025-05-13 18:05_",
+        "message": "Task 'makan bomn' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-14 04:22:47",
+        "read": false,
+        "username": "Argi"
+    },
+    {
+        "task_id": "test2_2025-05-20 07:29_",
+        "message": "Task 'test2' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 07:29:16",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "q_2025-05-20 07:29_",
+        "message": "Task 'q' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 07:29:16",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Makan mie ayam_2025-05-07 08:36_",
+        "message": "Task 'Makan mie ayam' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-20 07:29:16",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "test_2025-05-20 07:28_",
+        "message": "Task 'test' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-20 07:29:18",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "cek_2025-05-20 07:28_",
+        "message": "Task 'cek' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-20 07:29:21",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "test2_2025-05-20 07:29_",
+        "message": "Task 'test2' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-20 07:29:23",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "q_2025-05-20 07:29_",
+        "message": "Task 'q' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-20 07:29:26",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "1_2025-05-20 13:16_",
+        "message": "Task '1' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 13:16:05",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "monthly 20_2025-05-20 14:25_2025-05-20 23:59",
+        "message": "Task 'monthly 20' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 14:25:51",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Weekly_2025-05-20 17:30_2025-05-20 23:59",
+        "message": "Task 'Weekly' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 17:30:46",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Add task regular_2025-05-20 18:43_",
+        "message": "Task 'Add task regular' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 18:43:14",
+        "read": false,
+        "username": "sopiansah"
+    },
+    {
+        "task_id": "task weekly wednesday_2025-05-21 19:40_2025-05-21 23:59",
+        "message": "Task 'task weekly wednesday' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-21 19:40:29",
+        "read": false,
+        "username": "sopiansah"
+    },
+    {
+        "task_id": "task 1_2025-05-20 21:11_",
+        "message": "Task 'task 1' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-20 21:11:39",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "task 3_2025-05-20 21:31_",
+        "message": "Task 'task 3' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 21:31:29",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "task 4_2025-05-20 21:31_",
+        "message": "Task 'task 4' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 21:31:29",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "copywriting_2025-05-20 21:40_",
+        "message": "Task 'copywriting' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 21:40:17",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "coding_2025-05-20 21:40_",
+        "message": "Task 'coding' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 21:40:32",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "turu_2025-05-20 21:40_",
+        "message": "Task 'turu' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 21:40:47",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "cardio_2025-05-20 21:41_",
+        "message": "Task 'cardio' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 21:41:17",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "pusingg_2025-05-20 21:55_",
+        "message": "Task 'pusingg' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 21:55:35",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "urgent ni boss_2025-05-20 21:58_",
+        "message": "Task 'urgent ni boss' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-20 21:58:20",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "pusingg_2025-05-20 21:55_",
+        "message": "Task 'pusingg' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-05-20 22:07:37",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "copywriting_2025-05-20 21:40_",
+        "message": "Task 'copywriting' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-20 22:14:56",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "repeated 2_2025-05-21 10:09_2025-05-21 23:59",
+        "message": "Task 'repeated 2' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-21 10:09:10",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "repeated 1_2025-05-21 10:10_2025-05-21 23:59",
+        "message": "Task 'repeated 1' has started!",
+        "type": "start_time",
+        "timestamp": "2025-05-21 10:10:10",
+        "read": false,
+        "username": "darrellrahan"
+    },
+    {
+        "task_id": "makan mie wedneday_2025-06-03 09:27_2025-06-03 23:59",
+        "message": "Task 'makan mie wedneday' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-03 07:52:51",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "makan mie wedneday_2025-06-03 09:27_2025-06-03 23:59",
+        "message": "Task 'makan mie wedneday' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-03 07:52:54",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Weekly Satturday_2025-05-03 11:02_2025-05-03 23:59",
+        "message": "Task 'Weekly Satturday' has been completed!",
+        "type": "done",
+        "timestamp": "2025-05-03 11:13:30",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Monthly 3_2025-06-03 11:39_2025-06-03 23:59",
+        "message": "Task 'Monthly 3' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-03 11:43:47",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Elang_2025-06-03 11:44_2025-06-03 11:46",
+        "message": "Task 'Elang' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-03 11:44:47",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "test_2025-06-04 00:47_2025-06-04 00:48",
+        "message": "Task 'test' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-04 00:47:42",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Daily task_2025-06-04 01:00_2025-06-04 23:59",
+        "message": "Task 'Daily task' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-04 00:48:13",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Monthly 3_2025-06-03 11:39_2025-06-03 23:59",
+        "message": "Task 'Monthly 3' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-04 00:50:19",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "weekly tuesday_2025-06-03 10:59_2025-06-03 23:59",
+        "message": "Task 'weekly tuesday' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-04 00:51:20",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "!@#$%^&*()_2025-06-04 01:35_2025-06-04 01:37",
+        "message": "Task '!@#$%^&*()' deadline is in 5 minutes!",
+        "type": "reminder",
+        "timestamp": "2025-06-04 01:36:10",
+        "read": false,
+        "username": "Radit"
+    },
+    {
+        "task_id": "!@#$%^&*()_2025-06-04 01:35_2025-06-04 01:37",
+        "message": "Task '!@#$%^&*()' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-04 01:37:08",
+        "read": false,
+        "username": "Radit"
+    },
+    {
+        "task_id": "!@#$%^&*()_2025-06-04 01:35_2025-06-04 01:37",
+        "message": "Task '!@#$%^&*()' deadline has arrived!",
+        "type": "deadline",
+        "timestamp": "2025-06-04 01:37:10",
+        "read": false,
+        "username": "Radit"
+    },
+    {
+        "task_id": "!@#$%^&*()_2025-06-04 01:35_2025-06-04 01:37",
+        "message": "Task '!@#$%^&*()' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-04 01:37:16",
+        "read": false,
+        "username": "Radit"
+    },
+    {
+        "task_id": "tedsr_2025-06-04 01:39_2025-06-04 01:40",
+        "message": "Task 'tedsr' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-04 01:39:10",
+        "read": false,
+        "username": "Radit"
+    },
+    {
+        "task_id": "tedsr_2025-06-04 01:39_2025-06-04 01:40",
+        "message": "Task 'tedsr' deadline has arrived!",
+        "type": "deadline",
+        "timestamp": "2025-06-04 01:40:10",
+        "read": false,
+        "username": "Radit"
+    },
+    {
+        "task_id": "tedsr_2025-06-04 01:39_2025-06-04 01:40",
+        "message": "Task 'tedsr' has failed (deadline passed)!",
+        "type": "failed",
+        "timestamp": "2025-06-04 01:40:10",
+        "read": false,
+        "username": "Radit"
+    },
+    {
+        "task_id": "Olahraga_2025-06-05 01:42_2025-06-05 23:59",
+        "message": "Task 'Olahraga' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-05 01:42:05",
+        "read": false,
+        "username": "Radit"
+    },
+    {
+        "task_id": "Olahraga_2025-06-05 01:42_2025-06-05 23:59",
+        "message": "Task 'Olahraga' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-05 01:42:31",
+        "read": false,
+        "username": "Radit"
+    },
+    {
+        "task_id": "Weekly wednesday_2025-06-04 00:53_2025-06-04 23:59",
+        "message": "Task 'Weekly wednesday' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-05 01:45:16",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "p_2025-06-06 02:20_",
+        "message": "Task 'p' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-06 02:20:03",
+        "read": false,
+        "username": "ivan2975"
+    },
+    {
+        "task_id": "p_2025-06-06 02:20_",
+        "message": "Task 'p' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-06 02:20:07",
+        "read": false,
+        "username": "ivan2975"
+    },
+    {
+        "task_id": "p_2025-06-06 02:20_",
+        "message": "Task 'p' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-06 02:20:16",
+        "read": false,
+        "username": "ivan2975"
+    },
+    {
+        "task_id": "Test 2_2025-06-06 02:30_2025-06-06 02:35",
+        "message": "Task 'Test 2' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-06 02:30:41",
+        "read": false,
+        "username": "Amalia"
+    },
+    {
+        "task_id": "Test 2_2025-06-06 02:30_2025-06-06 02:35",
+        "message": "Task 'Test 2' deadline is in 5 minutes!",
+        "type": "reminder",
+        "timestamp": "2025-06-06 02:30:41",
+        "read": false,
+        "username": "Amalia"
+    },
+    {
+        "task_id": "test 4_2025-06-06 02:36_2025-06-06 02:37",
+        "message": "Task 'test 4' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-06 02:36:41",
+        "read": false,
+        "username": "Amalia"
+    },
+    {
+        "task_id": "test 4_2025-06-06 02:36_2025-06-06 02:37",
+        "message": "Task 'test 4' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-07 02:40:10",
+        "read": false,
+        "username": "Amalia"
+    },
+    {
+        "task_id": "test 3_2025-06-07 02:31_2025-06-07 23:59",
+        "message": "Task 'test 3' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-08 02:43:48",
+        "read": false,
+        "username": "Amalia"
+    },
+    {
+        "task_id": "Sda_2025-06-09 02:51_2025-06-11 02:52",
+        "message": "Task 'Sda' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-08 02:52:36",
+        "read": false,
+        "username": "Amalia"
+    },
+    {
+        "task_id": "test_2025-06-03 11:34_",
+        "message": "Task 'test' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-03 11:34:05",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "e_2025-06-03 11:57_2025-06-03 11:58",
+        "message": "Task 'e' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-03 11:57:31",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "e_2025-06-03 11:57_2025-06-03 11:58",
+        "message": "Task 'e' deadline has arrived!",
+        "type": "deadline",
+        "timestamp": "2025-06-03 11:58:01",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "e_2025-06-03 11:57_2025-06-03 11:58",
+        "message": "Task 'e' has failed (deadline passed)!",
+        "type": "failed",
+        "timestamp": "2025-06-03 11:58:01",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Test_2025-06-03 12:03_",
+        "message": "Task 'Test' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-03 12:03:19",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Test_2025-06-03 12:03_",
+        "message": "Task 'Test' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-03 12:03:28",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "5_2025-06-03 12:05_",
+        "message": "Task '5' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-03 12:05:09",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "5_2025-06-03 12:05_",
+        "message": "Task '5' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-03 12:05:11",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "4_2025-06-03 12:11_",
+        "message": "Task '4' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-03 12:11:48",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "MuhamadSopiana_2025-06-03 18:00_",
+        "message": "Task 'MuhamadSopiana' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-03 18:00:55",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "p_2025-06-03 12:13_",
+        "message": "Task 'p' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-03 18:15:08",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Daily 1_2025-06-03 18:48_2025-06-03 23:59",
+        "message": "Task 'Daily 1' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-03 19:06:17",
+        "read": false,
+        "username": "MuhamadSopiana1"
+    }
+]

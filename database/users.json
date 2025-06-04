@@ -1,0 +1,59 @@
+{
+  "users": [
+    {
+      "email": "MuhamadSopiana1@gmail.com",
+      "username": "MuhamadSopiana1",
+      "password_hash": "011742669ae734bcbaa4d3b78b79f129d6275cfc2fc42f882f4ee658b5ad013c"
+    },
+    {
+      "email": "MuhamadSopiana@Gmail.com",
+      "username": "MuhamadSopiana",
+      "password_hash": "011742669ae734bcbaa4d3b78b79f129d6275cfc2fc42f882f4ee658b5ad013c"
+    },
+    {
+      "email": "Argi1234@gmail.com",
+      "username": "Argi",
+      "password_hash": "1ad4828bb1700e452c8ca253882cbbd43937d7df1dbadc5314b4e7bb2b14eb4d"
+    },
+    {
+      "email": "sopiansah123@gmail.com",
+      "username": "sopiansah",
+      "password_hash": "3dfe96aa00d555895b851c635dda20ca3638d10f226142126f3ba873f2d0c69d"
+    },
+    {
+      "email": "darrell@gmail.com",
+      "username": "darrellrahan",
+      "password_hash": "62cf9b8d278b556cb8f6248e3005feb5633bd25b45e4bfe61328de1f60c39324"
+    },
+    {
+      "email": "Argiansah2@gmail.com",
+      "username": "Argiansah2",
+      "password_hash": "8e0f6481920e59241fcbaa48744e67768197c264ed34cea686090c9f01bef582"
+    },
+    {
+      "email": "raditganteng@gmail.com",
+      "username": "Radit",
+      "password_hash": "658c388476d9481f910639ce6ef101e79bcb999d08b4c4d0a9bf5ab96d0a0681"
+    },
+    {
+      "email": "ivansetiawanihsan@r.com",
+      "username": "ivan2975",
+      "password_hash": "8b3db8aab0615e6271f5dda138d9e553f789289bfcb192c6fc18ec4c72d85b42"
+    },
+    {
+      "email": "Amaliakhoerina25@gmail.com",
+      "username": "Amalia",
+      "password_hash": "925c25c586ec2fd3cfd81b84b643b143c8d20f99fa430acb277c554b35cb80d6"
+    },
+    {
+      "email": "raihan@gmail.com",
+      "username": "Raihan",
+      "password_hash": "fcf05e23fff6924f973312b77e6a666155d38f43f869a858a2e071db224ceaf2"
+    },
+    {
+      "email": "tama@gmail.com",
+      "username": "Tama",
+      "password_hash": "f91972f3af2418172ca1361cf643ccc3238c91a38248e2d030cd5a39bd4231d1"
+    }
+  ]
+}
