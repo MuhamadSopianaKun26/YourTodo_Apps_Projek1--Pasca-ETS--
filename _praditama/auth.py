@@ -8,11 +8,13 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QWidget,
     QAction,
+    QInputDialog
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 import hashlib, re, json
 from _sopian.path_utils import get_image_path, get_database_path
+from _praditama.otp_verification import OTPVerification
 
 
 class LoginDialog(QDialog):
@@ -335,6 +337,8 @@ class RegistrationDialog(QDialog):
         self.setWindowTitle("Register")
         self.setFixedSize(1100, 750)
         self._setup_styles()
+        self.otp_verification = OTPVerification()
+        self.otp_verified = False  # Placeholder for OTP verification
         self.initUI()
 
     def _setup_styles(self):
@@ -498,6 +502,10 @@ class RegistrationDialog(QDialog):
 
     def register(self):
         """Handle the registration process with validation."""
+        if not self.otp_verified:
+            self._verify_email_otp()
+            return
+        
         email = self.email.text().strip()
         username = self.username.text().strip()
         password = self.password.text()
@@ -507,9 +515,9 @@ class RegistrationDialog(QDialog):
             QMessageBox.warning(self, "Error", "Please fill in all fields")
             return
 
-        if len(email) < 6 or len(email) > 30:
+        if len(email) < 6:
             QMessageBox.warning(
-                self, "Error", "Email must be between 6 and 30 character long"
+                self, "Error", "Email must be at least 6 character long"
             )
             return
 
@@ -576,6 +584,49 @@ class RegistrationDialog(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Registration failed: {str(e)}")
             return
+        
+    def _verify_email_otp(self):
+        """Handle the email OTP verification process."""
+        email = self.email.text().strip()
+        if not email:
+            QMessageBox.warning(self, "Error", "Please enter your email First")
+            return
+        
+        if not re.search(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email):
+            QMessageBox.warning(self, "Error", "Invalid email format")
+            return
+        
+        self.otp_verification.generate_otp()
+        if self.otp_verification.send_otp(email):
+            while True:
+                otp, ok = QInputDialog.getText(
+                    self,
+                    "OTP Verification",
+                    "Enter the OTP sent to your email:",
+                    QLineEdit.Normal,
+                    "",
+                )
+
+                if not ok:
+                    QMessageBox.warning(self, "Cancelled", "OTP verification cancelled.")
+                    break
+
+                if self.otp_verification.verify_otp(otp):
+                    self.otp_verified = True
+                    QMessageBox.information(self, "Success", "Email verified successfully!")
+                    self.register()
+                    break
+                else:
+                    if self.otp_verification.is_otp_expired():
+                        retry = QMessageBox.question(
+                            self,
+                            "OTP Expired",
+                            "OTP expired. Do you want to request a new one?",
+                            QMessageBox.Yes | QMessageBox.No,
+                        )
+                        if retry == QMessageBox.Yes:
+                            self._verify_email_otp()
+                        break 
 
 class ForgotPassDialog(QDialog):
     """
@@ -589,7 +640,10 @@ class ForgotPassDialog(QDialog):
         self.setFixedSize(1100, 750)
         self._setup_styles()
         self.current_email = email #Store the email passed from LoginDialog
+        self.otp_verification = OTPVerification()
+        self.otp_verified = False
         self.initUI()
+        self._verify_email_otp()
         
     def _setup_styles(self):
         """Configure the styling for the registration dialog components."""
@@ -644,6 +698,8 @@ class ForgotPassDialog(QDialog):
         main_layout = QHBoxLayout()
         main_layout.addWidget(self._create_reset_form())
         main_layout.addWidget(self._create_illustration())
+        self.password.setEnabled(False)
+        self.confirm_password.setEnabled(False)
         self.setLayout(main_layout)
 
     def _create_reset_form(self):
@@ -722,6 +778,12 @@ class ForgotPassDialog(QDialog):
         right_widget.setLayout(right_layout)
         return right_widget
 
+    def show_reset_fields(self):
+        """Show the reset password fields after OTP verified."""
+        self.password.setEnabled(True)
+        self.confirm_password.setEnabled(True)
+        self.otp_verified = True
+
     def _hash_password(self, password):
         """Hash the password using SHA-256."""
         return hashlib.sha256(password.encode()).hexdigest()
@@ -793,3 +855,43 @@ class ForgotPassDialog(QDialog):
             QMessageBox.critical(self, "Error", "Invalid database format")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error resetting password: {str(e)}")
+
+    def _verify_email_otp(self):
+        """Handle the email OTP verification process."""
+
+        self.otp_verification.generate_otp()
+        if self.otp_verification.send_otp(self.current_email):
+            while True:
+                otp, ok = QInputDialog.getText(
+                    self, 
+                    "OTP Verification", 
+                    "Enter the OTP sent to your email:",
+                    QLineEdit.Normal,
+                    "",
+                )
+
+                if not ok:
+                    QMessageBox.warning(self, "Cancelled", "OTP verification cancelled.")
+                    self.close()
+                    return
+                
+                if self.otp_verification.verify_otp(otp):
+                    QMessageBox.information(self, "Success", "Email verified successfully!")
+                    self.show_reset_fields()
+                    break
+                else:
+                    if self.otp_verification.is_otp_expired():
+                        retry = QMessageBox.question(
+                            self, 
+                            "OTP Expired", 
+                            "OTP expired. Do you want to request a new one?",
+                            QMessageBox.Yes | QMessageBox.No,
+                        )
+                        if retry == QMessageBox.Yes:
+                            self._verify_email_otp()
+                        else:
+                            QMessageBox.warning(self, "Cancelled", "OTP verification cancelled.")
+                            self.close()
+                        return
+        else:
+            QMessageBox.critical(self, "Error", "Failed to send OTP. Please try again.")
