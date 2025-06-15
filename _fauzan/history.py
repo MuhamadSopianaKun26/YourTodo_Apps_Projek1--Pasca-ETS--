@@ -208,7 +208,8 @@ class HistoryWidget(QWidget):
 
         self.status_combo.addItems(["All", "Done", "Failed"])
 
-        self.view_combo.addItems(["Graph View", "Text View"])
+        # UPDATED: Add new view options
+        self.view_combo.addItems(["Bar Graph", "Line Graph", "Pie Chart", "Text View"])
 
         # Style controls
         control_style = "padding: 5px; border-radius: 5px;"
@@ -246,8 +247,14 @@ class HistoryWidget(QWidget):
         self.end_date.dateChanged.connect(self.update_display)
 
     def toggle_view(self):
-        """Switch between graph and text views"""
-        current_index = 0 if self.view_combo.currentText() == "Graph View" else 1
+        """Switch between different views"""
+        # UPDATED: Handle all view types
+        current_view = self.view_combo.currentText()
+        if current_view == "Text View":
+            current_index = 1  # List widget
+        else:
+            current_index = 0  # Canvas for all graph types
+        
         self.stacked_widget.setCurrentIndex(current_index)
         self.adjustSize()
         self.update_display()
@@ -294,13 +301,19 @@ class HistoryWidget(QWidget):
             case "Failed":
                 status_filter = "failed"
 
-        # NEW: Pass username to load_history
-        if self.view_combo.currentText() == "Graph View":
-            self.update_graph(start, end, status_filter)
-        else:
+        # UPDATED: Handle all view types
+        current_view = self.view_combo.currentText()
+        if current_view == "Text View":
             self.update_text_history(start, end, status_filter)
+        elif current_view == "Bar Graph":
+            self.update_bar_graph(start, end, status_filter)
+        elif current_view == "Line Graph":
+            self.update_line_graph(start, end, status_filter)
+        elif current_view == "Pie Chart":
+            self.update_pie_chart(start, end, status_filter)
 
-    def update_graph(self, start, end, status_filter):
+    def update_bar_graph(self, start, end, status_filter):
+        """Original bar graph functionality"""
         # UPDATED: Add username filter
         done, failed, _ = HistoryManager.load_history(
             self.username, start, end, status_filter
@@ -317,34 +330,56 @@ class HistoryWidget(QWidget):
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)
+        
+        total_done = sum(done_counts)
+        total_failed = sum(failed_counts)
+        
+        if total_done == 0 and total_failed == 0:
+            ax.text(0.5, 0.5, 'No data available\nfor selected period', 
+                   ha='center', va='center', transform=ax.transAxes, 
+                   fontsize=16, color='gray')
+            ax.set_xlim(0, 1)
+            ax.set_ylim(0, 1)
+        else:
+            bar_width = 0.35  # Width of the bars
 
-        bar_width = 0.35  # Width of the bars
+            if status_filter == "all":
+                # Convert dates to numbers for proper bar positioning
+                x = [mdates.date2num(d) for d in dates]
 
-        if status_filter == "all":
-            # Convert dates to numbers for proper bar positioning
-            x = [mdates.date2num(d) for d in dates]
+                # Plot bars side by side
+                done_bars = ax.bar(
+                    [xi - bar_width / 2 for xi in x],
+                    done_counts,
+                    bar_width,
+                    label="Done",
+                    color="#4CAF50",
+                )
+                failed_bars = ax.bar(
+                    [xi + bar_width / 2 for xi in x],
+                    failed_counts,
+                    bar_width,
+                    label="Failed",
+                    color="#FF4444",
+                )
 
-            # Plot bars side by side
-            done_bars = ax.bar(
-                [xi - bar_width / 2 for xi in x],
-                done_counts,
-                bar_width,
-                label="Done",
-                color="#4CAF50",
-            )
-            failed_bars = ax.bar(
-                [xi + bar_width / 2 for xi in x],
-                failed_counts,
-                bar_width,
-                label="Failed",
-                color="#FF4444",
-            )
-
-            # Add value labels on top of bars
-            for bars in [done_bars, failed_bars]:
+                # Add value labels on top of bars
+                for bars in [done_bars, failed_bars]:
+                    for bar in bars:
+                        height = bar.get_height()
+                        if height > 0:  # Only show label if there's a value
+                            ax.text(
+                                bar.get_x() + bar.get_width() / 2,
+                                height,
+                                f"{int(height)}",
+                                ha="center",
+                                va="bottom",
+                            )
+            elif status_filter == "done":
+                bars = ax.bar(dates, done_counts, color="#4CAF50")
                 for bar in bars:
                     height = bar.get_height()
-                    if height > 0:  # Only show label if there's a value
+                    if height > 0:
                         ax.text(
                             bar.get_x() + bar.get_width() / 2,
                             height,
@@ -352,31 +387,20 @@ class HistoryWidget(QWidget):
                             ha="center",
                             va="bottom",
                         )
-        elif status_filter == "done":
-            bars = ax.bar(dates, done_counts, color="#4CAF50")
-            for bar in bars:
-                height = bar.get_height()
-                if height > 0:
-                    ax.text(
-                        bar.get_x() + bar.get_width() / 2,
-                        height,
-                        f"{int(height)}",
-                        ha="center",
-                        va="bottom",
-                    )
-        else:
-            bars = ax.bar(dates, failed_counts, color="#FF4444")
-            for bar in bars:
-                height = bar.get_height()
-                if height > 0:
-                    ax.text(
-                        bar.get_x() + bar.get_width() / 2,
-                        height,
-                        f"{int(height)}",
-                        ha="center",
-                        va="bottom",
-                    )
+            else:
+                bars = ax.bar(dates, failed_counts, color="#FF4444")
+                for bar in bars:
+                    height = bar.get_height()
+                    if height > 0:
+                        ax.text(
+                            bar.get_x() + bar.get_width() / 2,
+                            height,
+                            f"{int(height)}",
+                            ha="center",
+                            va="bottom",
+                        )
 
+        ax.set_title("Task Completion History - Bar Chart")
         ax.xaxis.set_major_locator(mdates.AutoDateLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
         ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
@@ -385,6 +409,182 @@ class HistoryWidget(QWidget):
             ax.legend()
         self.figure.autofmt_xdate()
         self.canvas.draw()
+
+    def update_line_graph(self, start, end, status_filter):
+        """NEW: Line graph view"""
+        done, failed, _ = HistoryManager.load_history(
+            self.username, start, end, status_filter
+        )
+
+        dates = []
+        current = start
+        while current <= end:
+            dates.append(current)
+            current += timedelta(days=1)
+
+        done_counts = [done.get(d.strftime("%Y-%m-%d"), 0) for d in dates]
+        failed_counts = [failed.get(d.strftime("%Y-%m-%d"), 0) for d in dates]
+
+        self.figure.clear()
+        ax = self.figure.add_subplot(111)
+
+        # Check if we have any data
+        total_done = sum(done_counts)
+        total_failed = sum(failed_counts)
+        
+        if total_done == 0 and total_failed == 0:
+            ax.text(0.5, 0.5, 'No data available\nfor selected period', 
+                   ha='center', va='center', transform=ax.transAxes, 
+                   fontsize=16, color='gray')
+            ax.set_xlim(0, 1)
+            ax.set_ylim(0, 1)
+        else:
+            if status_filter == "all":
+                # Plot both lines
+                line1 = ax.plot(dates, done_counts, marker='o', linewidth=2.5, markersize=6, 
+                       color="#4CAF50", label="Done", alpha=0.8)
+                line2 = ax.plot(dates, failed_counts, marker='s', linewidth=2.5, markersize=6, 
+                       color="#FF4444", label="Failed", alpha=0.8)
+                
+                # Add area fill for better visualization
+                ax.fill_between(dates, done_counts, alpha=0.2, color="#4CAF50")
+                ax.fill_between(dates, failed_counts, alpha=0.2, color="#FF4444")
+                
+                ax.legend(loc='upper right')
+            elif status_filter == "done":
+                ax.plot(dates, done_counts, marker='o', linewidth=2.5, markersize=6, 
+                       color="#4CAF50", alpha=0.8)
+                ax.fill_between(dates, done_counts, alpha=0.2, color="#4CAF50")
+            else:
+                ax.plot(dates, failed_counts, marker='s', linewidth=2.5, markersize=6, 
+                       color="#FF4444", alpha=0.8)
+                ax.fill_between(dates, failed_counts, alpha=0.2, color="#FF4444")
+
+            # Improve styling
+            ax.set_title("Task Completion History - Line Chart")
+            ax.set_xlabel("Date", fontsize=11)
+            ax.set_ylabel("Number of Tasks", fontsize=11)
+            
+            # Enhanced grid
+            ax.grid(True, alpha=0.3, linestyle='--')
+            ax.set_facecolor('#fafafa') 
+            # Better date formatting
+            ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+            if len(dates) <= 7:  # For short periods, show full dates
+                ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            else:  # For longer periods, show abbreviated
+                ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+            
+            ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+            
+            # Set y-axis to start from 0 but add some padding at top
+            max_val = max(max(done_counts) if done_counts else [0], 
+                         max(failed_counts) if failed_counts else [0])
+            if max_val > 0:
+                ax.set_ylim(0, max_val * 1.1)  # Add 10% padding at top
+            else:
+                ax.set_ylim(0, 1)
+        
+        self.figure.autofmt_xdate()
+        self.canvas.draw()
+
+    def update_pie_chart(self, start, end, status_filter):
+        """NEW: Pie chart view"""
+        done, failed, _ = HistoryManager.load_history(
+            self.username, start, end, status_filter
+        )
+
+        # Calculate totals
+        total_done = sum(done.values())
+        total_failed = sum(failed.values())
+
+        self.figure.clear()
+        ax = self.figure.add_subplot(111)
+
+        if status_filter == "all":
+            if total_done == 0 and total_failed == 0:
+                # No data case
+                ax.text(0.5, 0.5, 'No data available\nfor selected period', 
+                       ha='center', va='center', transform=ax.transAxes, 
+                       fontsize=16, color='gray')
+                ax.set_xlim(0, 1)
+                ax.set_ylim(0, 1)
+            else:
+                sizes = []
+                labels = []
+                colors = []
+                
+                if total_done > 0:
+                    sizes.append(total_done)
+                    labels.append(f'Done ({total_done})')
+                    colors.append('#4CAF50')
+                
+                if total_failed > 0:
+                    sizes.append(total_failed)
+                    labels.append(f'Failed ({total_failed})')
+                    colors.append('#FF4444')
+                
+                wedges, texts, autotexts = ax.pie(sizes, labels=labels, colors=colors, 
+                                                 autopct='%1.1f%%', startangle=90)
+                
+                # Make percentage text bold and white
+                for autotext in autotexts:
+                    autotext.set_color('white')
+                    autotext.set_fontweight('bold')
+                    autotext.set_fontsize(10)
+        else:
+            # Single status filter
+            if status_filter == "done":
+                total = total_done
+                color = '#4CAF50'
+                status_name = "Done"
+            else:
+                total = total_failed
+                color = '#FF4444'
+                status_name = "Failed"
+            
+            if total == 0:
+                ax.text(0.5, 0.5, f'No {status_name.lower()} tasks\nfor selected period', 
+                       ha='center', va='center', transform=ax.transAxes, 
+                       fontsize=16, color='gray')
+                ax.set_xlim(0, 1)
+                ax.set_ylim(0, 1)
+            else:
+                # Show daily breakdown for single status
+                daily_counts = []
+                daily_labels = []
+                
+                current = start
+                while current <= end:
+                    date_str = current.strftime("%Y-%m-%d")
+                    if status_filter == "done":
+                        count = done.get(date_str, 0)
+                    else:
+                        count = failed.get(date_str, 0)
+                    
+                    if count > 0:
+                        daily_counts.append(count)
+                        daily_labels.append(current.strftime("%m-%d"))
+                    
+                    current += timedelta(days=1)
+                
+                if daily_counts:
+                    wedges, texts, autotexts = ax.pie(daily_counts, labels=daily_labels, 
+                                                     autopct='%1.1f%%', startangle=90)
+                    for autotext in autotexts:
+                        autotext.set_color('white')
+                        autotext.set_fontweight('bold')
+                        autotext.set_fontsize(8)
+                else:
+                    ax.text(0.5, 0.5, f'No {status_name.lower()} tasks\nfor selected period', 
+                           ha='center', va='center', transform=ax.transAxes, 
+                           fontsize=16, color='gray')
+                    ax.set_xlim(0, 1)
+                    ax.set_ylim(0, 1)
+
+        ax.set_title("Task Completion History - Pie Chart")
+        self.canvas.draw()
+
 
     def update_text_history(self, start, end, status_filter):
         # Load history with the correct date range
