@@ -390,7 +390,9 @@ class TaskItemWidget(QFrame):
         # Add schedule info if exists
         schedule = self.task_data.get("schedule", "")
         if schedule:
-            schedule_label = QLabel(f"🔄scheduled: {schedule}")
+            # Get only the schedule type (daily/weekly/monthly)
+            schedule_type = schedule.split("_")[0].capitalize()
+            schedule_label = QLabel(f"🔄scheduled: {schedule_type}")
             schedule_label.setStyleSheet("color: #666; font-size: 14px;")
             schedule_label.setContentsMargins(0, 8, 0, 8)  # Increase vertical padding
             schedule_label.setFixedHeight(32)  # Increase height

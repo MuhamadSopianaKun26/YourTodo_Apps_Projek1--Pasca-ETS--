@@ -49,10 +49,11 @@ class ScheduleWidget(QWidget):
         self.highlightDatesWithTasks()
 
     def initUI(self):
-        """Inisialisasi komponen UI widget jadwal."""
-        layout = QVBoxLayout()
-        layout.setContentsMargins(10, 10, 10, 10)
-        layout.setSpacing(5)
+        """Initialize the UI components."""
+        # Main layout
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
 
         # Header
         header = QHBoxLayout()
@@ -62,96 +63,76 @@ class ScheduleWidget(QWidget):
         header.addWidget(title)
         header.addStretch()
 
-        # Dropdown pemilih tampilan
-        self.view_selector = QComboBox()
-        self.view_selector.addItems(["Schedule", "Repeated Tasks"])
-        self.view_selector.setStyleSheet(
+        # Ganti dengan dua tombol untuk pemilihan tampilan
+        view_buttons_container = QWidget()
+        view_buttons_layout = QHBoxLayout(view_buttons_container)
+        view_buttons_layout.setContentsMargins(0, 0, 0, 0)
+        view_buttons_layout.setSpacing(10)  # Jarak antar tombol
+
+        # Tombol Schedule
+        self.schedule_btn = QPushButton("Schedule")
+        self.schedule_btn.setCheckable(True)
+        self.schedule_btn.setChecked(True)
+        self.schedule_btn.setStyleSheet(
             """
-            QComboBox {
+            QPushButton {
                 background-color: #f0f0f0;
-                color: #333;
-                border: 1px solid #ccc;
+                color: #333333;
+                border: 1px solid #cccccc;
                 border-radius: 8px;
                 padding: 3px 10px;
                 font-weight: bold;
-                font-size: 16px;
-            }
-            QComboBox:hover {
-                background-color: #e0e0e0;
-            }
-            QComboBox::drop-down {
-                padding: 5px; 
-                border-radius: 5px
-            }
-            QComboBox::down-arrow {
-                width: 10px;
-                height: 10px;
-                font-family: "Arial";
                 font-size: 12px;
+                min-width: 90px;
+                min-height: 25px;
             }
-            QComboBox QAbstractItemView {
-                background-color: white;
-                color: #333;
-                selection-background-color: #E3F8FF;
-                selection-color: #333;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                padding: 5px;
-                font-size: 14px;
-                font-weight: bold;
+            QPushButton:hover {
+                background-color: #e8e8e8;
             }
-            QComboBox QAbstractItemView::item {
-                padding: 12px 15px;
-                min-height: 40px;
-                border-radius: 4px;
-                margin: 2px;
-                font-size: 16px;
-            }
-            QComboBox QAbstractItemView::item:hover {
-                background-color: #E3F8FF;
-            }
-            QComboBox QAbstractItemView::item:selected {
+            QPushButton:checked {
                 background-color: #E3F8FF;
                 color: #00B4D8;
+                border: 1px solid #00B4D8;
             }
         """
         )
+        self.schedule_btn.clicked.connect(lambda: self.switchView("Schedule"))
 
-        # Hilangkan pendekatan custom widget
-        self.view_selector.setEditable(False)
-        self.view_selector.setInsertPolicy(QComboBox.NoInsert)
-
-        # Buat tombol custom dengan panah
-        dropdown_container = QWidget()
-        dropdown_layout = QHBoxLayout(dropdown_container)
-        dropdown_layout.setContentsMargins(0, 0, 0, 0)
-        dropdown_layout.setSpacing(0)
-
-        # Tambahkan combo box ke layout
-        dropdown_layout.addWidget(self.view_selector)
-
-        # Buat label untuk panah
-        self.arrow_label = QLabel("▼")
-        self.arrow_label.setStyleSheet(
+        # Tombol Repeated Tasks
+        self.repeated_tasks_btn = QPushButton("Repeated Tasks")
+        self.repeated_tasks_btn.setCheckable(True)
+        self.repeated_tasks_btn.setStyleSheet(
             """
-            color: #333;
-            font-size: 14px;
-            font-weight: bold;
-            padding-right: 5px;
+            QPushButton {
+                background-color: #f0f0f0;
+                color: #333333;
+                border: 1px solid #cccccc;
+                border-radius: 8px;
+                padding: 3px 10px;
+                font-weight: bold;
+                font-size: 12px;
+                min-width: 90px;
+                min-height: 25px;
+            }
+            QPushButton:hover {
+                background-color: #e8e8e8;
+            }
+            QPushButton:checked {
+                background-color: #E3F8FF;
+                color: #00B4D8;
+                border: 1px solid #00B4D8;
+            }
         """
         )
-        self.arrow_label.setFixedWidth(20)
-        self.arrow_label.setAlignment(Qt.AlignCenter)
+        self.repeated_tasks_btn.clicked.connect(lambda: self.switchView("Repeated Tasks"))
 
-        # Tambahkan label panah ke layout
-        dropdown_layout.addWidget(self.arrow_label)
+        # Tambahkan tombol ke layout
+        view_buttons_layout.addWidget(self.schedule_btn)
+        view_buttons_layout.addWidget(self.repeated_tasks_btn)
+        view_buttons_layout.addSpacing(20)  # Mengurangi jarak dengan tombol refresh
 
         # Tambahkan container ke header
-        header.addWidget(dropdown_container)
-
-        # Hubungkan sinyal untuk mengubah arah panah
-        self.view_selector.view().installEventFilter(self)
-        self.view_selector.currentTextChanged.connect(self.switchView)
+        header.addWidget(view_buttons_container)
 
         # Tombol refresh
         refresh_btn = QPushButton("Refresh")
@@ -176,11 +157,11 @@ class ScheduleWidget(QWidget):
         refresh_btn.clicked.connect(self.refreshSchedule)
         header.addWidget(refresh_btn)
 
-        layout.addLayout(header)
+        main_layout.addLayout(header)
 
         # Stack konten untuk berpindah antar tampilan
         self.content_stack = QStackedWidget()
-        layout.addWidget(self.content_stack)
+        main_layout.addWidget(self.content_stack)
 
         # Widget kalender
         calendar_widget = QWidget()
@@ -352,15 +333,21 @@ class ScheduleWidget(QWidget):
         self.loading_widget = self._createLoadingWidget()
         self.content_stack.addWidget(self.loading_widget)
 
-        self.setLayout(layout)
+        # Set the main layout
+        self.setLayout(main_layout)
+
+        # Load tasks and update count immediately
+        self.loadScheduledTasks()
+        self.updateTaskList(QDate.currentDate())
+        self.updateRepeatedTasksList()
+        
+        # Update task count immediately after loading tasks
+        if hasattr(self, 'main_app') and hasattr(self.main_app, 'updateTaskCount'):
+            self.main_app.updateTaskCount()
 
         # Connect calendar signals
         self.calendar.clicked.connect(self.updateTaskList)
         self.calendar.currentPageChanged.connect(self.highlightDatesWithTasks)
-
-        # Update task list for current date when widget is initialized
-        self.updateTaskList(self.calendar.selectedDate())
-        self.updateRepeatedTasksList()
 
         # Set smooth scrolling for repeated tasks list
         self.repeated_tasks_list.setVerticalScrollMode(QListWidget.ScrollPerPixel)
@@ -472,14 +459,14 @@ class ScheduleWidget(QWidget):
         RepeatedTaskManager.checkAndAddScheduledTasks(self)
 
         # Update tampilan saat ini
-        if self.view_selector.currentText() == "Schedule":
+        if self.schedule_btn.isChecked():
             self.updateTaskList(self.calendar.selectedDate())
         else:
             # Untuk tugas berulang, hanya update tampilan tanpa menambah tugas baru
             self.updateRepeatedTasksList()
 
         # Kembali ke tampilan yang sesuai
-        if self.view_selector.currentText() == "Schedule":
+        if self.schedule_btn.isChecked():
             self.content_stack.setCurrentWidget(self.content_stack.widget(0))
         else:
             self.content_stack.setCurrentWidget(self.content_stack.widget(1))
@@ -768,9 +755,9 @@ class ScheduleWidget(QWidget):
                                     task_dict["schedule"]
                                     and task_dict["schedule"].lower() != "none"
                                 ):
-                                    schedule_label = QLabel(
-                                        task_dict["schedule"].capitalize()
-                                    )
+                                    # Get only the schedule type (daily/weekly/monthly)
+                                    schedule_type = task_dict["schedule"].split("_")[0].capitalize()
+                                    schedule_label = QLabel(schedule_type)
                                     schedule_label.setStyleSheet(
                                         """
                                         background-color: #00B4D8;
@@ -838,12 +825,17 @@ class ScheduleWidget(QWidget):
         RepeatedTaskManager.deleteScheduledTask(self, task)
 
     def switchView(self, view_name):
-        """Switch between calendar and repeated tasks view."""
+        """Switch between calendar and repeated tasks views."""
         if view_name == "Schedule":
-            self.content_stack.setCurrentIndex(0)
-            self.updateTaskList(self.calendar.selectedDate())
-        else:
-            self.content_stack.setCurrentIndex(1)
+            self.content_stack.setCurrentWidget(self.content_stack.widget(0))
+            self.schedule_btn.setChecked(True)
+            self.repeated_tasks_btn.setChecked(False)
+        elif view_name == "Repeated Tasks":
+            self.content_stack.setCurrentWidget(self.content_stack.widget(1))
+            self.schedule_btn.setChecked(False)
+            self.repeated_tasks_btn.setChecked(True)
+            # Load repeated tasks immediately when switching to this view
+            self.loadScheduledTasks()
             self.updateRepeatedTasksList()
 
     def updateRepeatedTasksList(self):
@@ -853,14 +845,6 @@ class ScheduleWidget(QWidget):
     def show_add_repeated_task_dialog(self):
         """Tampilkan dialog untuk menambahkan tugas berulang baru."""
         AddRepeatedTaskDialog.addRepeatedTask(self)
-
-    def eventFilter(self, obj, event):
-        """Event filter untuk mendeteksi ketika dropdown terbuka/ditutup."""
-        if obj == self.view_selector.view() and event.type() == event.Show:
-            self.arrow_label.setText("▲")
-        elif obj == self.view_selector.view() and event.type() == event.Hide:
-            self.arrow_label.setText("▼")
-        return super().eventFilter(obj, event)
 
     def clearAllScheduledTasks(self):
         """Clear All Schedule task."""

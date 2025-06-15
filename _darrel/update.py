@@ -20,6 +20,15 @@ class TodoUpdater:
             task_widget: The widget containing task data to be updated
             save_callback: Function to call after successful update
         """
+        # Check if task is a scheduled task
+        if task_widget.task_data.get("schedule", "").lower() != "none":
+            QMessageBox.warning(
+                task_widget.main_window,
+                "Cannot Update Task",
+                "Can't update scheduled task component!",
+            )
+            return
+
         # Store current username before update
         current_username = task_widget.task_data.get("username")
         

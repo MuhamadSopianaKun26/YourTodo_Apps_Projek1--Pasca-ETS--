@@ -64,6 +64,16 @@
       "email": "praditama.ajmal.tif424@polban.ac.id",
       "username": "tama",
       "password_hash": "2a3b5bce7fae1df2f117c31e4745fe017906c846001d73bbb6902e3a695d9514"
+    },
+    {
+      "email": "argiansyah264@gmail.com",
+      "username": "argiansah",
+      "password_hash": "405d853b39726f0648a51b395ab6ad3401a84557322ae23f653bb3da52035095"
+    },
+    {
+      "email": "lian1argi@gmail.com",
+      "username": "lianKun",
+      "password_hash": "2ef7b4883460b75c0d43697d80ae14da6ec17e4b0694057fa4874b472a5f573a"
     }
   ]
 }

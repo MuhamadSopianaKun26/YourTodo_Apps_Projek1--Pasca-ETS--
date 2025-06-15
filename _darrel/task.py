@@ -53,6 +53,12 @@ class TaskManager:
                 background-color: #0096B7;
             }
         """
+        self.initUI()
+        self.loadTasks()  # Load tasks first
+        self.updateTaskCount()  # Then update the count
+
+    def initUI(self):
+        self.setupTasksWidget()
 
     def setupTasksWidget(self):
         """Set up the Tasks section widget with task list and action buttons."""
@@ -111,6 +117,7 @@ class TaskManager:
         self.content_stack.addWidget(self.loading_widget)
         self.content_stack.setCurrentWidget(scroll)
 
+        self.updateTaskCount();
         self.load_filter_settings() # Load filter settings on startup
 
         return self.tasks_widget

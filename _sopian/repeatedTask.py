@@ -15,6 +15,8 @@ from PyQt5.QtWidgets import (
     QFrame,
     QMenu,
     QAction,
+    QCheckBox,
+    QGridLayout,
 )
 from PyQt5.QtCore import Qt, QTime, QSize
 from PyQt5.QtGui import QFont, QIcon
@@ -136,7 +138,9 @@ class RepeatedTaskManager:
         # Add schedule info if exists
         schedule = task_dict.get("schedule", "")
         if schedule:
-            schedule_label = QLabel(f"🔄scheduled: {schedule}")
+            # Get only the schedule type (daily/weekly/monthly)
+            schedule_type = schedule.split("_")[0].capitalize()
+            schedule_label = QLabel(f"🔄scheduled: {schedule_type}")
             schedule_label.setStyleSheet("color: #666; font-size: 14px;")
             schedule_label.setContentsMargins(0, 8, 0, 8)
             schedule_label.setFixedHeight(32)
@@ -468,7 +472,7 @@ class RepeatedTaskManager:
 
                     elif schedule_type == "weekly":
                         # Task mingguan ditambahkan setiap hari yang sama dalam minggu
-                        selected_day = task["schedule"].split("_")[1]
+                        selected_days = task["schedule"].split("_")[1].split(",")
                         last_run = task.get("last_run_date")
                         days = [
                             "monday",
@@ -479,25 +483,26 @@ class RepeatedTaskManager:
                             "saturday",
                             "sunday",
                         ]
-                        # status is_added
-                        is_added = task.get("is_added")
+                        # Initialize is_added with default value
+                        is_added = task.get("is_added", False)
                         
                         if last_run and is_added:
                             last_run_date = datetime.strptime(last_run, "%Y-%m-%d")
                             if current_date.date() != last_run_date.date():
-                                if days[current_weekday] == selected_day:
+                                if days[current_weekday] in selected_days:
                                     is_added = False
 
                     elif schedule_type == "monthly":
                         # Task bulanan ditambahkan setiap tanggal yang sama dalam bulan
-                        selected_date = int(task["schedule"].split("_")[1])
+                        selected_dates = [int(date) for date in task["schedule"].split("_")[1].split(",")]
                         last_run = task.get("last_run_date")
-                        is_added = task.get("is_added")
+                        # Initialize is_added with default value
+                        is_added = task.get("is_added", False)
                         if last_run and is_added:
                             last_run_date = datetime.strptime(last_run, "%Y-%m-%d")
                             # status is_added
-                            if current_date.date() != last_run_date.date() :
-                                if current_day == selected_date:
+                            if current_date.date() != last_run_date.date():
+                                if current_day in selected_dates:
                                     is_added = False
 
                 except (ValueError, TypeError) as e:
@@ -522,7 +527,10 @@ class RepeatedTaskManager:
                     json.dump({"scheduled_tasks": scheduled_tasks}, file, indent=2)
 
                 # Refresh tampilan
-                parent.updateRepeatedTasksList()
+                if hasattr(parent, 'updateRepeatedTasksList'):
+                    parent.updateRepeatedTasksList()
+                elif hasattr(parent, 'main_app') and hasattr(parent.main_app, 'updateRepeatedTasksList'):
+                    parent.main_app.updateRepeatedTasksList()
 
         except Exception as e:
             print(f"Error checking scheduled tasks: {e}")
@@ -687,58 +695,100 @@ class AddRepeatedTaskDialog(QDialog):
         # Day selection for weekly tasks
         self.weekly_container = QWidget()
         weekly_layout = QVBoxLayout(self.weekly_container)
-        weekly_day_label = QLabel("Select Day:")
-        self.weekly_day_combo = QComboBox()
-        self.weekly_day_combo.addItems(
-            [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday",
-            ]
-        )
-        self.weekly_day_combo.setStyleSheet(
-            """
-            QComboBox {
-                padding: 8px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                font-size: 14px;
-            }
-            QComboBox:focus {
-                border: 1px solid #00B4D8;
-            }
-            """
-        )
+        weekly_day_label = QLabel("Select Days:")
+        weekly_day_label.setStyleSheet("font-size: 14px;")
+        
+        # Create a widget to hold checkboxes
+        self.weekly_days_widget = QWidget()
+        weekly_days_layout = QVBoxLayout(self.weekly_days_widget)
+        weekly_days_layout.setSpacing(5)
+        
+        # Create checkboxes for each day
+        self.weekly_checkboxes = {}
+        days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        for day in days:
+            checkbox = QCheckBox(day)
+            checkbox.setStyleSheet(
+                """
+                QCheckBox {
+                    font-size: 14px;
+                    padding: 5px;
+                }
+                QCheckBox:hover {
+                    background-color: #E3F8FF;
+                    border-radius: 4px;
+                }
+                QCheckBox::indicator {
+                    width: 18px;
+                    height: 18px;
+                }
+                QCheckBox::indicator:unchecked {
+                    border: 2px solid #ccc;
+                    border-radius: 3px;
+                    background-color: white;
+                }
+                QCheckBox::indicator:checked {
+                    border: 2px solid #00B4D8;
+                    border-radius: 3px;
+                    background-color: #00B4D8;
+                }
+                """
+            )
+            self.weekly_checkboxes[day] = checkbox
+            weekly_days_layout.addWidget(checkbox)
+        
         weekly_layout.addWidget(weekly_day_label)
-        weekly_layout.addWidget(self.weekly_day_combo)
+        weekly_layout.addWidget(self.weekly_days_widget)
         self.weekly_container.setVisible(False)
         layout.addWidget(self.weekly_container)
 
         # Date selection for monthly tasks
         self.monthly_container = QWidget()
         monthly_layout = QVBoxLayout(self.monthly_container)
-        monthly_date_label = QLabel("Select Date:")
-        self.monthly_date_combo = QComboBox()
-        self.monthly_date_combo.addItems([str(i) for i in range(1, 32)])
-        self.monthly_date_combo.setStyleSheet(
-            """
-            QComboBox {
-                padding: 8px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                font-size: 14px;
-            }
-            QComboBox:focus {
-                border: 1px solid #00B4D8;
-            }
-        """
-        )
+        monthly_date_label = QLabel("Select Dates:")
+        monthly_date_label.setStyleSheet("font-size: 14px;")
+        
+        # Create a widget to hold date buttons
+        self.monthly_dates_widget = QWidget()
+        monthly_dates_layout = QVBoxLayout(self.monthly_dates_widget)
+        
+        # Create a grid layout for date buttons
+        self.monthly_dates_grid = QGridLayout()
+        self.monthly_dates_grid.setSpacing(5)
+        
+        # Create buttons for each date
+        self.monthly_date_buttons = {}
+        for i in range(1, 32):
+            btn = QPushButton(str(i))
+            btn.setCheckable(True)
+            btn.setFixedSize(40, 40)
+            btn.setStyleSheet(
+                """
+                QPushButton {
+                    background-color: white;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    font-size: 14px;
+                }
+                QPushButton:hover {
+                    background-color: #E3F8FF;
+                    border: 1px solid #00B4D8;
+                }
+                QPushButton:checked {
+                    background-color: #00B4D8;
+                    color: white;
+                    border: none;
+                }
+                """
+            )
+            row = (i - 1) // 7
+            col = (i - 1) % 7
+            self.monthly_dates_grid.addWidget(btn, row, col)
+            self.monthly_date_buttons[i] = btn
+        
+        monthly_dates_layout.addLayout(self.monthly_dates_grid)
         monthly_layout.addWidget(monthly_date_label)
-        monthly_layout.addWidget(self.monthly_date_combo)
+        monthly_layout.addWidget(self.monthly_dates_widget)
         self.monthly_container.setVisible(False)
         layout.addWidget(self.monthly_container)
 
@@ -822,9 +872,19 @@ class AddRepeatedTaskDialog(QDialog):
         schedule_data = schedule_type
 
         if schedule_type == "weekly":
-            schedule_data = f"weekly_{self.weekly_day_combo.currentText().lower()}"
+            # Get all checked days
+            selected_days = [day.lower() for day, checkbox in self.weekly_checkboxes.items() if checkbox.isChecked()]
+            if not selected_days:
+                QMessageBox.warning(self, "Warning", "Please select at least one day!")
+                return None
+            schedule_data = f"weekly_{','.join(selected_days)}"
         elif schedule_type == "monthly":
-            schedule_data = f"monthly_{self.monthly_date_combo.currentText()}"
+            # Get all checked dates
+            selected_dates = [str(date) for date, btn in self.monthly_date_buttons.items() if btn.isChecked()]
+            if not selected_dates:
+                QMessageBox.warning(self, "Warning", "Please select at least one date!")
+                return None
+            schedule_data = f"monthly_{','.join(selected_dates)}"
 
         return {
             "name": self.name_edit.text(),
@@ -832,6 +892,8 @@ class AddRepeatedTaskDialog(QDialog):
             "start_time": self.time_edit.time().toString("HH:mm"),
             "schedule": schedule_data,
             "priority": self.priority_combo.currentText(),
+            "status": "due",
+            "username": self.parent().main_app.current_user,
         }
 
     @staticmethod
@@ -915,9 +977,9 @@ class AddRepeatedTaskDialog(QDialog):
 
                     # Refresh the display
                     parent.updateRepeatedTasksList()
-                    QMessageBox.information(
-                        parent, "Success", "Task has been added successfully."
-                    )
+                    # QMessageBox.information(
+                    #     parent, "Success", "Task has been added successfully."
+                    # )
 
                 except Exception as e:
                     QMessageBox.critical(

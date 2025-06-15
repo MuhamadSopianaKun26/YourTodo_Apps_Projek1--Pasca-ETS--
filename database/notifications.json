@@ -582,5 +582,29 @@
         "timestamp": "2025-06-03 19:06:17",
         "read": false,
         "username": "MuhamadSopiana1"
+    },
+    {
+        "task_id": "Makan ayam_2025-06-15 08:37_",
+        "message": "Task 'Makan ayam' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-15 08:37:47",
+        "read": false,
+        "username": "argiansah"
+    },
+    {
+        "task_id": "MONDAY WEDNESDAY SUNDAY_2025-06-15 18:17_2025-06-15 23:59",
+        "message": "Task 'MONDAY WEDNESDAY SUNDAY' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-15 18:17:47",
+        "read": false,
+        "username": "lianKun"
+    },
+    {
+        "task_id": "daily_2025-06-15 20:30_2025-06-15 23:59",
+        "message": "Task 'daily' has started!",
+        "type": "start_time",
+        "timestamp": "2025-06-15 20:30:43",
+        "read": false,
+        "username": "lianKun"
     }
 ]
