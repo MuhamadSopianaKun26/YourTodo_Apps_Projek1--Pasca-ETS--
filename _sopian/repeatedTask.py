@@ -443,6 +443,8 @@ class RepeatedTaskManager:
 
                 try:
                     schedule_type = task["schedule"].split("_")[0]
+                    # Initialize is_added with default value from task or False
+                    is_added = task.get("is_added", False)
 
                     # Untuk daily task
                     if schedule_type == "daily":
@@ -462,8 +464,6 @@ class RepeatedTaskManager:
                         if not task_exists:
                             # Cek last_run_date
                             last_run = task.get("last_run_date")
-                            # status is_added
-                            is_added = task.get("is_added")
                             if last_run and is_added:
                                 last_run_date = datetime.strptime(last_run, "%Y-%m-%d")
                                 # Jika last_run_date lebih kecil dari current_date, tambahkan task
@@ -483,8 +483,6 @@ class RepeatedTaskManager:
                             "saturday",
                             "sunday",
                         ]
-                        # Initialize is_added with default value
-                        is_added = task.get("is_added", False)
                         
                         if last_run and is_added:
                             last_run_date = datetime.strptime(last_run, "%Y-%m-%d")
@@ -496,11 +494,8 @@ class RepeatedTaskManager:
                         # Task bulanan ditambahkan setiap tanggal yang sama dalam bulan
                         selected_dates = [int(date) for date in task["schedule"].split("_")[1].split(",")]
                         last_run = task.get("last_run_date")
-                        # Initialize is_added with default value
-                        is_added = task.get("is_added", False)
                         if last_run and is_added:
                             last_run_date = datetime.strptime(last_run, "%Y-%m-%d")
-                            # status is_added
                             if current_date.date() != last_run_date.date():
                                 if current_day in selected_dates:
                                     is_added = False

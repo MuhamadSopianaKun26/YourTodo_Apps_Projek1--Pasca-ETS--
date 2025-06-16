@@ -305,7 +305,6 @@ class TaskManager:
         except Exception as e:
             QMessageBox.critical(None, "Error", f"Error loading tasks: {str(e)}")
 
-        print("Total widgets di layout:", self.task_list_layout.count())
         self.applyFilters(selected_text=self.task_filter.get_current_filter()) # Reapply filters after loading tasks
         self.updateTaskCount()
 

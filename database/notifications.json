@@ -606,5 +606,37 @@
         "timestamp": "2025-06-15 20:30:43",
         "read": false,
         "username": "lianKun"
+    },
+    {
+        "task_id": "wow_2025-06-16 19:05_2025-06-16 23:59",
+        "message": "Task 'wow' has failed (deadline passed)!",
+        "type": "failed",
+        "timestamp": "2025-06-17 00:23:00",
+        "read": false,
+        "username": "lianKun"
+    },
+    {
+        "task_id": "tidur_2025-06-16 19:05_2025-06-16 23:59",
+        "message": "Task 'tidur' has failed (deadline passed)!",
+        "type": "failed",
+        "timestamp": "2025-06-17 00:23:00",
+        "read": false,
+        "username": "lianKun"
+    },
+    {
+        "task_id": "daily_2025-06-16 20:30_2025-06-16 23:59",
+        "message": "Task 'daily' has failed (deadline passed)!",
+        "type": "failed",
+        "timestamp": "2025-06-17 00:23:00",
+        "read": false,
+        "username": "lianKun"
+    },
+    {
+        "task_id": "sunday_2025-06-16 20:44_2025-06-16 23:59",
+        "message": "Task 'sunday' has failed (deadline passed)!",
+        "type": "failed",
+        "timestamp": "2025-06-17 00:23:00",
+        "read": false,
+        "username": "lianKun"
     }
 ]

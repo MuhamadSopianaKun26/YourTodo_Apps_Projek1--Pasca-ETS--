@@ -352,8 +352,8 @@ class TaskItemWidget(QFrame):
                     if deadline.isValid() and current > deadline:
                         current_date = QDate.currentDate().toString("yyyy-MM-dd")
                         self.task_data["status"] = f"failed - Completed on {current_date}"
-                        if self.main_window:
-                            self.main_window.saveTasks()
+                        if self.main_window and hasattr(self.main_window, "task_manager"):
+                            self.main_window.task_manager.saveTasks()
 
                             # Trigger notification for deadline passed
                             self._trigger_deadline_passed_notification()
