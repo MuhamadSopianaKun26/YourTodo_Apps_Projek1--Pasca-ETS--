@@ -98,22 +98,22 @@ class ToDoApp(QWidget):
         self._connectSidebarButtons()
 
         return content_layout
+    
 
     def _setupStackedWidgets(self):
         """Initialize and set up all section widgets in the stacked widget."""
         self.history_widget = None
         self.setupSimpleWidget(self.history_widget, "History")
 
-        self.tasks_widget = self.task_manager.setupTasksWidget()
+        self.tasks_widget = self.task_manager.tasks_widget
         self.stacked_widget.addWidget(self.tasks_widget)
+
 
         self.schedule_widget = ScheduleWidget(self)
         self.stacked_widget.addWidget(self.schedule_widget)
 
         self.notification_widget = NotificationWidget(self)
         self.stacked_widget.addWidget(self.notification_widget)
-
-        self.task_manager.loadTasks()
 
     def _connectSidebarButtons(self):
         """Connect sidebar buttons to their respective sections and set up button behavior."""
@@ -169,7 +169,7 @@ class ToDoApp(QWidget):
             RepeatedTaskManager.checkAndAddScheduledTasks(self.task_manager)
             # Load tasks after login
             self.task_manager.loadTasks()
-            
+
             self.show()
             return True
         return False

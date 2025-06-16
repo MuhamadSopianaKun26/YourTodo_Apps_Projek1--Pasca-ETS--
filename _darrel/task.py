@@ -54,8 +54,8 @@ class TaskManager:
             }
         """
         self.initUI()
-        self.loadTasks()  # Load tasks first
-        self.updateTaskCount()  # Then update the count
+        # self.loadTasks()  # Load tasks first
+        # self.updateTaskCount()  # Then update the count
 
     def initUI(self):
         self.setupTasksWidget()
@@ -117,7 +117,6 @@ class TaskManager:
         self.content_stack.addWidget(self.loading_widget)
         self.content_stack.setCurrentWidget(scroll)
 
-        self.updateTaskCount();
         self.load_filter_settings() # Load filter settings on startup
 
         return self.tasks_widget
@@ -276,9 +275,6 @@ class TaskManager:
     def loadTasks(self):
         """Load tasks from file for the current user and update UI."""
         try:
-            if not self.main_app.current_user:
-                return
-
             tasks_data = []
             task_file = get_database_path("tasks.json")
 
@@ -311,8 +307,9 @@ class TaskManager:
         except Exception as e:
             QMessageBox.critical(None, "Error", f"Error loading tasks: {str(e)}")
 
-        self.updateTaskCount()
+        print("Total widgets di layout:", self.task_list_layout.count())
         self.applyFilters(selected_text=self.task_filter.get_current_filter()) # Reapply filters after loading tasks
+        self.updateTaskCount()
 
     def addTask(self):
         """Open dialog to create a new task."""
@@ -400,7 +397,7 @@ class TaskManager:
     def updateTaskCount(self):
         """Update the task count display."""
         # This now counts all tasks, not just visible ones, before filtering
-        count = self.task_list_layout.count() if self.task_list_layout else 0
+        count = self.task_list_layout.count() 
         self.task_count_label.setText(f"Tasks: {count}")
 
     def refreshTasks(self):
