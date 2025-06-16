@@ -142,7 +142,7 @@ class HistoryWidget(QWidget):
         self.start_date = QDateEdit(calendarPopup=True)
 
         self.end_date = QDateEdit(calendarPopup=True)
-
+        
         self.export_btn = QPushButton("Export")
 
         # Update 19 Mei 2025
@@ -187,7 +187,7 @@ class HistoryWidget(QWidget):
                 padding: 8px;
             }
         """
-        )
+        )   
 
         # Add views to stack
         self.stacked_widget.addWidget(self.canvas)
@@ -234,7 +234,6 @@ class HistoryWidget(QWidget):
             QPushButton:hover { background-color: #0096B7; }
         """
         )
-        
         
         self.export_format_combo.setStyleSheet(control_style)
 
@@ -338,8 +337,7 @@ class HistoryWidget(QWidget):
             ax.text(0.5, 0.5, 'No data available\nfor selected period', 
                    ha='center', va='center', transform=ax.transAxes, 
                    fontsize=16, color='gray')
-            ax.set_xlim(0, 1)
-            ax.set_ylim(0, 1)
+            ax.axis('off')
         else:
             bar_width = 0.35  # Width of the bars
 
@@ -401,12 +399,15 @@ class HistoryWidget(QWidget):
                         )
 
         ax.set_title("Task Completion History - Bar Chart")
+        
         ax.xaxis.set_major_locator(mdates.AutoDateLocator())
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+        if len(dates) <= 7:  # For short periods, show full dates
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+        else:  # For longer periods, show abbreviated
+            ax.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))
         ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+        
         ax.set_ylim(bottom=0)
-        if status_filter == "all":
-            ax.legend()
         self.figure.autofmt_xdate()
         self.canvas.draw()
 
@@ -436,8 +437,7 @@ class HistoryWidget(QWidget):
             ax.text(0.5, 0.5, 'No data available\nfor selected period', 
                    ha='center', va='center', transform=ax.transAxes, 
                    fontsize=16, color='gray')
-            ax.set_xlim(0, 1)
-            ax.set_ylim(0, 1)
+            ax.axis('off')
         else:
             if status_filter == "all":
                 # Plot both lines
@@ -461,7 +461,6 @@ class HistoryWidget(QWidget):
                 ax.fill_between(dates, failed_counts, alpha=0.2, color="#FF4444")
 
             # Improve styling
-            ax.set_title("Task Completion History - Line Chart")
             ax.set_xlabel("Date", fontsize=11)
             ax.set_ylabel("Number of Tasks", fontsize=11)
             
@@ -473,7 +472,7 @@ class HistoryWidget(QWidget):
             if len(dates) <= 7:  # For short periods, show full dates
                 ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
             else:  # For longer periods, show abbreviated
-                ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
+                ax.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d"))
             
             ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
             
@@ -485,6 +484,7 @@ class HistoryWidget(QWidget):
             else:
                 ax.set_ylim(0, 1)
         
+        ax.set_title("Task Completion History - Line Chart")
         self.figure.autofmt_xdate()
         self.canvas.draw()
 
@@ -493,10 +493,20 @@ class HistoryWidget(QWidget):
         done, failed, _ = HistoryManager.load_history(
             self.username, start, end, status_filter
         )
+        
+        
+        dates = []
+        current = start
+        while current <= end:
+            dates.append(current)
+            current += timedelta(days=1)
 
+        done_counts = [done.get(d.strftime("%Y-%m-%d"), 0) for d in dates]
+        failed_counts = [failed.get(d.strftime("%Y-%m-%d"), 0) for d in dates]
+        
         # Calculate totals
-        total_done = sum(done.values())
-        total_failed = sum(failed.values())
+        total_done = sum(done_counts)
+        total_failed = sum(failed_counts)
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)
@@ -507,8 +517,7 @@ class HistoryWidget(QWidget):
                 ax.text(0.5, 0.5, 'No data available\nfor selected period', 
                        ha='center', va='center', transform=ax.transAxes, 
                        fontsize=16, color='gray')
-                ax.set_xlim(0, 1)
-                ax.set_ylim(0, 1)
+                ax.axis('off')
             else:
                 sizes = []
                 labels = []
@@ -725,7 +734,7 @@ class HistoryWidget(QWidget):
                 "task": 30,        # Wider for task names
                 "description": 40, # Extra wide for descriptions
                 "start_time": 17,  # Fixed width for start time
-                "deadline": 17,   # Fixed width for deadline
+                "deadline": 17,    # Fixed width for deadline
                 "status": 30,      # Fixed width for status
                 "priority": 10     # Narrow for priority
             }
