@@ -114,7 +114,7 @@
       "status": "due",
       "schedule": "daily",
       "username": "lianKun",
-      "last_run_date": "2025-06-15",
+      "last_run_date": "2025-06-16",
       "is_added": true
     },
     {
@@ -127,7 +127,7 @@
       "status": "due",
       "schedule": "weekly_monday,tuesday,wednesday,thursday,friday,saturday,sunday",
       "username": "lianKun",
-      "last_run_date": "2025-06-15",
+      "last_run_date": "2025-06-16",
       "is_added": true
     },
     {
@@ -140,7 +140,7 @@
       "status": "due",
       "schedule": "daily",
       "username": "lianKun",
-      "last_run_date": "2025-06-15",
+      "last_run_date": "2025-06-16",
       "is_added": true
     },
     {
@@ -153,7 +153,7 @@
       "status": "due",
       "schedule": "weekly_monday,sunday",
       "username": "lianKun",
-      "last_run_date": "2025-06-15",
+      "last_run_date": "2025-06-16",
       "is_added": true
     },
     {
