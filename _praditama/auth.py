@@ -14,7 +14,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 import hashlib, re, json
 from _sopian.path_utils import get_image_path, get_database_path
-from _praditama.otp_verification import OTPVerification
+from _praditama.otp_verification import OTPVerification, OTPDialog
 
 
 class LoginDialog(QDialog):
@@ -502,10 +502,6 @@ class RegistrationDialog(QDialog):
 
     def register(self):
         """Handle the registration process with validation."""
-        if not self.otp_verified:
-            self._verify_email_otp()
-            return
-        
         email = self.email.text().strip()
         username = self.username.text().strip()
         password = self.password.text()
@@ -549,6 +545,10 @@ class RegistrationDialog(QDialog):
 
         if not re.search(r"[0-9]", password):
             QMessageBox.warning(self, "Error", "Password must containt a number")
+            return
+        
+        if not self.otp_verified:
+            self._verify_email_otp()
             return
 
         users_file = get_database_path("users.json")
@@ -596,37 +596,10 @@ class RegistrationDialog(QDialog):
             QMessageBox.warning(self, "Error", "Invalid email format")
             return
         
-        self.otp_verification.generate_otp()
-        if self.otp_verification.send_otp(email):
-            while True:
-                otp, ok = QInputDialog.getText(
-                    self,
-                    "OTP Verification",
-                    "Enter the OTP sent to your email:",
-                    QLineEdit.Normal,
-                    "",
-                )
-
-                if not ok:
-                    QMessageBox.warning(self, "Cancelled", "OTP verification cancelled.")
-                    break
-
-                if self.otp_verification.verify_otp(otp):
-                    self.otp_verified = True
-                    QMessageBox.information(self, "Success", "Email verified successfully!")
-                    self.register()
-                    break
-                else:
-                    if self.otp_verification.is_otp_expired():
-                        retry = QMessageBox.question(
-                            self,
-                            "OTP Expired",
-                            "OTP expired. Do you want to request a new one?",
-                            QMessageBox.Yes | QMessageBox.No,
-                        )
-                        if retry == QMessageBox.Yes:
-                            self._verify_email_otp()
-                        break 
+        otp_dialog = OTPDialog(self.otp_verification, email, self)
+        if otp_dialog.exec_() == QDialog.Accepted:
+            self.otp_verified = True
+            self.register()
 
 class ForgotPassDialog(QDialog):
     """
@@ -858,40 +831,6 @@ class ForgotPassDialog(QDialog):
 
     def _verify_email_otp(self):
         """Handle the email OTP verification process."""
-
-        self.otp_verification.generate_otp()
-        if self.otp_verification.send_otp(self.current_email):
-            while True:
-                otp, ok = QInputDialog.getText(
-                    self, 
-                    "OTP Verification", 
-                    "Enter the OTP sent to your email:",
-                    QLineEdit.Normal,
-                    "",
-                )
-
-                if not ok:
-                    QMessageBox.warning(self, "Cancelled", "OTP verification cancelled.")
-                    self.close()
-                    return
-                
-                if self.otp_verification.verify_otp(otp):
-                    QMessageBox.information(self, "Success", "Email verified successfully!")
-                    self.show_reset_fields()
-                    break
-                else:
-                    if self.otp_verification.is_otp_expired():
-                        retry = QMessageBox.question(
-                            self, 
-                            "OTP Expired", 
-                            "OTP expired. Do you want to request a new one?",
-                            QMessageBox.Yes | QMessageBox.No,
-                        )
-                        if retry == QMessageBox.Yes:
-                            self._verify_email_otp()
-                        else:
-                            QMessageBox.warning(self, "Cancelled", "OTP verification cancelled.")
-                            self.close()
-                        return
-        else:
-            QMessageBox.critical(self, "Error", "Failed to send OTP. Please try again.")
+        otp_dialog = OTPDialog(self.otp_verification, self.current_email, self)
+        if otp_dialog.exec_() == QDialog.Accepted:
+            self.show_reset_fields()

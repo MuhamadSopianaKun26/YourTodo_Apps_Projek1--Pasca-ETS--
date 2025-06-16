@@ -56,16 +56,6 @@
       "password_hash": "f91972f3af2418172ca1361cf643ccc3238c91a38248e2d030cd5a39bd4231d1"
     },
     {
-      "email": "praditamaajmal@gmail.com",
-      "username": "Pradit",
-      "password_hash": "54b11245f2365fe865c7e82fe25170947e56f35aef41bff7089b027216a2b569"
-    },
-    {
-      "email": "praditama.ajmal.tif424@polban.ac.id",
-      "username": "tama",
-      "password_hash": "2a3b5bce7fae1df2f117c31e4745fe017906c846001d73bbb6902e3a695d9514"
-    },
-    {
       "email": "argiansyah264@gmail.com",
       "username": "argiansah",
       "password_hash": "405d853b39726f0648a51b395ab6ad3401a84557322ae23f653bb3da52035095"
@@ -74,6 +64,11 @@
       "email": "lian1argi@gmail.com",
       "username": "lianKun",
       "password_hash": "2ef7b4883460b75c0d43697d80ae14da6ec17e4b0694057fa4874b472a5f573a"
+    },
+    {
+      "email": "praditamaajmal@gmail.com",
+      "username": "tama",
+      "password_hash": "3b406f466d505bb1bb5fc799d96f82176a3376b71b18f48ee6d50e82c1cb0490"
     }
   ]
 }
