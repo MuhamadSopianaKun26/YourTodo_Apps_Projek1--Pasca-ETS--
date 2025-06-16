@@ -26,6 +26,7 @@ import calendar
 from _sopian.path_utils import get_image_path, get_database_path
 import json
 from _sopian.repeatedTask import AddRepeatedTaskDialog, RepeatedTaskManager
+from _sopian.main_components import TaskItemWidget
 
 
 class ScheduleWidget(QWidget):
@@ -57,10 +58,10 @@ class ScheduleWidget(QWidget):
 
         # Header
         header = QHBoxLayout()
-        title = QLabel("Schedule")
-        title.setFont(QFont("Arial", 20, QFont.Bold))
-        title.setStyleSheet("color: #333;")
-        header.addWidget(title)
+        self.title = QLabel("Schedule")
+        self.title.setFont(QFont("Arial", 20, QFont.Bold))
+        self.title.setStyleSheet("color: #333;")
+        header.addWidget(self.title)
         header.addStretch()
 
         # Ganti dengan dua tombol untuk pemilihan tampilan
@@ -135,8 +136,8 @@ class ScheduleWidget(QWidget):
         header.addWidget(view_buttons_container)
 
         # Tombol refresh
-        refresh_btn = QPushButton("Refresh")
-        refresh_btn.setStyleSheet(
+        self.refresh_btn = QPushButton("Refresh")
+        self.refresh_btn.setStyleSheet(
             """
             QPushButton {
                 background-color: #00B4D8;
@@ -154,8 +155,8 @@ class ScheduleWidget(QWidget):
             }
         """
         )
-        refresh_btn.clicked.connect(self.refreshSchedule)
-        header.addWidget(refresh_btn)
+        self.refresh_btn.clicked.connect(self.refreshSchedule)
+        header.addWidget(self.refresh_btn)
 
         main_layout.addLayout(header)
 
@@ -285,8 +286,8 @@ class ScheduleWidget(QWidget):
         repeated_layout.addWidget(add_task_btn)
 
         # Add Clear All button
-        clear_all_btn = QPushButton("Clear All")
-        clear_all_btn.setStyleSheet(
+        self.clear_all_btn = QPushButton("Clear All")
+        self.clear_all_btn.setStyleSheet(
             """
             QPushButton {
                 background-color: #FF5252;
@@ -303,8 +304,8 @@ class ScheduleWidget(QWidget):
             }
         """
         )
-        clear_all_btn.clicked.connect(self.clearAllScheduledTasks)
-        repeated_layout.addWidget(clear_all_btn)
+        self.clear_all_btn.clicked.connect(self.clearAllScheduledTasks)
+        repeated_layout.addWidget(self.clear_all_btn)
 
         self.repeated_tasks_list = QListWidget()
         self.repeated_tasks_list.setStyleSheet(
@@ -546,9 +547,6 @@ class ScheduleWidget(QWidget):
             # Jangan override penandai tanggal saat ini
             if date != today:
                 self.calendar.setDateTextFormat(date, format)
-                print(
-                    f"Applied yellow highlight to date: {date.toString('yyyy-MM-dd')}"
-                )
 
         # print(f"Total dates with tasks: {len(dates_with_tasks)}")
 
@@ -837,6 +835,8 @@ class ScheduleWidget(QWidget):
             # Load repeated tasks immediately when switching to this view
             self.loadScheduledTasks()
             self.updateRepeatedTasksList()
+        
+        self.updateTaskList(self.calendar.selectedDate())
 
     def updateRepeatedTasksList(self):
         """Memperbarui daftar tugas berulang."""
@@ -902,3 +902,47 @@ class ScheduleWidget(QWidget):
                 item.setHidden(False)
             else:
                 item.setHidden(True)
+
+    def update_text(self, key, new_text):
+        """Update text when language changes"""
+        # Update schedule-related text
+        if key == "schedule":
+            if hasattr(self, "title"):
+                self.title.setText(new_text)
+
+        # Update view selector text
+        if hasattr(self, "schedule_btn"):
+            self.schedule_btn.setText(new_text)
+        if hasattr(self, "repeated_tasks_btn"):
+            self.repeated_tasks_btn.setText(new_text)
+
+        # Update task items
+        if hasattr(self, "task_list_layout"):
+            for i in range(self.task_list_layout.count()):
+                widget = self.task_list_layout.itemAt(i).widget()
+                if isinstance(widget, TaskItemWidget):
+                    widget.update_text(key, new_text)
+
+        # Update filter combo box
+        if hasattr(self, "filter_combo"):
+            if key == "all_tasks":
+                self.filter_combo.setItemText(0, new_text)
+            elif key == "high_priority":
+                self.filter_combo.setItemText(1, new_text)
+            elif key == "medium_priority":
+                self.filter_combo.setItemText(2, new_text)
+            elif key == "low_priority":
+                self.filter_combo.setItemText(3, new_text)
+            elif key == "completed":
+                self.filter_combo.setItemText(4, new_text)
+            elif key == "pending":
+                self.filter_combo.setItemText(5, new_text)
+
+        #updaet button
+        if hasattr (self, "refresh_btn"):
+            self.refresh_btn.setText(new_text)
+
+        if hasattr (self, "clear_all_btn"):
+            self.clear_all_btn.setText(new_text)
+            
+            

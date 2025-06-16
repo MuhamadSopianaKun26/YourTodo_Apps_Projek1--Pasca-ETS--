@@ -523,9 +523,9 @@ class TaskManager:
     def update_text(self, key, new_text):
         """Update text when language changes"""
         # Update task-related text
-        # No direct buttons for "add_task" or "clear_all" in task.py now,
-        # but if they were to be localized, this is where it would go.
-        # For now, action buttons are created with static text.
+        if hasattr(self, "add_task_btn"):
+            if key == "add_task":
+                self.add_task_btn.setText(new_text)
 
         # Update task item texts
         for i in range(self.task_list_layout.count()):
@@ -536,11 +536,5 @@ class TaskManager:
         # Update task count label if it exists
         if hasattr(self, "task_count_label"):
             if key == "tasks":
-                # When language changes, we re-count visible tasks based on current filters
-                visible_count = 0
-                if self.task_list_layout:
-                    for i in range(self.task_list_layout.count()):
-                        widget = self.task_list_layout.itemAt(i).widget()
-                        if widget and widget.isVisible():
-                            visible_count += 1
-                self.task_count_label.setText(f"{new_text}: {visible_count}")
+                count = self.task_list_layout.count() if self.task_list_layout else 0
+                self.task_count_label.setText(f"{new_text} ({count})")

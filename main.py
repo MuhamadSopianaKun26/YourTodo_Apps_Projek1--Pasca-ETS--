@@ -29,6 +29,9 @@ from _sopian.schedule import ScheduleWidget
 from _praditama.welcome_screen import WelcomeScreen
 from _sopian.Add_Task import IconManager
 from _sopian.repeatedTask import RepeatedTaskManager
+from _sopian._language.language_manager import LanguageManager
+from _sopian._language.language_settings import LanguageSettingsWidget
+
 
 def log_time(message):
     """Helper function untuk logging waktu"""
@@ -45,6 +48,7 @@ class ToDoApp(QWidget):
         self.current_user = None
         self.taskTable = None
         self.task_manager = TaskManager(self)
+        self.language_manager = LanguageManager()
         self.notification_system = None
         self.action_button_style = """
             QPushButton {
@@ -59,6 +63,11 @@ class ToDoApp(QWidget):
                 background-color: #0096B7;
             }
         """
+
+         # Connect language change signals
+        self.language_manager.text_changed.connect(self.update_text)
+        self.language_manager.language_changed.connect(self.on_language_changed)
+
         # Preload icons saat aplikasi pertama kali dibuka
         start_time = time.time()
         IconManager.preload_icons()
@@ -68,7 +77,7 @@ class ToDoApp(QWidget):
 
     def initUI(self):
         """Initialize the main user interface components and layout."""
-        self.setWindowTitle("YourTodo")
+        self.setWindowTitle(self.language_manager.get_text("app_title"))
         self.setGeometry(100, 100, 1200, 800)
         self.setStyleSheet("background-color: #F0FBFF;")
 
@@ -103,7 +112,9 @@ class ToDoApp(QWidget):
     def _setupStackedWidgets(self):
         """Initialize and set up all section widgets in the stacked widget."""
         self.history_widget = None
-        self.setupSimpleWidget(self.history_widget, "History")
+        self.setupSimpleWidget(
+            self.history_widget, self.language_manager.get_text("history")
+        )
 
         self.tasks_widget = self.task_manager.tasks_widget
         self.stacked_widget.addWidget(self.tasks_widget)
@@ -115,6 +126,15 @@ class ToDoApp(QWidget):
         self.notification_widget = NotificationWidget(self)
         self.stacked_widget.addWidget(self.notification_widget)
 
+        # Add language settings widget
+        self.language_settings_widget = LanguageSettingsWidget(
+            self.language_manager, self
+        )
+
+        self.stacked_widget.addWidget(self.language_settings_widget)
+
+        self.task_manager.loadTasks()
+
     def _connectSidebarButtons(self):
         """Connect sidebar buttons to their respective sections and set up button behavior."""
         button_sections = {
@@ -122,6 +142,7 @@ class ToDoApp(QWidget):
             self.sidebar.history_btn: "history",
             self.sidebar.schedule_btn: "schedule",
             self.sidebar.notification_btn: "notifications",
+            self.sidebar.language_settings_btn: "language_settings",
         }
 
         for button, section in button_sections.items():
@@ -181,6 +202,7 @@ class ToDoApp(QWidget):
             "history": self.history_widget,
             "schedule": self.schedule_widget,
             "notifications": self.notification_widget,
+            "language_settings": self.language_settings_widget,
         }
         if section in section_widgets and section_widgets[section] is not None:
             self.stacked_widget.setCurrentWidget(section_widgets[section])
@@ -228,6 +250,54 @@ class ToDoApp(QWidget):
 
         if not self.authenticate():
             QApplication.quit()
+
+    def update_text(self, key, new_text):
+        """Update text for a specific key in the UI"""
+        # Update window title
+        if key == "app_title":
+            self.setWindowTitle(new_text)
+
+        # Update sidebar buttons
+        if hasattr(self, "sidebar"):
+            if key == "tasks":
+                self.sidebar.tasks_btn.setText(new_text)
+            elif key == "history":
+                self.sidebar.history_btn.setText(new_text)
+            elif key == "schedule":
+                self.sidebar.schedule_btn.setText(new_text)
+            elif key == "notifications":
+                self.sidebar.notification_btn.setText(new_text)
+            elif key == "language_settings":
+                self.sidebar.language_settings_btn.setText(new_text)
+
+        # Update header
+        if hasattr(self, "header"):
+            if key == "logout":
+                self.header.logout_btn.setText(new_text)
+            elif key == "search":
+                self.header.search_bar.setPlaceholderText(new_text)
+
+        # Update task manager
+        if hasattr(self, "task_manager"):
+            self.task_manager.update_text(key, new_text)
+
+        # Update schedule widget
+        if hasattr(self, "schedule_widget"):
+            self.schedule_widget.update_text(key, new_text)
+
+        # Update notification widget
+        if hasattr(self, "notification_widget"):
+            self.notification_widget.update_text(key, new_text)
+
+    def on_language_changed(self, lang_code):
+        """Handle language change event"""
+        # Refresh all widgets that need to be updated
+        if hasattr(self, "task_manager"):
+            self.task_manager.refreshTasks()
+        if hasattr(self, "schedule_widget"):
+            self.schedule_widget.refreshSchedule()
+        if hasattr(self, "notification_widget"):
+            self.notification_widget.loadNotifications()
 
 
 if __name__ == "__main__":

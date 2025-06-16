@@ -638,5 +638,21 @@
         "timestamp": "2025-06-17 00:23:00",
         "read": false,
         "username": "lianKun"
+    },
+    {
+        "task_id": "daily 2_2025-06-17 08:24_2025-06-17 23:59",
+        "message": "Task 'daily 2' has been completed!",
+        "type": "done",
+        "timestamp": "2025-06-17 09:08:27",
+        "read": false,
+        "username": "lianKun"
+    },
+    {
+        "task_id": "18 juni_2025-06-18 08:21_",
+        "message": "Task '18 juni' has been marked as failed!",
+        "type": "failed",
+        "timestamp": "2025-06-17 09:08:46",
+        "read": false,
+        "username": "lianKun"
     }
 ]

@@ -465,6 +465,30 @@
       "username": "MuhamadSopiana1",
       "last_run_date": "2025-06-03",
       "is_added": false
+    },
+    {
+      "name": "daily 2",
+      "description": "",
+      "start_time": "2025-06-17 08:24",
+      "deadline": "2025-06-17 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "done - Completed on 2025-06-17",
+      "schedule": "daily",
+      "username": "lianKun",
+      "last_run_date": "2025-06-17",
+      "is_added": false
+    },
+    {
+      "name": "18 juni",
+      "description": "",
+      "start_time": "2025-06-18 08:21",
+      "deadline": "",
+      "priority": "None",
+      "reminder": "None",
+      "status": "failed - Completed on 2025-06-17",
+      "schedule": "None",
+      "username": "lianKun"
     }
   ]
 }

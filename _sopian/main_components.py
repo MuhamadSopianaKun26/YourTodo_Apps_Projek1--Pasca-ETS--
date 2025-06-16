@@ -163,6 +163,15 @@ class HeaderWidget(QWidget):
             )
         return notif_btn
 
+    def update_text(self, key, new_text):
+        """Update text saat ganti bahasa"""
+        if key == "search":
+            self.search_bar.setPlaceholderText(new_text)
+        elif key == "logout":
+            self.logout_btn.setText(new_text)
+        elif key == "app_title":
+            self.title_label.setText(new_text)
+
     def _createUserContainer(self):
         """Membuat dan mengembalikan container informasi pengguna dengan username dan logout."""
         container = QWidget()
@@ -182,8 +191,8 @@ class HeaderWidget(QWidget):
         )
         layout.addWidget(self.username_label)
 
-        logout_btn = QPushButton("Logout")
-        logout_btn.setStyleSheet(
+        self.logout_btn = QPushButton("Logout")
+        self.logout_btn.setStyleSheet(
             """
             QPushButton {
                 background-color: #FF4444;
@@ -198,8 +207,8 @@ class HeaderWidget(QWidget):
             }
         """
         )
-        logout_btn.clicked.connect(self._handle_logout)
-        layout.addWidget(logout_btn)
+        self.logout_btn.clicked.connect(self._handle_logout)
+        layout.addWidget(self.logout_btn)
 
         return container
 
@@ -296,6 +305,9 @@ class SidebarWidget(QWidget):
         self.notification_btn = SidebarButton(
             "Notifications", get_image_path("notification.png")
         )
+        self.language_settings_btn = SidebarButton(
+            "Language", get_image_path("settings.png")
+        )
 
         self.tasks_btn.setChecked(True)
 
@@ -304,6 +316,7 @@ class SidebarWidget(QWidget):
             self.schedule_btn,
             self.history_btn,
             self.notification_btn,
+            self.language_settings_btn,
         ]:
             layout.addWidget(btn)
         layout.addStretch()
@@ -734,6 +747,32 @@ class TaskItemWidget(QFrame):
         """
         )
         return self.status_btn
+
+    def update_text(self, key, new_text):
+        """Update text when language changes"""
+        # Update priority text
+        if key == "task_priority":
+            if self.priority_btn:
+                self.priority_btn.setText(new_text)
+
+        # Update status text
+        if key == "task_status":
+            if self.status_btn:
+                status = self.task_data.get("status", "due")
+                if "done" in status.lower():
+                    self.status_btn.setText("done")
+                elif "failed" in status.lower():
+                    self.status_btn.setText("failed")
+                else:
+                    self.status_btn.setText("due")
+
+        # Update task info labels
+        if key == "task_title":
+            if self.name_label:
+                self.name_label.setText(self.task_data.get("name", ""))
+        elif key == "task_description":
+            if self.desc_label:
+                self.desc_label.setText(self.task_data.get("description", ""))
 
 
 class LoadingWidget(QWidget):

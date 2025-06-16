@@ -142,6 +142,32 @@
       "username": "lianKun",
       "last_run_date": "2025-06-17",
       "is_added": true
+    },
+    {
+      "name": "makan mie ayam",
+      "description": "",
+      "start_time": "2025-06-17 08:19",
+      "deadline": "2025-06-17 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "daily",
+      "username": "lianKun",
+      "last_run_date": "2025-06-17",
+      "is_added": true
+    },
+    {
+      "name": "daily 2",
+      "description": "",
+      "start_time": "2025-06-17 08:24",
+      "deadline": "2025-06-17 23:59",
+      "priority": "High",
+      "reminder": "None",
+      "status": "due",
+      "schedule": "daily",
+      "username": "lianKun",
+      "last_run_date": "2025-06-17",
+      "is_added": true
     }
   ]
 }
