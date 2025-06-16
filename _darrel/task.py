@@ -54,8 +54,6 @@ class TaskManager:
             }
         """
         self.initUI()
-        # self.loadTasks()  # Load tasks first
-        # self.updateTaskCount()  # Then update the count
 
     def initUI(self):
         self.setupTasksWidget()
