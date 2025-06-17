@@ -264,8 +264,8 @@ class ScheduleWidget(QWidget):
         repeated_layout.setContentsMargins(0, 0, 0, 0)
 
         # Add "Add Repeated Task" button
-        add_task_btn = QPushButton("Add Repeated Task")
-        add_task_btn.setStyleSheet(
+        self.add_task_btn = QPushButton("Add Repeated Task")
+        self.add_task_btn.setStyleSheet(
             """
             QPushButton {
                 background-color: #00B4D8;
@@ -282,8 +282,8 @@ class ScheduleWidget(QWidget):
             }
         """
         )
-        add_task_btn.clicked.connect(self.show_add_repeated_task_dialog)
-        repeated_layout.addWidget(add_task_btn)
+        self.add_task_btn.clicked.connect(self.show_add_repeated_task_dialog)
+        repeated_layout.addWidget(self.add_task_btn)
 
         # Add Clear All button
         self.clear_all_btn = QPushButton("Clear All")
@@ -909,12 +909,20 @@ class ScheduleWidget(QWidget):
         if key == "schedule":
             if hasattr(self, "title"):
                 self.title.setText(new_text)
-
-        # Update view selector text
-        if hasattr(self, "schedule_btn"):
-            self.schedule_btn.setText(new_text)
-        if hasattr(self, "repeated_tasks_btn"):
-            self.repeated_tasks_btn.setText(new_text)
+            if hasattr(self, "schedule_btn"):
+                self.schedule_btn.setText(new_text)
+        elif key == "repeated_tasks":
+            if hasattr(self, "repeated_tasks_btn"):
+                self.repeated_tasks_btn.setText(new_text)
+        elif key == "refresh":
+            if hasattr(self, "refresh_btn"):
+                self.refresh_btn.setText(new_text)
+        elif key == "clear_all":
+            if hasattr(self, "clear_all_btn"):
+                self.clear_all_btn.setText(new_text)
+        elif key == "add_repeated_task":
+            if hasattr(self, "add_task_btn"):
+                self.add_task_btn.setText(new_text)
 
         # Update task items
         if hasattr(self, "task_list_layout"):
@@ -937,12 +945,5 @@ class ScheduleWidget(QWidget):
                 self.filter_combo.setItemText(4, new_text)
             elif key == "pending":
                 self.filter_combo.setItemText(5, new_text)
-
-        #updaet button
-        if hasattr (self, "refresh_btn"):
-            self.refresh_btn.setText(new_text)
-
-        if hasattr (self, "clear_all_btn"):
-            self.clear_all_btn.setText(new_text)
             
             

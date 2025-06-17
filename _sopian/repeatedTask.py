@@ -592,6 +592,28 @@ class AddRepeatedTaskDialog(QDialog):
         self.setMinimumWidth(400)
         self.setup_ui()
 
+    def update_text(self, key, new_text):
+        """Update text when language changes"""
+        if key == "add_repeated_task":
+            self.setWindowTitle(new_text)
+            self.ok_button.setText(new_text)
+        elif key == "task_name":
+            self.name_label.setText(new_text)
+        elif key == "description":
+            self.desc_label.setText(new_text)
+        elif key == "start_time":
+            self.time_label.setText(new_text)
+        elif key == "repeat":
+            self.schedule_label.setText(new_text)
+        elif key == "select_days":
+            self.weekly_day_label.setText(new_text)
+        elif key == "select_dates":
+            self.monthly_date_label.setText(new_text)
+        elif key == "priority":
+            self.priority_label.setText(new_text)
+        elif key == "cancel":
+            self.cancel_button.setText(new_text)
+
     def setup_ui(self):
         """Initialize dialog UI."""
         layout = QVBoxLayout()
@@ -599,7 +621,7 @@ class AddRepeatedTaskDialog(QDialog):
 
         # Task name
         name_layout = QVBoxLayout()
-        name_label = QLabel("Task Name:")
+        self.name_label = QLabel("Task Name:")
         self.name_edit = QLineEdit()
         self.name_edit.setPlaceholderText("Enter task name")
         self.name_edit.setStyleSheet(
@@ -615,13 +637,13 @@ class AddRepeatedTaskDialog(QDialog):
             }
         """
         )
-        name_layout.addWidget(name_label)
+        name_layout.addWidget(self.name_label)
         name_layout.addWidget(self.name_edit)
         layout.addLayout(name_layout)
 
         # Task description
         desc_layout = QVBoxLayout()
-        desc_label = QLabel("Description:")
+        self.desc_label = QLabel("Description:")
         self.desc_edit = QTextEdit()
         self.desc_edit.setMaximumHeight(100)
         self.desc_edit.setPlaceholderText("Enter task description")
@@ -638,13 +660,13 @@ class AddRepeatedTaskDialog(QDialog):
             }
         """
         )
-        desc_layout.addWidget(desc_label)
+        desc_layout.addWidget(self.desc_label)
         desc_layout.addWidget(self.desc_edit)
         layout.addLayout(desc_layout)
 
         # Start time
         time_layout = QVBoxLayout()
-        time_label = QLabel("Start Time:")
+        self.time_label = QLabel("Start Time:")
         self.time_edit = QTimeEdit()
         self.time_edit.setDisplayFormat("HH:mm")
         self.time_edit.setTime(QTime.currentTime())
@@ -661,13 +683,13 @@ class AddRepeatedTaskDialog(QDialog):
             }
         """
         )
-        time_layout.addWidget(time_label)
+        time_layout.addWidget(self.time_label)
         time_layout.addWidget(self.time_edit)
         layout.addLayout(time_layout)
 
         # Schedule type
         schedule_layout = QVBoxLayout()
-        schedule_label = QLabel("Repeat:")
+        self.schedule_label = QLabel("Repeat:")
         self.schedule_combo = QComboBox()
         self.schedule_combo.addItems(["Daily", "Weekly", "Monthly"])
         self.schedule_combo.setStyleSheet(
@@ -683,15 +705,15 @@ class AddRepeatedTaskDialog(QDialog):
             }
             """
         )
-        schedule_layout.addWidget(schedule_label)
+        schedule_layout.addWidget(self.schedule_label)
         schedule_layout.addWidget(self.schedule_combo)
         layout.addLayout(schedule_layout)
 
         # Day selection for weekly tasks
         self.weekly_container = QWidget()
         weekly_layout = QVBoxLayout(self.weekly_container)
-        weekly_day_label = QLabel("Select Days:")
-        weekly_day_label.setStyleSheet("font-size: 14px;")
+        self.weekly_day_label = QLabel("Select Days:")
+        self.weekly_day_label.setStyleSheet("font-size: 14px;")
         
         # Create a widget to hold checkboxes
         self.weekly_days_widget = QWidget()
@@ -732,7 +754,7 @@ class AddRepeatedTaskDialog(QDialog):
             self.weekly_checkboxes[day] = checkbox
             weekly_days_layout.addWidget(checkbox)
         
-        weekly_layout.addWidget(weekly_day_label)
+        weekly_layout.addWidget(self.weekly_day_label)
         weekly_layout.addWidget(self.weekly_days_widget)
         self.weekly_container.setVisible(False)
         layout.addWidget(self.weekly_container)
@@ -740,8 +762,8 @@ class AddRepeatedTaskDialog(QDialog):
         # Date selection for monthly tasks
         self.monthly_container = QWidget()
         monthly_layout = QVBoxLayout(self.monthly_container)
-        monthly_date_label = QLabel("Select Dates:")
-        monthly_date_label.setStyleSheet("font-size: 14px;")
+        self.monthly_date_label = QLabel("Select Dates:")
+        self.monthly_date_label.setStyleSheet("font-size: 14px;")
         
         # Create a widget to hold date buttons
         self.monthly_dates_widget = QWidget()
@@ -782,7 +804,7 @@ class AddRepeatedTaskDialog(QDialog):
             self.monthly_date_buttons[i] = btn
         
         monthly_dates_layout.addLayout(self.monthly_dates_grid)
-        monthly_layout.addWidget(monthly_date_label)
+        monthly_layout.addWidget(self.monthly_date_label)
         monthly_layout.addWidget(self.monthly_dates_widget)
         self.monthly_container.setVisible(False)
         layout.addWidget(self.monthly_container)
@@ -792,7 +814,7 @@ class AddRepeatedTaskDialog(QDialog):
 
         # Priority
         priority_layout = QVBoxLayout()
-        priority_label = QLabel("Priority:")
+        self.priority_label = QLabel("Priority:")
         self.priority_combo = QComboBox()
         self.priority_combo.addItems(["High", "Medium", "Low"])
         self.priority_combo.setStyleSheet(
@@ -808,7 +830,7 @@ class AddRepeatedTaskDialog(QDialog):
             }
         """
         )
-        priority_layout.addWidget(priority_label)
+        priority_layout.addWidget(self.priority_label)
         priority_layout.addWidget(self.priority_combo)
         layout.addLayout(priority_layout)
 

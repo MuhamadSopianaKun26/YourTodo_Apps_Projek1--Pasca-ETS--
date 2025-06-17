@@ -51,5 +51,13 @@
   "medium_priority": "Prioritas Sedang",
   "low_priority": "Prioritas Rendah",
   "clear_all": "Hapus Semua",
-  "refresh": "Segarkan"
+  "refresh": "Segarkan",
+  "add_repeated_task": "Tambah Tugas Berulang",
+  "task_name": "Nama Tugas",
+  "description": "Deskripsi",
+  "start_time": "Waktu Mulai",
+  "repeat": "Ulangi",
+  "select_days": "Pilih Hari",
+  "select_dates": "Pilih Tanggal",
+  "priority": "Prioritas"
 }

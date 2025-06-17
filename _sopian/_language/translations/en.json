@@ -44,10 +44,20 @@
   "warning": "Warning",
   "info": "Information",
   "repeated_tasks": "Repeated Tasks",
+  "repeated_tasks_btn": "Repeated Tasks",
+  "schedule_btn": "Schedule",
   "all_tasks": "All Tasks",
   "high_priority": "High Priority",
   "medium_priority": "Medium Priority",
   "low_priority": "Low Priority",
   "clear_all": "Clear All",
-  "refresh": "Refresh"
+  "refresh": "Refresh",
+  "add_repeated_task": "Add Repeated Task",
+  "task_name": "Task Name",
+  "description": "Description",
+  "start_time": "Start Time",
+  "repeat": "Repeat",
+  "select_days": "Select Days",
+  "select_dates": "Select Dates",
+  "priority": "Priority"
 }
